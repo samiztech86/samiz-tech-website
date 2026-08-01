@@ -35,68 +35,7 @@ ${message}`;
 
   return (
     <main className="min-h-screen bg-white text-slate-950">
-      {/* HEADER */}
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between px-6 lg:px-10">
-          <a href="/" className="flex items-center">
-            <Image
-              src="/samiz-logo.png"
-              alt="Samiz Tech Engineering"
-              width={160}
-              height={60}
-              className="h-auto w-[100px] sm:w-[112px]"
-            />
-          </a>
-
-          <nav className="hidden items-center gap-8 lg:flex">
-            <a
-              href="/services"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              Services
-            </a>
-
-            <a
-              href="/energyos"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              EnergyOS
-            </a>
-
-            <a
-              href="/projects"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              Projects
-            </a>
-
-            <a
-              href="/about"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              About
-            </a>
-
-            <a
-              href="/contact"
-              className="bg-blue-700 px-5 py-3 text-sm font-semibold text-white"
-            >
-              Start a Project
-            </a>
-          </nav>
-
-          <a
-            href="https://wa.me/2348155721739?text=Hello%20Samiz%20Tech%2C%20I%20would%20like%20to%20discuss%20a%20project."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[#25D366] px-4 py-2.5 text-xs font-bold text-white lg:hidden"
-          >
-            WhatsApp
-          </a>
-        </div>
-      </header>
-
-      {/* HERO */}
+{/* HERO */}
       <section className="bg-[#07111f]">
         <div className="mx-auto max-w-[1400px] px-6 py-20 lg:px-10 lg:py-28">
           <div className="max-w-4xl">
@@ -448,3 +387,4 @@ ${message}`;
     </main>
   );
 }
+

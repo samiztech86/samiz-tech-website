@@ -31,73 +31,7 @@ const capabilities = [
 export default function EnergyOSPage() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
-      {/* HEADER */}
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between px-6 lg:px-10">
-          <a href="/">
-            <Image
-              src="/samiz-logo.png"
-              alt="Samiz Tech Engineering"
-              width={160}
-              height={60}
-              className="h-auto w-[100px] sm:w-[112px]"
-            />
-          </a>
-
-          <nav className="hidden items-center gap-8 lg:flex">
-            <a
-              href="/services"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              Services
-            </a>
-
-            <a
-              href="/#systems"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              Systems
-            </a>
-
-            <a
-              href="/energyos"
-              className="text-sm font-semibold text-blue-700"
-            >
-              EnergyOS
-            </a>
-
-            <a
-              href="/projects"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              Projects
-            </a>
-
-            <a
-              href="/about"
-              className="text-sm font-medium text-slate-600 hover:text-blue-700"
-            >
-              About
-            </a>
-
-            <a
-              href="/contact"
-              className="bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-            >
-              Start a Project
-            </a>
-          </nav>
-
-          <a
-            href="/contact"
-            className="bg-slate-950 px-4 py-2.5 text-xs font-bold text-white lg:hidden"
-          >
-            Contact
-          </a>
-        </div>
-      </header>
-
-      {/* HERO */}
+{/* HERO */}
       <section className="overflow-hidden bg-[#06111f]">
         <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10 lg:py-32">
           <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
@@ -509,3 +443,4 @@ export default function EnergyOSPage() {
     </main>
   );
 }
+
