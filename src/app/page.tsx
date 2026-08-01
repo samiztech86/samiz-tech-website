@@ -2,6 +2,46 @@
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Electrical & Solar Engineering in Lagos, Nigeria",
+  description:
+    "Samiz Tech Engineering Ltd. provides electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions for homes, estates, businesses and critical facilities across Lagos and Nigeria.",
+  keywords: [
+    "electrical engineering Lagos",
+    "electrical contractors Lagos",
+    "solar EPC Lagos",
+    "solar installation Lagos",
+    "solar company Nigeria",
+    "solar power systems Nigeria",
+    "electrical installation Nigeria",
+    "energy infrastructure Nigeria",
+    "smart automation Lagos",
+    "energy management Nigeria",
+    "Samiz Tech Engineering Ltd.",
+    "Samiz EnergyOS",
+  ],
+  alternates: {
+    canonical: "https://www.samiztech.com.ng/",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://www.samiztech.com.ng/",
+    title: "Samiz Tech Engineering Ltd. | Electrical & Solar Engineering",
+    description:
+      "Electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Lagos and Nigeria.",
+    siteName: "Samiz Tech Engineering Ltd.",
+    locale: "en_NG",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Samiz Tech Engineering Ltd. | Electrical & Solar Engineering",
+    description:
+      "Electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Nigeria.",
+  },
+};
+
 
 const services = [
   {
@@ -925,6 +965,8 @@ export default function Home() {
     </main>
   );
 }
+
+
 
 
 

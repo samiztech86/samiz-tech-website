@@ -1,5 +1,45 @@
 ﻿import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Electrical, Solar & Energy Services in Lagos",
+  description:
+    "Samiz Tech Engineering Ltd. delivers solar EPC, electrical engineering, energy infrastructure, smart automation and facility energy solutions for homes, estates, businesses and institutions across Lagos and Nigeria.",
+  keywords: [
+    "electrical services Lagos",
+    "electrical engineering services Lagos",
+    "electrical contractors Nigeria",
+    "solar EPC Lagos",
+    "solar installation services Lagos",
+    "solar power installation Nigeria",
+    "energy infrastructure services Nigeria",
+    "electrical maintenance Lagos",
+    "smart automation Nigeria",
+    "energy management services Lagos",
+    "facility energy solutions Nigeria",
+    "Samiz Tech Engineering Ltd.",
+  ],
+  alternates: {
+    canonical: "https://www.samiztech.com.ng/services",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://www.samiztech.com.ng/services",
+    title: "Electrical, Solar & Energy Services | Samiz Tech Engineering Ltd.",
+    description:
+      "Solar EPC, electrical engineering, energy infrastructure and smart automation services across Lagos and Nigeria.",
+    siteName: "Samiz Tech Engineering Ltd.",
+    locale: "en_NG",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Electrical, Solar & Energy Services | Samiz Tech Engineering Ltd.",
+    description:
+      "Solar EPC, electrical engineering, energy infrastructure and smart automation services across Lagos and Nigeria.",
+  },
+};
+
 
 const services = [
   {
@@ -246,5 +286,6 @@ export default function ServicesPage() {
 </main>
   );
 }
+
 
 

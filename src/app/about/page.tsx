@@ -1,5 +1,44 @@
 ﻿import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Samiz Tech Engineering Ltd.",
+  description:
+    "Learn about Samiz Tech Engineering Ltd., a Nigerian engineering company delivering electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions.",
+  keywords: [
+    "Samiz Tech Engineering Ltd.",
+    "Samiz Tech Engineering",
+    "electrical engineering company Lagos",
+    "electrical engineering company Nigeria",
+    "solar engineering company Lagos",
+    "solar EPC company Nigeria",
+    "energy infrastructure company Nigeria",
+    "electrical contractors Lagos",
+    "engineering company Nigeria",
+    "energy solutions Nigeria",
+    "smart energy company Nigeria",
+  ],
+  alternates: {
+    canonical: "https://www.samiztech.com.ng/about",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://www.samiztech.com.ng/about",
+    title: "About Samiz Tech Engineering Ltd.",
+    description:
+      "Samiz Tech Engineering Ltd. delivers electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Nigeria.",
+    siteName: "Samiz Tech Engineering Ltd.",
+    locale: "en_NG",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Samiz Tech Engineering Ltd.",
+    description:
+      "Learn about Samiz Tech Engineering Ltd. and its engineering, solar, energy infrastructure and automation capabilities.",
+  },
+};
+
 
 const principles = [
   {
@@ -313,5 +352,6 @@ export default function AboutPage() {
     </main>
   );
 }
+
 
 

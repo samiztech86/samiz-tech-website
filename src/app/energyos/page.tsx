@@ -1,5 +1,46 @@
 ﻿import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Samiz EnergyOS | Intelligent Energy Management Platform",
+  description:
+    "Samiz EnergyOS by Samiz Tech Engineering Ltd. is an intelligent energy management platform designed to monitor, manage and optimise electrical infrastructure, energy assets and power systems.",
+  keywords: [
+    "Samiz EnergyOS",
+    "energy management system Nigeria",
+    "energy management platform Nigeria",
+    "intelligent energy management Lagos",
+    "energy monitoring Nigeria",
+    "energy monitoring platform Lagos",
+    "smart energy system Nigeria",
+    "energy infrastructure management",
+    "IoT energy monitoring Nigeria",
+    "power monitoring system Nigeria",
+    "building energy management Nigeria",
+    "estate energy management Nigeria",
+    "Samiz Tech Engineering Ltd.",
+  ],
+  alternates: {
+    canonical: "https://www.samiztech.com.ng/energyos",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://www.samiztech.com.ng/energyos",
+    title: "Samiz EnergyOS | Intelligent Energy Management",
+    description:
+      "Monitor, manage and optimise energy infrastructure with Samiz EnergyOS from Samiz Tech Engineering Ltd.",
+    siteName: "Samiz Tech Engineering Ltd.",
+    locale: "en_NG",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Samiz EnergyOS | Intelligent Energy Management",
+    description:
+      "An intelligent energy management platform for monitoring and managing electrical infrastructure and energy assets.",
+  },
+};
+
 
 const capabilities = [
   {
@@ -400,5 +441,7 @@ export default function EnergyOSPage() {
     </main>
   );
 }
+
+
 
 
