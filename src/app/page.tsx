@@ -726,7 +726,7 @@ export default function Home() {
           </div>
 
           <div className="mt-16 overflow-hidden border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
-            <div className="min-w-[850px]">
+            <div className="w-full min-w-0">
               <PowerSystemDiagram />
             </div>
           </div>
@@ -925,6 +925,8 @@ export default function Home() {
     </main>
   );
 }
+
+
 
 
 
