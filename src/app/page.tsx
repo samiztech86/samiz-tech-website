@@ -560,7 +560,7 @@ function EnergyOSDiagram() {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
-      <SiteHeader />
+
       <div className="fixed bottom-6 right-6 z-[100]">
         <WhatsAppButton
           label="Chat with us"
@@ -925,6 +925,8 @@ export default function Home() {
     </main>
   );
 }
+
+
 
 
 
