@@ -8,7 +8,7 @@ export default function SiteFooter() {
           <div className="lg:col-span-2">
             <Image
               src="/samiz-logo.png"
-              alt="Samiz Tech Engineering"
+              alt="Samiz Tech Engineering Ltd."
               width={160}
               height={60}
               className="h-auto w-[105px] brightness-0 invert"
@@ -104,3 +104,4 @@ export default function SiteFooter() {
     </footer>
   );
 }
+

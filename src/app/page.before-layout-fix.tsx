@@ -1,6 +1,4 @@
 ﻿import Image from "next/image";
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 const services = [
@@ -560,7 +558,6 @@ function EnergyOSDiagram() {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
-      <SiteHeader />
       <div className="fixed bottom-6 right-6 z-[100]">
         <WhatsAppButton
           label="Chat with us"
@@ -568,8 +565,67 @@ export default function Home() {
         />
       </div>
 
+      {/* NAVIGATION */}
+      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between px-6 lg:px-10">
+          <a href="/" className="flex items-center">
+            <Image
+              src="/samiz-logo.png"
+              alt="Samiz Tech Engineering"
+              width={160}
+              height={60}
+              className="h-auto w-[100px] sm:w-[112px]"
+              priority
+            />
+          </a>
 
+          <nav className="hidden items-center gap-8 lg:flex">
+            <a
+              href="/services"
+              className="text-sm font-medium text-slate-600 transition hover:text-blue-700"
+            >
+              Services
+            </a>
+            <a
+              href="#systems"
+              className="text-sm font-medium text-slate-600 transition hover:text-blue-700"
+            >
+              Systems
+            </a>
+            <a
+              href="/energyos"
+              className="text-sm font-medium text-slate-600 transition hover:text-blue-700"
+            >
+              EnergyOS
+            </a>
+            <a
+              href="/projects"
+              className="text-sm font-medium text-slate-600 transition hover:text-blue-700"
+            >
+              Projects
+            </a>
+            <a
+              href="/about"
+              className="text-sm font-medium text-slate-600 transition hover:text-blue-700"
+            >
+              About
+            </a>
+            <a
+              href="/contact"
+              className="bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Start a Project
+            </a>
+          </nav>
 
+          <a
+            href="/contact"
+            className="bg-slate-950 px-4 py-2.5 text-xs font-bold text-white lg:hidden"
+          >
+            Contact
+          </a>
+        </div>
+      </header>
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#07111f]">
@@ -593,13 +649,13 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="max-w-3xl text-4xl font-bold leading-[1.08] sm:text-5xl tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-3xl text-5xl font-bold leading-[1.02] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
               Engineering the infrastructure behind{" "}
               <span className="text-blue-400">reliable energy.</span>
             </h1>
 
             <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300">
-              Samiz Tech Engineering Ltd. delivers electrical, solar, automation and
+              Samiz Tech Engineering delivers electrical, solar, automation and
               intelligent energy solutions for homes, estates, businesses and
               critical facilities.
             </p>
@@ -648,7 +704,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="min-h-[300px] w-full min-w-0 sm:min-h-[380px] lg:min-h-[520px]">
+          <div className="min-h-[430px] lg:min-h-[520px]">
             <GridDiagram />
           </div>
         </div>
@@ -866,7 +922,7 @@ export default function Home() {
                 Samiz Tech Engineering Ltd
               </p>
 
-              <h2 className="mt-4 max-w-[18rem] text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:max-w-none sm:text-6xl">
+              <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-6xl">
                 Where Engineering Meets Energy.
               </h2>
             </div>
@@ -920,19 +976,71 @@ export default function Home() {
         </div>
       </section>
 
-      <SiteFooter />
+      {/* FOOTER */}
+      <footer className="bg-[#050b14] text-slate-400">
+        <div className="mx-auto max-w-[1400px] px-6 py-12 lg:px-10">
+          <div className="grid gap-10 md:grid-cols-3">
+            <div>
+              <Image
+                src="/samiz-logo.png"
+                alt="Samiz Tech Engineering"
+                width={160}
+                height={60}
+                className="h-auto w-[105px] brightness-0 invert"
+              />
+              <p className="mt-5 max-w-sm text-sm leading-6">
+                Electrical engineering, energy infrastructure and intelligent
+                energy technology.
+              </p>
+            </div>
 
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">
+                Navigation
+              </p>
+              <div className="mt-5 grid gap-3 text-sm">
+                <a href="/services" className="hover:text-white">
+                  Services
+                </a>
+                <a href="#systems" className="hover:text-white">
+                  Systems
+                </a>
+                <a href="/energyos" className="hover:text-white">
+                  EnergyOS
+                </a>
+                <a href="/projects" className="hover:text-white">
+                  Projects
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">
+                Company
+              </p>
+              <div className="mt-5 grid gap-3 text-sm">
+                <a href="/about" className="hover:text-white">
+                  About Samiz Tech
+                </a>
+                <a href="/contact" className="hover:text-white">
+                  Contact
+                </a>
+                <a href="mailto:info@samiztech.com" className="hover:text-white">
+                  info@samiztech.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-slate-800 pt-7 text-xs sm:flex-row">
+            <p>
+              © {new Date().getFullYear()} Samiz Tech Engineering Ltd. All
+              rights reserved.
+            </p>
+            <p>Where Engineering Meets Energy.</p>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
