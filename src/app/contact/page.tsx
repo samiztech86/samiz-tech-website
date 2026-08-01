@@ -328,54 +328,7 @@ ${message}`;
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#050b14] text-slate-400">
-        <div className="mx-auto max-w-[1400px] px-6 py-10 lg:px-10">
-          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-            <div>
-              <Image
-                src="/samiz-logo.png"
-                alt="Samiz Tech Engineering"
-                width={160}
-                height={60}
-                className="h-auto w-[105px] brightness-0 invert"
-              />
-
-              <p className="mt-3 text-xs">
-                Where Engineering Meets Energy.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-5 text-xs">
-              <a href="/" className="hover:text-white">
-                Home
-              </a>
-
-              <a href="/services" className="hover:text-white">
-                Services
-              </a>
-
-              <a href="/energyos" className="hover:text-white">
-                EnergyOS
-              </a>
-
-              <a href="/projects" className="hover:text-white">
-                Projects
-              </a>
-
-              <a href="/about" className="hover:text-white">
-                About
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-8 border-t border-slate-800 pt-6 text-xs">
-            © {new Date().getFullYear()} Samiz Tech Engineering Ltd. All rights
-            reserved.
-          </div>
-        </div>
-      </footer>
-
-      {/* FLOATING WHATSAPP */}
+{/* FLOATING WHATSAPP */}
       <a
         href="https://wa.me/2348155721739?text=Hello%20Samiz%20Tech%2C%20I%20would%20like%20to%20discuss%20a%20project."
         target="_blank"
@@ -387,4 +340,5 @@ ${message}`;
     </main>
   );
 }
+
 
