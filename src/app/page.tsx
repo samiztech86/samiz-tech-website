@@ -621,7 +621,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-[#07111f]">
         <div className="absolute inset-0">
           <Image
-            src="/images/engineering/engineering-electrical-installation-01.jpg"
+            src="/images/engineering/engineering-solar-installation-01.jpg"
             alt="Electrical installation engineered by Samiz Tech Engineering"
             fill
             priority
