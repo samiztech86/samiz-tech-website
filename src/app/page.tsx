@@ -642,7 +642,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="relative mx-auto grid max-w-[1400px] items-center gap-10 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
+        <div className="relative mx-auto grid max-w-[1400px] items-center gap-8 px-5 py-14 sm:gap-10 sm:px-6 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
           <div>
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
@@ -651,18 +651,18 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="max-w-3xl text-4xl font-bold leading-[1.08] sm:text-5xl tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-3xl text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl">
               Engineering the infrastructure behind{" "}
               <span className="text-blue-400">reliable energy.</span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300">
+            <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 sm:mt-7 sm:text-lg sm:leading-8">
               Samiz Tech Engineering Ltd. delivers electrical, solar, automation and
               intelligent energy solutions for homes, estates, businesses and
               critical facilities.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <a
                 href="/contact"
                 className="bg-blue-600 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-500"
@@ -720,7 +720,7 @@ export default function Home() {
               <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-700">
                 Core capabilities
               </p>
-              <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">
                 Built around engineering discipline.
               </h2>
             </div>
@@ -772,7 +772,7 @@ export default function Home() {
               Power systems
             </p>
 
-            <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">
               From generation to distribution, every connection matters.
             </h2>
 
@@ -858,7 +858,7 @@ export default function Home() {
                 </span>
               </div>
 
-              <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
                 Energy infrastructure meets intelligence.
               </h2>
 
@@ -908,7 +908,7 @@ export default function Home() {
                 Where we operate
               </p>
 
-              <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">
                 Solutions for real operating environments.
               </h2>
             </div>
@@ -942,7 +942,7 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-400">
               Engineering process
             </p>
-            <h2 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">
               Designed. Engineered. Delivered.
             </h2>
           </div>
@@ -1002,7 +1002,7 @@ export default function Home() {
                 Start a conversation
               </p>
 
-              <h2 className="mt-4 max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl">
+              <h2 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-6xl">
                 Let&apos;s engineer your next energy system.
               </h2>
             </div>
@@ -1040,6 +1040,9 @@ export default function Home() {
     </main>
   );
 }
+
+
+
 
 
 
