@@ -144,7 +144,7 @@ export default function AboutPage() {
                 src="/images/founder/founder-bode-samuel-ogidiolu.jpg"
                 alt="Engr. Bode Samuel Ogidiolu, Founder of Samiz Tech Engineering Ltd."
                 fill
-                className="object-cover"
+                className="object-cover object-center"
                 sizes="(max-width: 1024px) 100vw, 40vw"
               />
             </div>
@@ -186,12 +186,12 @@ export default function AboutPage() {
         <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10">
           <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
 
-            <div className="relative min-h-[360px] overflow-hidden bg-slate-200 sm:min-h-[480px] lg:min-h-[560px]">
+            <div className="relative min-h-[460px] overflow-hidden bg-slate-200 sm:min-h-[480px] lg:min-h-[560px]">
               <Image
                 src="/images/team/team-electrical-engineer.jpg"
                 alt="Samiz Tech Engineering team"
                 fill
-                className="object-cover"
+                className="object-cover object-center"
                 sizes="(max-width: 1024px) 100vw, 65vw"
               />
 
@@ -463,6 +463,7 @@ export default function AboutPage() {
     </main>
   );
 }
+
 
 
 
