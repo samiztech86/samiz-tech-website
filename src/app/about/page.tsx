@@ -186,7 +186,7 @@ export default function AboutPage() {
         <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10">
           <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
 
-            <div className="relative min-h-[460px] overflow-hidden bg-slate-200 sm:min-h-[480px] lg:min-h-[560px]">
+            <div className="relative aspect-[4/3] overflow-hidden bg-slate-200 sm:aspect-[3/2] lg:aspect-[16/10]">
               <Image
                 src="/images/team/team-electrical-engineer.jpg"
                 alt="Samiz Tech Engineering team"
@@ -463,6 +463,7 @@ export default function AboutPage() {
     </main>
   );
 }
+
 
 
 
