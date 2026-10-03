@@ -3,21 +3,26 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Samiz Tech Engineering Ltd.",
+  title: "About Samiz Tech Engineering | Electrical & Energy Company Lagos",
   description:
-    "Learn about Samiz Tech Engineering Ltd., a Nigerian engineering company delivering electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions.",
+    "Samiz Tech Engineering is a Nigerian engineering company delivering electrical installations, solar EPC, power systems, energy infrastructure and automation for residential, commercial, estate and industrial projects.",
   keywords: [
     "Samiz Tech Engineering Ltd.",
     "Samiz Tech Engineering",
     "electrical engineering company Lagos",
     "electrical engineering company Nigeria",
-    "solar engineering company Lagos",
-    "solar EPC company Nigeria",
+    "electrical contractor Lagos",
+    "solar EPC company Lagos",
     "energy infrastructure company Nigeria",
-    "electrical contractors Lagos",
+    "power systems engineering company Nigeria",
+    "electrical installation company Lagos",
+    "commercial electrical contractor Lagos",
+    "industrial electrical contractor Nigeria",
+    "estate electrical contractor Lagos",
+    "engineering company Lagos",
     "engineering company Nigeria",
-    "energy solutions Nigeria",
-    "smart energy company Nigeria",
+    "energy systems company Nigeria",
+    "smart energy systems Nigeria",
   ],
   alternates: {
     canonical: "https://www.samiztech.com.ng/about",
@@ -25,20 +30,19 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/about",
-    title: "About Samiz Tech Engineering Ltd.",
+    title: "About Samiz Tech Engineering | Electrical & Energy Company Lagos",
     description:
-      "Samiz Tech Engineering Ltd. delivers electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Nigeria.",
+      "Learn about Samiz Tech Engineering and our approach to electrical installations, solar EPC, power systems, energy infrastructure and automation projects across Lagos and Nigeria.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Samiz Tech Engineering Ltd.",
+    title: "About Samiz Tech Engineering | Electrical & Energy Company Lagos",
     description:
-      "Learn about Samiz Tech Engineering Ltd. and its engineering, solar, energy infrastructure and automation capabilities.",
+      "Learn about Samiz Tech Engineering, our engineering capabilities and our approach to electrical, solar and energy infrastructure projects.",
   },
 };
-
 
 const principles = [
   {
@@ -127,6 +131,113 @@ export default function AboutPage() {
                 is used.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOUNDER */}
+      <section className="border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10">
+          <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="relative aspect-[4/5] overflow-hidden bg-slate-100">
+              <Image
+                src="/images/founder/founder-bode-samuel-ogidiolu.jpg"
+                alt="Engr. Bode Samuel Ogidiolu, Founder of Samiz Tech Engineering Ltd."
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+              />
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-700">
+                Founder & Technical Lead
+              </p>
+
+              <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+                Engineering with a practical understanding of energy systems.
+              </h2>
+
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+                Engr. Bode Samuel Ogidiolu founded Samiz Tech Engineering with a
+                focus on electrical engineering, solar energy, power systems and
+                the development of practical energy infrastructure.
+              </p>
+
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+                His work combines hands-on engineering experience with a
+                technology-driven approach to monitoring, automation and energy
+                management.
+              </p>
+
+              <div className="mt-8 border-l-2 border-blue-600 pl-5">
+                <p className="text-sm font-semibold leading-7 text-slate-700">
+                  Building reliable energy infrastructure today while
+                  developing the intelligence needed to manage it tomorrow.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TEAM */}
+      <section className="border-t border-slate-200 bg-slate-50">
+        <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10">
+          <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+
+            <div className="relative min-h-[360px] overflow-hidden bg-slate-200 sm:min-h-[480px] lg:min-h-[560px]">
+              <Image
+                src="/images/team/team-electrical-engineer.jpg"
+                alt="Samiz Tech Engineering team"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 65vw"
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07111f]/55 via-transparent to-transparent" />
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-700">
+                Our Team
+              </p>
+
+              <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+                Engineering is built by people who understand the work.
+              </h2>
+
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                Samiz Tech brings together engineering, energy and technology
+                capabilities focused on solving practical infrastructure
+                challenges.
+              </p>
+
+              <p className="mt-5 text-lg leading-8 text-slate-600">
+                From electrical installations and solar systems to automation,
+                monitoring and energy management, our work is driven by a
+                hands-on understanding of the systems we design and deliver.
+              </p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                {[
+                  ["ELECTRICAL", "Power systems and infrastructure"],
+                  ["ENERGY", "Solar, backup and storage"],
+                  ["TECHNOLOGY", "Automation and intelligent systems"],
+                ].map(([title, text]) => (
+                  <div key={title} className="border-t-2 border-blue-600 pt-4">
+                    <p className="text-xs font-bold tracking-[0.15em] text-slate-950">
+                      {title}
+                    </p>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      {text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -352,6 +463,7 @@ export default function AboutPage() {
     </main>
   );
 }
+
 
 
 

@@ -2,19 +2,25 @@
 import ContactPage from "./ContactPage";
 
 export const metadata: Metadata = {
-  title: "Contact Samiz Tech Engineering Ltd.",
+  title: "Contact an Electrical & Solar Engineering Company in Lagos | Samiz Tech",
   description:
-    "Contact Samiz Tech Engineering Ltd. for electrical engineering, solar EPC, energy infrastructure, automation, maintenance and intelligent energy solutions in Lagos and across Nigeria.",
+    "Discuss your electrical, solar EPC, power distribution, backup power or energy infrastructure project with Samiz Tech Engineering in Lagos and across Nigeria.",
   keywords: [
-    "contact electrical company Lagos",
-    "electrical contractor Lagos",
-    "solar company Lagos",
-    "solar EPC Nigeria",
-    "electrical engineering Lagos",
-    "electrical installation Lagos",
-    "solar installation Nigeria",
-    "energy solutions Lagos",
-    "energy infrastructure Nigeria",
+    "electrical contractor Lagos contact",
+    "electrical engineering company Lagos contact",
+    "electrical installation contractor Lagos",
+    "solar EPC contractor Lagos",
+    "solar installation contractor Lagos",
+    "commercial electrical contractor Lagos",
+    "industrial electrical contractor Nigeria",
+    "power distribution contractor Lagos",
+    "backup power contractor Lagos",
+    "energy infrastructure contractor Nigeria",
+    "estate electrical contractor Lagos",
+    "estate solar contractor Lagos",
+    "engineering project contractor Lagos",
+    "electrical project enquiry Lagos",
+    "solar project enquiry Lagos",
     "engineering company Lagos",
     "Samiz Tech Engineering Ltd.",
   ],
@@ -24,17 +30,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/contact",
-    title: "Contact Samiz Tech Engineering Ltd.",
+    title: "Contact an Electrical & Solar Engineering Company in Lagos | Samiz Tech",
     description:
-      "Get in touch with Samiz Tech Engineering Ltd. for electrical engineering, solar EPC, energy infrastructure and intelligent energy solutions across Nigeria.",
+      "Discuss your electrical, solar EPC, power distribution, backup power or energy infrastructure project with Samiz Tech Engineering in Lagos and across Nigeria.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Samiz Tech Engineering Ltd.",
+    title: "Contact an Electrical & Solar Engineering Company in Lagos | Samiz Tech",
     description:
-      "Contact Samiz Tech Engineering Ltd. for electrical, solar, energy infrastructure and automation solutions.",
+      "Start a project discussion with Samiz Tech Engineering for electrical, solar, power and energy infrastructure work.",
   },
 };
 

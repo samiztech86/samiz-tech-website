@@ -63,6 +63,14 @@ export const metadata: Metadata = {
     title: "Samiz Tech Engineering Ltd. | Where Engineering Meets Energy",
     description:
       "Electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Nigeria.",
+    images: [
+      {
+        url: "/images/og/samiz-tech-og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Samiz Tech Engineering Ltd. — Where Engineering Meets Energy",
+      },
+    ],
   },
 
   twitter: {
@@ -106,5 +114,6 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 

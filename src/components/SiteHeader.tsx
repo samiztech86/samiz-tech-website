@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const navigation = [
   { label: "Services", href: "/services" },
-  { label: "Systems", href: "/#systems" },
+  { label: "Systems", href: "/systems" },
   { label: "EnergyOS", href: "/energyos" },
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
@@ -128,3 +128,4 @@ export default function SiteHeader() {
     </header>
   );
 }
+

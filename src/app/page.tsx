@@ -5,22 +5,28 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Electrical & Solar Engineering in Lagos, Nigeria",
+  title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
   description:
-    "Samiz Tech Engineering Ltd. provides electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions for homes, estates, businesses and critical facilities across Lagos and Nigeria.",
+    "Samiz Tech Engineering delivers electrical installations, solar EPC, power distribution, backup power and energy systems for estates, businesses, commercial facilities and industrial projects in Lagos and across Nigeria.",
   keywords: [
-    "electrical engineering Lagos",
-    "electrical contractors Lagos",
-    "solar EPC Lagos",
-    "solar installation Lagos",
-    "solar company Nigeria",
-    "solar power systems Nigeria",
-    "electrical installation Nigeria",
-    "energy infrastructure Nigeria",
-    "smart automation Lagos",
-    "energy management Nigeria",
+    "electrical engineering company Lagos",
+    "electrical contractor Lagos",
+    "electrical installation company Lagos",
+    "electrical engineering services Lagos",
+    "solar EPC company Lagos",
+    "solar installation company Lagos",
+    "commercial solar installation Lagos",
+    "industrial solar installation Nigeria",
+    "commercial electrical contractor Lagos",
+    "industrial electrical contractor Nigeria",
+    "power systems engineering Nigeria",
+    "electrical infrastructure contractor Lagos",
+    "power distribution contractor Lagos",
+    "estate electrical contractor Lagos",
+    "estate solar installation Lagos",
+    "backup power systems Lagos",
+    "solar battery storage Lagos",
     "Samiz Tech Engineering Ltd.",
-    "Samiz EnergyOS",
   ],
   alternates: {
     canonical: "https://www.samiztech.com.ng/",
@@ -28,17 +34,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/",
-    title: "Samiz Tech Engineering Ltd. | Electrical & Solar Engineering",
+    title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
     description:
-      "Electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Lagos and Nigeria.",
+      "Electrical installations, solar EPC, power distribution, backup power and energy systems for commercial, estate, industrial and institutional projects in Lagos and across Nigeria.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Samiz Tech Engineering Ltd. | Electrical & Solar Engineering",
+    title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
     description:
-      "Electrical engineering, solar EPC, energy infrastructure, automation and intelligent energy solutions across Nigeria.",
+      "Electrical installations, solar EPC, power distribution, backup power and energy systems for projects across Lagos and Nigeria.",
   },
 };
 
@@ -613,6 +619,18 @@ export default function Home() {
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#07111f]">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/engineering/engineering-electrical-installation-01.jpg"
+            alt="Electrical installation engineered by Samiz Tech Engineering"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-[#07111f]/80" />
+        </div>
+
         <div className="absolute inset-0 opacity-[0.08]">
           <div
             className="h-full w-full"
@@ -765,9 +783,64 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-16 overflow-hidden border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
-            <div className="w-full min-w-0">
-              <PowerSystemDiagram />
+          <div className="mt-16 grid overflow-hidden border border-slate-200 bg-white lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="relative min-h-[340px] sm:min-h-[460px] lg:min-h-[540px]">
+              <Image
+                src="/images/engineering/power-distribution-infrastructure.jpg"
+                alt="Electrical infrastructure installation by Samiz Tech Engineering"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07111f]/85 via-[#07111f]/10 to-transparent" />
+
+              <div className="absolute bottom-0 left-0 max-w-xl p-6 sm:p-8 lg:p-10">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-300">
+                  Electrical Infrastructure
+                </p>
+
+                <h3 className="mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  Engineered for how your facility actually operates.
+                </h3>
+
+                <p className="mt-3 max-w-lg text-sm leading-6 text-slate-200 sm:text-base">
+                  From incoming supply and distribution to protection, backup and
+                  renewable integration, we design the electrical infrastructure
+                  around the demands of the facility.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center bg-white p-7 sm:p-10 lg:p-12">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+                Engineering scope
+              </p>
+
+              <div className="mt-7 divide-y divide-slate-200">
+                {[
+                  ["01", "Power Distribution", "Main and sub-distribution systems designed for real operating requirements."],
+                  ["02", "Protection & Safety", "Electrical protection, isolation and infrastructure designed for safe operation."],
+                  ["03", "Solar & Backup", "Solar generation and backup systems integrated with existing electrical infrastructure."],
+                  ["04", "Testing & Commissioning", "Installation testing, verification and commissioning before handover."],
+                ].map(([number, title, description]) => (
+                  <div key={number} className="flex gap-4 py-5 first:pt-0 last:pb-0">
+                    <span className="pt-1 text-xs font-bold text-blue-600">
+                      {number}
+                    </span>
+
+                    <div>
+                      <h4 className="font-bold text-slate-950">
+                        {title}
+                      </h4>
+
+                      <p className="mt-1.5 text-sm leading-6 text-slate-600">
+                        {description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -955,6 +1028,8 @@ export default function Home() {
               >
                 Send an Email
               </a>
+
+                <a href="https://tinyurl.com/4r2re2xm" target="_blank" rel="noopener noreferrer" className="inline-flex items-center border border-blue-300 px-8 py-4 text-sm font-bold text-white transition hover:bg-blue-600">Tell Us What You Need ↗</a>
             </div>
           </div>
         </div>
@@ -965,6 +1040,12 @@ export default function Home() {
     </main>
   );
 }
+
+
+
+
+
+
 
 
 

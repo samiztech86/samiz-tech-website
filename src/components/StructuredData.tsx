@@ -20,7 +20,7 @@
       "Energy Monitoring",
       "Intelligent Energy Systems",
     ],
-    sameAs: [],
+
   };
 
   const website = {
@@ -120,4 +120,6 @@
     </>
   );
 }
+
+
 

@@ -3,21 +3,28 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Electrical, Solar & Energy Services in Lagos",
+  title: "Electrical, Solar & Power Systems Engineering Services | Lagos",
   description:
-    "Samiz Tech Engineering Ltd. delivers solar EPC, electrical engineering, energy infrastructure, smart automation and facility energy solutions for homes, estates, businesses and institutions across Lagos and Nigeria.",
+    "Samiz Tech Engineering provides electrical installation, solar EPC, power distribution, backup power, automation and energy infrastructure services for estate, commercial, industrial and institutional projects in Lagos and Nigeria.",
   keywords: [
-    "electrical services Lagos",
     "electrical engineering services Lagos",
-    "electrical contractors Nigeria",
-    "solar EPC Lagos",
-    "solar installation services Lagos",
-    "solar power installation Nigeria",
-    "energy infrastructure services Nigeria",
-    "electrical maintenance Lagos",
-    "smart automation Nigeria",
-    "energy management services Lagos",
-    "facility energy solutions Nigeria",
+    "electrical contractor Lagos",
+    "electrical installation company Lagos",
+    "commercial electrical contractor Lagos",
+    "industrial electrical contractor Nigeria",
+    "electrical infrastructure contractor Lagos",
+    "solar EPC company Lagos",
+    "commercial solar installation Lagos",
+    "industrial solar installation Nigeria",
+    "solar power installation Lagos",
+    "power distribution contractor Lagos",
+    "backup power systems Lagos",
+    "solar battery storage Lagos",
+    "estate electrical contractor Lagos",
+    "estate solar installation Lagos",
+    "electrical maintenance contractor Lagos",
+    "smart building automation Lagos",
+    "energy infrastructure contractor Nigeria",
     "Samiz Tech Engineering Ltd.",
   ],
   alternates: {
@@ -26,17 +33,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/services",
-    title: "Electrical, Solar & Energy Services | Samiz Tech Engineering Ltd.",
+    title: "Electrical, Solar & Power Systems Engineering Services | Samiz Tech",
     description:
-      "Solar EPC, electrical engineering, energy infrastructure and smart automation services across Lagos and Nigeria.",
+      "Electrical installation, solar EPC, power distribution, backup power, automation and energy infrastructure for estate, commercial, industrial and institutional projects in Lagos and Nigeria.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Electrical, Solar & Energy Services | Samiz Tech Engineering Ltd.",
+    title: "Electrical, Solar & Power Systems Engineering Services | Samiz Tech",
     description:
-      "Solar EPC, electrical engineering, energy infrastructure and smart automation services across Lagos and Nigeria.",
+      "Electrical installation, solar EPC, power distribution, backup power and energy infrastructure services for projects across Lagos and Nigeria.",
   },
 };
 
@@ -136,6 +143,69 @@ export default function ServicesPage() {
                 className="bg-blue-600 px-7 py-4 text-sm font-bold text-white hover:bg-blue-500"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ENGINEERING SYSTEMS */}
+      <section className="border-t border-slate-200 bg-slate-50">
+        <div className="mx-auto max-w-[1400px] px-6 py-20 lg:px-10">
+          <div className="grid overflow-hidden border border-slate-200 bg-white lg:grid-cols-[1.15fr_0.85fr]">
+
+            <div className="relative min-h-[340px] sm:min-h-[460px] lg:min-h-[520px]">
+              <Image
+                src="/images/engineering/power-distribution-infrastructure.jpg"
+                alt="Power distribution infrastructure engineered by Samiz Tech Engineering"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07111f]/80 via-[#07111f]/10 to-transparent" />
+
+              <div className="absolute bottom-0 left-0 max-w-xl p-6 sm:p-8 lg:p-10">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-300">
+                  Power Systems
+                </p>
+
+                <h2 className="mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  Engineering beyond the equipment.
+                </h2>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
+                Integrated Engineering
+              </p>
+
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                Power infrastructure designed as one system.
+              </h2>
+
+              <p className="mt-5 text-base leading-7 text-slate-600">
+                From incoming supply and distribution to protection, backup,
+                renewable integration and commissioning, we design around how
+                the facility actually operates.
+              </p>
+
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                {[
+                  "Power distribution",
+                  "Protection & safety",
+                  "Solar & backup integration",
+                  "Testing & commissioning",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="border-t border-slate-200 pt-3 text-sm font-semibold text-slate-700"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -286,6 +356,8 @@ export default function ServicesPage() {
 </main>
   );
 }
+
+
 
 
 

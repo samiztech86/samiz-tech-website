@@ -3,19 +3,26 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Engineering & Energy Projects in Nigeria",
+  title: "Electrical & Solar Engineering Projects in Lagos | Samiz Tech",
   description:
-    "Explore electrical engineering, solar power, energy infrastructure, automation and integrated power projects delivered by Samiz Tech Engineering Ltd. across Lagos and Nigeria.",
+    "Explore electrical installations, solar EPC, power distribution, backup power and energy infrastructure projects delivered by Samiz Tech Engineering across Lagos and Nigeria.",
   keywords: [
-    "electrical engineering projects Nigeria",
-    "solar projects Lagos",
-    "solar installation projects Nigeria",
-    "electrical projects Lagos",
-    "energy infrastructure projects Nigeria",
-    "power infrastructure Lagos",
+    "electrical engineering projects Lagos",
+    "electrical installation projects Lagos",
+    "electrical contractor projects Lagos",
+    "solar EPC projects Lagos",
+    "solar installation projects Lagos",
     "commercial solar projects Nigeria",
+    "industrial solar projects Nigeria",
+    "power distribution projects Lagos",
+    "electrical infrastructure projects Nigeria",
+    "backup power projects Lagos",
+    "estate electrical projects Lagos",
+    "estate solar projects Lagos",
+    "commercial electrical projects Lagos",
     "industrial electrical projects Nigeria",
-    "building automation projects Nigeria",
+    "energy infrastructure projects Nigeria",
+    "solar and battery storage projects Lagos",
     "engineering company Lagos projects",
     "Samiz Tech Engineering Ltd.",
   ],
@@ -25,20 +32,19 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/projects",
-    title: "Engineering & Energy Projects | Samiz Tech Engineering Ltd.",
+    title: "Electrical & Solar Engineering Projects | Samiz Tech",
     description:
-      "Electrical engineering, solar power, energy infrastructure and automation projects delivered across Lagos and Nigeria.",
+      "Electrical installations, solar EPC, power distribution, backup power and energy infrastructure projects delivered by Samiz Tech Engineering across Lagos and Nigeria.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Engineering & Energy Projects | Samiz Tech Engineering Ltd.",
+    title: "Electrical & Solar Engineering Projects | Samiz Tech",
     description:
-      "Explore electrical, solar, energy infrastructure and automation projects delivered across Nigeria.",
+      "Explore electrical, solar, power distribution and energy infrastructure projects delivered by Samiz Tech Engineering.",
   },
 };
-
 
 const projects = [
   {
@@ -107,8 +113,20 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
 {/* HERO */}
-      <section className="bg-[#07111f]">
-        <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10 lg:py-32">
+      <section className="relative overflow-hidden bg-[#07111f]">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/engineering/engineering-solar-installation-01.jpg"
+            alt="Solar installation engineered by Samiz Tech Engineering"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-[#07111f]/75" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1400px] px-6 py-24 lg:px-10 lg:py-32">
           <div className="max-w-5xl">
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
