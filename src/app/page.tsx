@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -628,18 +628,7 @@ export default function Home() {
             className="object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-[#07111f]/80" />
-        </div>
-
-        <div className="absolute inset-0 opacity-[0.08]">
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage:
-                "linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#020817]/90 via-[#020817]/55 to-[#020817]/15" />
         </div>
 
         <div className="relative mx-auto grid max-w-[1400px] items-center gap-8 px-5 py-14 sm:gap-10 sm:px-6 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
@@ -647,13 +636,13 @@ export default function Home() {
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
               <span className="text-xs font-bold uppercase tracking-[0.25em] text-blue-400">
-                Electrical • Energy • Technology
+                33 kV POWER NETWORKS • SOLAR • ENERGY SYSTEMS
               </span>
             </div>
 
             <h1 className="max-w-3xl text-3xl font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl">
-              Engineering the infrastructure behind{" "}
-              <span className="text-blue-400">reliable energy.</span>
+              Engineering infrastructure behind{" "}
+              <span className="text-blue-400">reliable power.</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 sm:mt-7 sm:text-lg sm:leading-8">
@@ -706,9 +695,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="min-h-[300px] w-full min-w-0 sm:min-h-[380px] lg:min-h-[520px]">
-            <GridDiagram />
-          </div>
         </div>
       </section>
 
@@ -892,9 +878,6 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="overflow-hidden border border-slate-700 bg-[#0b1628] p-5 sm:p-8">
-              <EnergyOSDiagram />
-            </div>
           </div>
         </div>
       </section>
