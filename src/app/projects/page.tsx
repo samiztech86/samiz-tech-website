@@ -194,78 +194,34 @@ export default function ProjectsPage() {
               >
                 <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
                   {/* PROJECT VISUAL */}
-                  <div className="relative min-h-[330px] overflow-hidden bg-[#07111f]">
-                    <div className="absolute inset-0 opacity-20">
-                      <div className="absolute left-[15%] top-[20%] h-px w-[70%] bg-blue-400" />
-                      <div className="absolute left-[15%] top-[45%] h-px w-[70%] bg-blue-400" />
-                      <div className="absolute left-[15%] top-[70%] h-px w-[70%] bg-blue-400" />
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#07111f] sm:aspect-[16/10] lg:aspect-[16/9]">
+                    <img
+                      src={
+                        project.number === "01"
+                          ? "/images/engineering/engineering-solar-installation-01.jpg"
+                          : project.number === "02"
+                            ? "/images/engineering/power-distribution-infrastructure.jpg"
+                            : project.number === "03"
+                              ? "/images/engineering/engineering-electrical-installation-05.jpg"
+                              : "/images/engineering/engineering-electrical-installation-01.jpg"
+                      }
+                      alt={project.title}
+                      className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
 
-                      <div className="absolute left-[25%] top-[10%] h-[80%] w-px bg-blue-400" />
-                      <div className="absolute left-[50%] top-[10%] h-[80%] w-px bg-blue-400" />
-                      <div className="absolute left-[75%] top-[10%] h-[80%] w-px bg-blue-400" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#020817]/90 via-[#020817]/25 to-transparent" />
+
+                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-8">
+                      <p className="text-[10px] font-bold tracking-[0.25em] text-blue-300 sm:text-xs">
+                        {project.category}
+                      </p>
+                      <p className="mt-2 max-w-xl text-lg font-bold leading-tight text-white sm:text-xl lg:text-2xl">
+                        {project.title}
+                      </p>
                     </div>
 
-                    <div className="absolute inset-0 flex items-center justify-center p-10">
-                      <div className="relative w-full max-w-md">
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="border border-blue-500/60 bg-blue-500/10 p-5 text-center">
-                            <p className="text-[9px] font-bold tracking-widest text-blue-400">
-                              SOURCE
-                            </p>
-                            <p className="mt-2 text-sm font-bold text-white">
-                              GRID
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-center">
-                            <span className="h-px w-full bg-blue-500/60" />
-                          </div>
-
-                          <div className="border border-slate-600 bg-slate-900 p-5 text-center">
-                            <p className="text-[9px] font-bold tracking-widest text-slate-500">
-                              CONTROL
-                            </p>
-                            <p className="mt-2 text-sm font-bold text-white">
-                              MDB
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mx-auto h-12 w-px bg-blue-500/60" />
-
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="border border-emerald-500/50 bg-emerald-500/10 p-5 text-center">
-                            <p className="text-[9px] font-bold tracking-widest text-emerald-400">
-                              GENERATION
-                            </p>
-                            <p className="mt-2 text-sm font-bold text-white">
-                              SOLAR
-                            </p>
-                          </div>
-
-                          <div className="border border-slate-600 bg-slate-900 p-5 text-center">
-                            <p className="text-[9px] font-bold tracking-widest text-slate-500">
-                              STORAGE
-                            </p>
-                            <p className="mt-2 text-sm font-bold text-white">
-                              BESS
-                            </p>
-                          </div>
-
-                          <div className="border border-slate-600 bg-slate-900 p-5 text-center">
-                            <p className="text-[9px] font-bold tracking-widest text-slate-500">
-                              LOAD
-                            </p>
-                            <p className="mt-2 text-sm font-bold text-white">
-                              FACILITY
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="absolute left-6 top-6">
-                      <span className="text-sm font-bold tracking-[0.25em] text-blue-400">
+                    <div className="absolute left-5 top-5 sm:left-6 sm:top-6 lg:left-8 lg:top-8">
+                      <span className="text-sm font-bold tracking-[0.25em] text-white/80 sm:text-base">
                         {project.number}
                       </span>
                     </div>
@@ -444,6 +400,7 @@ export default function ProjectsPage() {
     </main>
   );
 }
+
 
 
 
