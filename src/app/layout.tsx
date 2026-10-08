@@ -1,9 +1,10 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import StructuredData from "@/components/StructuredData";
+import { SubscriptionProvider } from "@/lib/subscription/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,10 +107,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
-        <StructuredData />
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <SubscriptionProvider>
+          <StructuredData />
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+        </SubscriptionProvider>
       </body>
     </html>
   );
