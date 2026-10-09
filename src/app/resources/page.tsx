@@ -44,6 +44,20 @@ const resources = [
     href: "/resources/how-to-size-an-inverter",
     label: "Solar & Power Systems",
   },
+  {
+    title: "How Many Solar Panels Do You Need?",
+    description:
+      "Estimate the number of solar panels required using daily energy consumption, peak sun hours, panel wattage and system losses.",
+    href: "/resources/how-many-solar-panels-do-you-need",
+    label: "Solar & Power Systems",
+  },
+  {
+    title: "How to Calculate Battery Capacity for an Inverter",
+    description:
+      "Estimate inverter battery capacity using energy consumption, backup duration, battery voltage, depth of discharge and inverter efficiency.",
+    href: "/resources/how-to-calculate-battery-capacity",
+    label: "Solar & Power Systems",
+  },
 ];
 
 export default function ResourcesPage() {
