@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { useState } from "react";
@@ -8,6 +8,7 @@ const navigation = [
   { label: "Systems", href: "/systems" },
   { label: "EnergyOS", href: "/energyos" },
   { label: "Energy Tools", href: "/energy-tools" },
+  { label: "Resources", href: "/resources" },
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
@@ -129,5 +130,6 @@ export default function SiteHeader() {
     </header>
   );
 }
+
 
 

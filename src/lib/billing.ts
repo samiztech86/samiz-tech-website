@@ -20,7 +20,7 @@ export const BILLING_PLANS: Record<
     name: "Samiz Energy Tools Starter",
     amount: 8500,
     interval: "monthly",
-    paymentPlanId: "PLN_i1mh98qggfag8rr",
+    paymentPlanId: "PLN_0d4mnmqdem010xm",
   },
 
   pro: {
@@ -28,7 +28,7 @@ export const BILLING_PLANS: Record<
     name: "Samiz Energy Tools Pro",
     amount: 15000,
     interval: "monthly",
-    paymentPlanId: "PLN_ynko8tkiofho3jy",
+    paymentPlanId: "PLN_jb6oo7vyq0nxq2a",
   },
 
   business: {
@@ -36,7 +36,7 @@ export const BILLING_PLANS: Record<
     name: "Samiz Energy Tools Business",
     amount: 45000,
     interval: "monthly",
-    paymentPlanId: "PLN_vhuuwpd4hdydfd1",
+    paymentPlanId: "PLN_gbj8dplb4hotwaw",
   },
 };
 

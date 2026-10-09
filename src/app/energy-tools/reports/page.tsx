@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { downloadReportExcel } from "@/lib/exportExcel";
+import type { CalculatorResults } from "@/lib/energy-tools/calculator/calculate";
 
 type Appliance = {
   id: number;
@@ -10,6 +11,8 @@ type Appliance = {
   quantity: number;
   watts: number;
   hoursPerDay: number;
+  critical: boolean;
+  surgeWatts: number;
 };
 
 type Meter = {
@@ -23,9 +26,7 @@ type Meter = {
 type Area = {
   id: number;
   name: string;
-  common: boolean;
   appliances: Appliance[];
-  meter?: Meter;
 };
 
 type GeneratorResult = {
@@ -47,38 +48,30 @@ type GeneratorResult = {
   serviceDue: boolean;
 };
 
-type ReportResults = {
-  applianceLoad: number;
-  applianceEnergy: number;
-  commonAreaMeasuredEnergy: number;
-  commonAreaDailyEnergy: number;
-  gridEnergy: number;
-  gridDailyEnergy: number;
-  estimatedDailyEnergy: number;
-  weeklyEnergy: number;
-  monthlyEnergy: number;
-  measuredSubMeterEnergy: number;
-  measuredVsEstimatedDifference: number;
-
-  generatorResults: GeneratorResult[];
-  totalGeneratorRuntime: number;
-  totalGeneratorFuel: number;
-  totalGeneratorCost: number;
-  totalGeneratorCapacityKva: number;
-
-  installedPvKwp: number;
-  installedBatteryKwh: number;
-  recommendedInverterKva: number;
-};
+type ReportResults = CalculatorResults;
 
 type EnergyReport = {
   id: number;
   createdAt: string;
   propertyName: string;
   propertyType: string;
-  generators: GeneratorResult[];
+  generators: any[];
+  generatorHistory: any[];
   areas: Area[];
   gridMeter: Meter;
+  meterHistory: any[];
+  designInputs: {
+    solarPanelWatts: number;
+    peakSunHours: number;
+    pvEfficiency: number;
+    backupDuration: number;
+    powerFactor: number;
+    inverterMargin: number;
+    batteryEfficiency: number;
+    batteryDoD: number;
+    batteryUnitKwh: number;
+    batteryChemistry: string;
+  };
   results: ReportResults;
 };
 
@@ -133,7 +126,8 @@ export default function ReportsPage() {
       "",
       "BASIC ENERGY RESULTS",
       `Connected load: ${report.results.applianceLoad.toFixed(0)} W`,
-      `Daily energy: ${report.results.estimatedDailyEnergy.toFixed(2)} kWh`,
+      `Appliance energy: ${report.results.applianceEnergy.toFixed(2)} kWh/day`,
+      `Total daily energy: ${report.results.estimatedDailyEnergy.toFixed(2)} kWh/day`,
       `Weekly energy: ${report.results.weeklyEnergy.toFixed(2)} kWh`,
       `Monthly energy: ${report.results.monthlyEnergy.toFixed(2)} kWh`,
       "",
@@ -203,7 +197,8 @@ export default function ReportsPage() {
               "Assessment Date": new Date(report.createdAt).toLocaleString("en-NG"),
               Property: report.propertyName,
               "Property Type": report.propertyType,
-              "Daily Energy (kWh)": results.estimatedDailyEnergy,
+              "Appliance Energy (kWh/day)": results.applianceEnergy,
+              "Daily Energy (kWh/day)": results.estimatedDailyEnergy,
               "Weekly Energy (kWh)": results.weeklyEnergy,
               "Monthly Energy (kWh)": results.monthlyEnergy,
               "Connected Load (W)": results.applianceLoad,
@@ -824,8 +819,7 @@ export default function ReportsPage() {
         </div>
       </div>
     );
-  }
-  if (!report) {
+  }  if (!report) {
     return null;
   }
 
@@ -840,13 +834,19 @@ export default function ReportsPage() {
     },
   );
 
+  const formatNumber = (value: unknown, decimals = 2) =>
+    Number.isFinite(Number(value))
+      ? Number(value).toFixed(decimals)
+      : "0";
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950">
-
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <section className="bg-[#07111f] px-6 py-10 text-white sm:px-10 sm:py-14">
-            <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-start">
+
+          <section className="bg-[#07111f] px-6 py-10 text-white sm:px-10">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.3em] text-blue-400">
                   Samiz Energy Tools
@@ -856,39 +856,52 @@ export default function ReportsPage() {
                   Energy Assessment Report
                 </h1>
 
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                  A structured summary of the energy consumption calculated from the appliance profile.
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+                  Energy assessment generated from the Energy Calculator.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:min-w-[220px]">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Assessment date
-                </p>
+              <div className="flex flex-wrap gap-3 print:hidden">
 
-                <p className="mt-2 text-sm font-black">{assessmentDate}</p>
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="rounded-xl bg-white px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-slate-200"
+                >
+                  Print / Save PDF
+                </button>
 
-                <p className="mt-4 text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Report ID
-                </p>
+                <button
+                  type="button"
+                  onClick={handleExcelExport}
+                  className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-black text-white transition hover:bg-blue-500"
+                >
+                  Download Excel
+                </button>
 
-                <p className="mt-2 text-xs font-bold text-slate-300">
-                  SAMIZ-{report.id}
-                </p>
+                <button
+                  type="button"
+                  onClick={handleWhatsApp}
+                  className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-black text-white transition hover:bg-emerald-500"
+                >
+                  Share on WhatsApp
+                </button>
+
               </div>
             </div>
           </section>
 
           <section className="border-b border-slate-200 px-6 py-8 sm:px-10">
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   Property
                 </p>
 
-                <h2 className="mt-2 text-2xl font-black">
+                <p className="mt-2 text-lg font-black">
                   {report.propertyName}
-                </h2>
+                </p>
               </div>
 
               <div>
@@ -896,125 +909,158 @@ export default function ReportsPage() {
                   Property type
                 </p>
 
-                <p className="mt-2 text-lg font-bold">{report.propertyType}</p>
+                <p className="mt-2 text-lg font-bold">
+                  {report.propertyType}
+                </p>
               </div>
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Assessment date
+                </p>
+
+                <p className="mt-2 text-lg font-black">
+                  {assessmentDate}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Report ID
+                </p>
+
+                <p className="mt-2 text-lg font-black">
+                  SAMIZ-{report.id}
+                </p>
+              </div>
+
             </div>
           </section>
 
-          <section className="px-6 py-8 sm:px-10">
+          <section className="px-6 py-10 sm:px-10">
             <SectionTitle
               eyebrow="01"
-              title="Executive energy summary"
-              description="Key indicators from the completed assessment."
+              title="Property areas"
+              description="Appliance information entered into the Energy Calculator."
+            />
+
+            <div className="mt-6 space-y-6">
+
+              {(report.areas ?? []).map((area) => (
+                <div
+                  key={area.id}
+                  className="overflow-hidden rounded-2xl border border-slate-200"
+                >
+
+                  <div className="bg-slate-50 px-5 py-4">
+                    <p className="text-lg font-black">
+                      {area.name}
+                    </p>
+
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[760px] text-left text-sm">
+
+                      <thead className="bg-slate-950 text-white">
+                        <tr>
+                          <th className="px-4 py-3">Appliance</th>
+                          <th className="px-4 py-3">Qty</th>
+                          <th className="px-4 py-3">Power (W)</th>
+                          <th className="px-4 py-3">Hours/day</th>
+                          <th className="px-4 py-3">Critical</th>
+                          <th className="px-4 py-3">Surge W</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {(area.appliances ?? []).map((appliance) => (
+                          <tr
+                            key={appliance.id}
+                            className="border-b border-slate-100 last:border-0"
+                          >
+
+                            <td className="px-4 py-4 font-bold">
+                              {appliance.name}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              {appliance.quantity}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              {appliance.watts}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              {appliance.hoursPerDay}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              {appliance.critical ? "Yes" : "No"}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              {appliance.surgeWatts ?? 0}
+                            </td>
+
+                          </tr>
+                        ))}
+                      </tbody>
+
+                    </table>
+                  </div>
+
+
+                </div>
+              ))}
+
+            </div>
+          </section>
+
+          <section className="border-t border-slate-200 px-6 py-10 sm:px-10">
+
+            <SectionTitle
+              eyebrow="02"
+              title="Overall calculation"
+              description="The overall calculation shown by the Energy Calculator."
             />
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+              <SummaryCard
+                label="Connected load"
+                value={`${formatNumber(results.applianceLoad, 0)} W`}
+              />
+
+              <SummaryCard
+                label="Appliance energy"
+                value={`${formatNumber(results.applianceEnergy)} kWh/day`}
+              />
+
               <SummaryCard
                 label="Daily energy"
-                value={`${results.estimatedDailyEnergy.toFixed(2)} kWh`}
-              />
-
-              <SummaryCard
-                label="Monthly estimate"
-                value={`${results.monthlyEnergy.toFixed(2)} kWh`}
-              />
-
-              <SummaryCard
-                label="Appliance load"
-                value={`${results.applianceLoad.toFixed(0)} W`}
+                value={`${formatNumber(results.estimatedDailyEnergy)} kWh/day`}
               />
 
               <SummaryCard
                 label="Weekly energy"
-                value={`${results.weeklyEnergy.toFixed(2)} kWh`}
+                value={`${formatNumber(results.weeklyEnergy)} kWh`}
               />
+
+              <SummaryCard
+                label="Monthly energy"
+                value={`${formatNumber(results.monthlyEnergy)} kWh`}
+              />
+
             </div>
           </section>
 
-          <section className="border-t border-slate-200 px-6 py-8 sm:px-10">
-            <SectionTitle
-              eyebrow="02"
-              title="Consumption analysis"
-              description="Basic energy consumption calculated from the appliance profile."
-            />
-
-            <div className="mt-6 grid gap-5 md:grid-cols-3">
-              <AnalysisCard
-                title="Estimated appliance energy"
-                value={`${results.applianceEnergy.toFixed(2)} kWh/day`}
-                text="Calculated from the listed appliances, quantities, rated power and operating hours."
-              />
-
-              <AnalysisCard
-                title="Daily energy estimate"
-                value={`${results.estimatedDailyEnergy.toFixed(2)} kWh/day`}
-                text="Estimated from the appliance profile entered in the free assessment."
-              />
-            </div>
-
-          </section>
-
-          <section className="border-t border-slate-200 bg-slate-50 px-6 py-10 sm:px-10">
-            <div className="rounded-3xl border border-blue-200 bg-white p-6 shadow-sm sm:p-8">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600">
-                Premium Energy Assessment
-              </p>
-
-              <h2 className="mt-3 max-w-3xl text-2xl font-black text-slate-950 sm:text-3xl">
-                Go beyond the basic energy estimate.
-              </h2>
-
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-                The free assessment gives you a useful starting point. Premium adds the detailed engineering analysis required for deeper energy planning and decision-making.
-              </p>
-
-              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {[
-                  "Main grid and meter analysis",
-                  "Critical-load and surge analysis",
-                  "Solar and battery engineering",
-                  "Inverter and backup sizing",
-                  "Generator fleet and runtime analysis",
-                  "Detailed engineering report and export",
-                ].map((feature) => (
-                  <div
-                    key={feature}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                  >
-                    <p className="text-sm font-bold text-slate-800">
-                      {feature}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/energy-tools/calculator"
-                  className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-6 py-3.5 text-sm font-black text-white transition hover:bg-blue-700"
-                >
-                  Explore Premium Assessment
-                </Link>
-
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-black text-slate-800 transition hover:border-blue-300 hover:text-blue-700"
-                >
-                  Talk to Samiz Tech
-                </Link>
-              </div>
-
-              <p className="mt-5 text-xs leading-5 text-slate-500">
-                Final engineering design and equipment selection require professional verification and site-specific assessment.
-              </p>
-            </div>
-          </section>
         </div>
       </div>
     </div>
   );
 }
-
 function SectionTitle({
   eyebrow,
   title,
@@ -1134,3 +1180,10 @@ function NextStep({
     </div>
   );
 }
+
+
+
+
+
+
+

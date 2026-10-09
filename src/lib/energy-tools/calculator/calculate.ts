@@ -69,8 +69,6 @@ export type CalculatorResults = {
   applianceEnergy: number;
   criticalEnergy: number;
   estimatedSurgeLoad: number;
-  commonAreaMeasuredEnergy: number;
-  commonAreaDailyEnergy: number;
   gridEnergy: number;
   gridDailyEnergy: number;
   estimatedDailyEnergy: number;
@@ -88,7 +86,6 @@ export type CalculatorResults = {
   inverterFromSurge: number;
   requiredInverterKva: number;
   recommendedInverterKva: number;
-  measuredSubMeterEnergy: number;
   measuredVsEstimatedDifference: number;
   generatorResults: CalculatorGeneratorResult[];
   totalGeneratorRuntime: number;
@@ -120,23 +117,8 @@ export function calculateEnergyAssessment(
   let applianceEnergy = 0;
   let criticalEnergy = 0;
   let estimatedSurgeLoad = 0;
-  let commonAreaMeasuredEnergy = 0;
-  let commonAreaDailyEnergy = 0;
 
   areas.forEach((area) => {
-    if (area.common && area.meter) {
-      const meterEnergy = Math.max(
-        0,
-        area.meter.currentReading - area.meter.previousReading,
-      );
-      const days = Math.max(1, area.meter.days);
-
-      commonAreaMeasuredEnergy += meterEnergy;
-      commonAreaDailyEnergy += meterEnergy / days;
-
-      return;
-    }
-
     area.appliances.forEach((appliance) => {
       const quantity = Math.max(0, appliance.quantity);
       const watts = Math.max(0, appliance.watts);
@@ -171,8 +153,7 @@ export function calculateEnergyAssessment(
   const gridDailyEnergy =
     gridEnergy / Math.max(1, gridMeter.days);
 
-  const estimatedDailyEnergy =
-    applianceEnergy + commonAreaDailyEnergy;
+  const estimatedDailyEnergy = applianceEnergy;
 
   const weeklyEnergy = estimatedDailyEnergy * 7;
   const monthlyEnergy = estimatedDailyEnergy * 30;
@@ -363,9 +344,6 @@ export function calculateEnergyAssessment(
       0,
     );
 
-  const measuredSubMeterEnergy =
-    commonAreaMeasuredEnergy;
-
   const measuredVsEstimatedDifference =
     gridDailyEnergy - estimatedDailyEnergy;
 
@@ -375,8 +353,6 @@ export function calculateEnergyAssessment(
     applianceEnergy,
     criticalEnergy,
     estimatedSurgeLoad,
-    commonAreaMeasuredEnergy,
-    commonAreaDailyEnergy,
     gridEnergy,
     gridDailyEnergy,
     estimatedDailyEnergy,
@@ -394,7 +370,6 @@ export function calculateEnergyAssessment(
     inverterFromSurge,
     requiredInverterKva,
     recommendedInverterKva,
-    measuredSubMeterEnergy,
     measuredVsEstimatedDifference,
     generatorResults,
     totalGeneratorRuntime,

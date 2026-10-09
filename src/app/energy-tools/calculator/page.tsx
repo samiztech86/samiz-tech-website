@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { CalculatorResults } from "@/lib/energy-tools/calculator/calculate";
 import SubscriptionGate from "@/components/SubscriptionGate";
-
+import { useSubscription } from "@/lib/subscription/provider";
+import { checkToolAccess } from "@/lib/subscription/access";
 type Appliance = {
   id: number;
   name: string;
@@ -76,69 +77,289 @@ type Generator = {
 };
 
 const starterAppliances = [
+  // Lighting
   "Light / LED Bulb",
+  "LED Panel Light",
+  "LED Downlight",
+  "LED Floodlight",
+  "LED Tube Light",
+  "Fluorescent Tube Light",
+  "Halogen Light",
+  "Incandescent Bulb",
+  "Emergency Light",
+  "Street Light",
+  "Security Light",
+  "Outdoor Lighting",
+  "Garden Lighting",
+  "Parking Lot Lighting",
+  "Signage Lighting",
+
+  // Fans and ventilation
   "Ceiling Fan",
   "Standing Fan",
   "Table Fan",
-  "Television",
-  "Decoder / Set-Top Box",
-  "Refrigerator",
-  "Freezer",
-  "Air Conditioner",
-  "Water Pump",
-  "Borehole Pump",
-  "CCTV System",
-  "Wi-Fi Router",
-  "Computer / Desktop",
-  "Laptop",
-  "Printer",
-  "Monitor",
-  "Microwave",
-  "Electric Oven",
-  "Electric Cooker",
-  "Electric Kettle",
-  "Toaster",
-  "Blender",
-  "Food Processor",
-  "Washing Machine",
-  "Dishwasher",
-  "Water Heater",
-  "Electric Shower",
-  "Iron",
-  "Pressing Iron",
-  "Hair Dryer",
-  "Hair Clipper",
-  "Electric Shaver",
-  "Vacuum Cleaner",
-  "Water Dispenser",
-  "Chest Freezer",
-  "Ice Maker",
-  "Air Fryer",
-  "Rice Cooker",
-  "Coffee Maker",
-  "Refrigerator Fan",
+  "Wall Fan",
   "Exhaust Fan",
+  "Industrial Fan",
+  "Ventilation Fan",
   "Extractor Hood",
-  "Electric Grill",
-  "Deep Fryer",
+  "Air Curtain",
+
+  // Entertainment and home electronics
+  "Television",
+  "Smart TV",
+  "Decoder / Set-Top Box",
+  "Satellite Dish",
   "Sound System",
   "Home Theatre",
   "Gaming Console",
-  "Satellite Dish",
+  "DVD / Blu-ray Player",
+  "Radio",
+  "Bluetooth Speaker",
+  "Projector",
+  "Streaming Device",
+
+  // Computing and office
+  "Computer / Desktop",
+  "Laptop",
+  "All-in-One Computer",
+  "Monitor",
+  "Printer",
+  "Laser Printer",
+  "Photocopier",
+  "Scanner",
+  "Plotter",
+  "Fax Machine",
+  "Server / Network Equipment",
+  "Network Switch",
+  "Wi-Fi Router",
+  "Modem",
+  "UPS",
+  "Desktop UPS",
   "Phone Charger",
   "Power Bank Charger",
-  "Smart Home Hub",
-  "Security Alarm",
-  "Electric Gate",
-  "Gate Motor",
-  "Electric Fence",
-  "Outdoor Lighting",
-  "Garden Lighting",
+  "Tablet Charger",
+  "POS Terminal",
+  "Barcode Scanner",
+  "Receipt Printer",
+  "CCTV Monitor",
+
+  // Cooling
+  "Air Conditioner",
+  "Split Air Conditioner",
+  "Window Air Conditioner",
+  "Portable Air Conditioner",
+  "Standing Air Conditioner",
+  "Industrial Air Conditioner",
+  "Refrigerator",
+  "Freezer",
+  "Chest Freezer",
+  "Display Freezer",
+  "Commercial Refrigerator",
+  "Cold Room",
+  "Cold Room Compressor",
+  "Ice Maker",
+  "Water Cooler",
+
+  // Kitchen and cooking
+  "Microwave",
+  "Electric Oven",
+  "Gas Cooker Ignition",
+  "Electric Cooker",
+  "Induction Cooker",
+  "Hot Plate",
+  "Electric Kettle",
+  "Toaster",
+  "Sandwich Maker",
+  "Blender",
+  "Food Processor",
+  "Air Fryer",
+  "Rice Cooker",
+  "Coffee Maker",
+  "Coffee Machine",
+  "Electric Grill",
+  "Deep Fryer",
+  "Food Warmer",
+  "Bain Marie",
+  "Dishwasher",
+  "Commercial Dishwasher",
+  "Warming Cabinet",
+  "Electric Steamer",
+  "Juicer",
+
+  // Laundry and household
+  "Washing Machine",
+  "Commercial Washing Machine",
+  "Dryer",
+  "Clothes Dryer",
+  "Iron",
+  "Pressing Iron",
+  "Steam Iron",
+  "Industrial Iron",
+  "Vacuum Cleaner",
+  "Industrial Vacuum Cleaner",
+  "Water Dispenser",
+  "Water Heater",
+  "Electric Shower",
+  "Hair Dryer",
+  "Hair Clipper",
+  "Electric Shaver",
+
+  // Water and pumping
+  "Water Pump",
+  "Borehole Pump",
+  "Booster Pump",
+  "Pressure Pump",
+  "Submersible Pump",
+  "Surface Pump",
   "Pool Pump",
   "Pool Heater",
   "Sewage / Drainage Pump",
   "Sump Pump",
-  "Server / Network Equipment",
+  "Transfer Pump",
+  "Irrigation Pump",
+  "Fire Pump",
+  "Hydro Booster System",
+
+  // Security and access control
+  "CCTV Camera",
+  "CCTV DVR / NVR",
+  "Security Alarm",
+  "Electric Gate",
+  "Gate Motor",
+  "Automatic Gate",
+  "Electric Fence",
+  "Access Control System",
+  "Biometric Access Control",
+  "Card Reader",
+  "Intercom System",
+  "Video Intercom",
+  "Door Access System",
+  "Security Scanner",
+
+  // ICT and communications
+  "Server Rack",
+  "Data Center Equipment",
+  "Network Rack",
+  "Network Equipment",
+  "Wi-Fi Access Point",
+  "Radio Communication Equipment",
+  "PABX System",
+  "Telephone System",
+  "Public Address System",
+
+  // Medical / healthcare
+  "Medical Refrigerator",
+  "Medical Freezer",
+  "Oxygen Concentrator",
+  "Medical Ventilator",
+  "Patient Monitor",
+  "ECG Machine",
+  "Ultrasound Machine",
+  "X-Ray Machine",
+  "Laboratory Equipment",
+  "Autoclave",
+  "Medical Suction Pump",
+  "Dental Chair",
+  "Operating Theatre Equipment",
+
+  // Hotel / hospitality
+  "Hotel Room TV",
+  "Hotel Mini Fridge",
+  "Hotel Hair Dryer",
+  "Hotel Kettle",
+  "Hotel Safe",
+  "Commercial Ice Maker",
+  "Commercial Oven",
+
+  "Commercial Freezer",
+  "Laundry Equipment",
+  "Hotel Water Heater",
+  "Boiler",
+  "Steam Generator",
+
+  // School / education
+  "Interactive Display",
+  "Smart Board",
+  "Classroom Projector",
+
+  "Computer Lab PC",
+  "Computer Lab Monitor",
+  "School PA System",
+
+  // Industrial and workshop
+  "Electric Motor",
+  "Industrial Motor",
+  "Air Compressor",
+  "Compressor",
+  "Welding Machine",
+  "Arc Welder",
+  "MIG Welder",
+  "Plasma Cutter",
+  "Drilling Machine",
+  "Bench Grinder",
+  "Angle Grinder",
+  "Cutting Machine",
+  "Lathe Machine",
+  "Milling Machine",
+  "CNC Machine",
+  "Hydraulic Pump",
+  "Industrial Heater",
+  "Industrial Oven",
+  "Conveyor Motor",
+  "Packaging Machine",
+  "Production Machine",
+  "Machine Tool",
+  "Workshop Equipment",
+
+  // Agriculture
+  "Agricultural Pump",
+  "Irrigation System",
+  "Farm Water Pump",
+  "Poultry Ventilation Fan",
+  "Poultry Feeder",
+  "Poultry Drinker System",
+  "Incubator",
+  "Milking Machine",
+  "Feed Mill",
+  "Grain Dryer",
+  "Grain Mill",
+  "Cold Storage Equipment",
+
+  // Building / facility systems
+  "Elevator",
+  "Escalator",
+  "Automatic Door",
+  "Turnstile",
+  "Building Management System",
+  "Fire Alarm System",
+  "Fire Detection System",
+  "Smoke Extraction Fan",
+  "Smoke Detector System",
+  "Emergency Lighting System",
+  "Street Lighting System",
+  "Parking Barrier",
+  "Parking System",
+  "Car Park Lighting",
+
+  // Power and electrical equipment
+  "UPS System",
+  "Inverter",
+  "Solar Inverter",
+  "Battery Charger",
+  "Battery Bank",
+  "Solar PV System",
+  "Automatic Changeover",
+  "Manual Changeover",
+  "Distribution Board",
+  "Sub Distribution Board",
+  "Electrical Control Panel",
+  "Motor Control Panel",
+  "Transformer Auxiliary Load",
+  "Power Factor Correction System",
+
+  // Other
+
   "Other Appliance",
 ];
 
@@ -175,6 +396,7 @@ const createGenerator = (): Generator => ({
 });
 
 export default function CalculatorPage() {
+  const { state: subscriptionState, hydrated: subscriptionHydrated } = useSubscription();
   const router = useRouter();
   const [propertyName, setPropertyName] = useState("");
   const [propertyType, setPropertyType] = useState("Residential");
@@ -276,7 +498,9 @@ export default function CalculatorPage() {
     setAreas((current) => [
       ...current,
       {
-        id: 1,
+        id: current.length
+          ? Math.max(...current.map((area) => area.id)) + 1
+          : 1,
         name: common ? "New Common Area" : "New Area",
         common,
         appliances: [],
@@ -525,7 +749,11 @@ export default function CalculatorPage() {
               appliances: [
                 ...area.appliances,
                 {
-                  id: 1,
+                  id: area.appliances.length
+                    ? Math.max(
+                        ...area.appliances.map((appliance) => appliance.id),
+                      ) + 1
+                    : 1,
                   name: "Light / LED Bulb",
                   quantity: 1,
                   watts: 100,
@@ -613,6 +841,57 @@ export default function CalculatorPage() {
   const [calculationError, setCalculationError] =
     useState<string | null>(null);
 
+  const [showOverallCalculation, setShowOverallCalculation] =
+    useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("samiz_energy_report_flow") === "1") {
+      setShowOverallCalculation(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("samiz_energy_report_flow") !== "1") {
+      return;
+    }
+
+    try {
+      const saved = localStorage.getItem("samiz_energy_assessment");
+      if (!saved) return;
+
+      const report = JSON.parse(saved);
+
+      if (report.propertyName) setPropertyName(report.propertyName);
+      if (report.propertyType) setPropertyType(report.propertyType);
+      if (Array.isArray(report.areas)) setAreas(report.areas);
+      if (Array.isArray(report.generators)) setGenerators(report.generators);
+      if (Array.isArray(report.generatorHistory)) {
+        setGeneratorHistory(report.generatorHistory);
+      }
+      if (report.gridMeter) setGridMeter(report.gridMeter);
+      if (Array.isArray(report.meterHistory)) {
+        setMeterHistory(report.meterHistory);
+      }
+
+      if (report.designInputs) {
+        setSolarPanelWatts(report.designInputs.solarPanelWatts);
+        setPeakSunHours(report.designInputs.peakSunHours);
+        setPvEfficiency(report.designInputs.pvEfficiency);
+        setBackupDuration(report.designInputs.backupDuration);
+        setPowerFactor(report.designInputs.powerFactor);
+        setInverterMargin(report.designInputs.inverterMargin);
+        setBatteryEfficiency(report.designInputs.batteryEfficiency);
+        setBatteryDoD(report.designInputs.batteryDoD);
+        setBatteryUnitKwh(report.designInputs.batteryUnitKwh);
+        setBatteryChemistry(report.designInputs.batteryChemistry);
+      }
+
+      if (report.results) setResults(report.results);
+    } catch (error) {
+      console.error("Unable to restore saved energy assessment:", error);
+    }
+  }, []);
+
   const calculateAssessment = async (): Promise<CalculatorResults | null> => {
     setCalculationLoading(true);
     setCalculationError(null);
@@ -679,6 +958,49 @@ export default function CalculatorPage() {
     }
   };
 
+  useEffect(() => {
+    if (!showOverallCalculation || !subscriptionHydrated) {
+      return;
+    }
+
+    const access = checkToolAccess({
+      plan: subscriptionState.plan,
+      coins: subscriptionState.coins,
+      tool: "calculator",
+    });
+
+    if (!access.allowed) {
+      return;
+    }
+
+    void calculateAssessment();
+  }, [
+    showOverallCalculation,
+    subscriptionHydrated,
+    subscriptionState.plan,
+    subscriptionState.coins,
+    areas,
+    gridMeter,
+    generators,
+    solarPanelWatts,
+    peakSunHours,
+    pvEfficiency,
+    backupDuration,
+    powerFactor,
+    inverterMargin,
+    batteryEfficiency,
+    batteryDoD,
+    batteryUnitKwh,
+  ]);
+
+  const prepareEnergyReport = () => {
+    sessionStorage.setItem(
+      "samiz_energy_report_flow",
+      "1",
+    );
+
+    setShowOverallCalculation(true);
+  };
   const generateEnergyReport = async () => {
     let currentResults = results;
 
@@ -845,7 +1167,7 @@ export default function CalculatorPage() {
               {areas.map((area) => (
                 <div
                   key={area.id}
-                  className="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-5"
+                  className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm sm:p-6 [&+div]:mt-6"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-1 items-center gap-2 sm:gap-3">
@@ -1187,113 +1509,98 @@ export default function CalculatorPage() {
 
         </div>
 
-          <SubscriptionGate tool="calculator">
-        <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start">
-          <div className="rounded-2xl bg-[#07111f] p-4 text-white shadow-xl sm:p-6 lg:p-7">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-400 sm:text-xs">
-            </p>
+          {!showOverallCalculation ? (
+            <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start">
+              <div className="rounded-2xl bg-[#07111f] p-4 text-white shadow-xl sm:p-6 lg:p-7">
+                <h2 className="text-base font-black sm:text-xl lg:text-2xl">
+                  {propertyName || "Your Energy Profile"}
+                </h2>
 
-            <h2 className="mt-2 truncate text-base font-black sm:text-xl lg:text-2xl">
-              {propertyName || "Your Energy Profile"}
-            </h2>
+                <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+                  {propertyType}
+                </p>
 
-            <p className="mt-1 truncate text-xs text-slate-400 sm:text-sm">
-              {propertyType}
-            </p>
-            </div>
+                <p className="mt-5 text-sm leading-6 text-slate-300">
+                  Your energy assessment has been prepared. Generate the Energy
+                  Report to unlock the overall calculation and detailed results.
+                </p>
 
-            <div className="rounded-2xl bg-[#07111f] p-4 text-white shadow-xl sm:p-6 lg:p-7">
-
-            {results && (
-
-              <div className="mt-4 space-y-2 sm:mt-7 sm:space-y-3">
-
-                <div className="rounded-xl bg-slate-900/70 p-4">
-
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-
-                    Connected load
-
-                  </p>
-
-                  <p className="mt-1 text-lg font-black sm:text-2xl">
-
-                    {results.applianceLoad.toFixed(0)} W
-
-                  </p>
-
-                </div>
-
-
-                <div className="rounded-xl bg-slate-900/70 p-4">
-
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-
-                    Daily energy
-
-                  </p>
-
-                  <p className="mt-1 text-lg font-black sm:text-2xl">
-
-                    {results.applianceEnergy.toFixed(2)} kWh/day
-
-                  </p>
-
-                </div>
-
-
-                <div className="rounded-xl bg-slate-900/70 p-4">
-
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-
-                    Weekly energy
-
-                  </p>
-
-                  <p className="mt-1 text-lg font-black sm:text-2xl">
-
-                    {results.weeklyEnergy.toFixed(2)} kWh
-
-                  </p>
-
-                </div>
-
-
-                <div className="rounded-xl bg-slate-900/70 p-4">
-
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-
-                    Monthly energy
-
-                  </p>
-
-                  <p className="mt-1 text-lg font-black sm:text-2xl">
-
-                    {results.monthlyEnergy.toFixed(2)} kWh
-
-                  </p>
-
-                </div>
-
+                <button
+                  type="button"
+                  onClick={prepareEnergyReport}
+                  className="mt-6 w-full rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-black text-white transition hover:bg-blue-500 sm:py-4"
+                >
+                  Generate Energy Report
+                </button>
               </div>
+            </aside>
+          ) : (
+            <SubscriptionGate tool="calculator">
+              <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start">
+                <div className="rounded-2xl bg-[#07111f] p-4 text-white shadow-xl sm:p-6 lg:p-7">
+                  <h2 className="mt-2 truncate text-base font-black sm:text-xl lg:text-2xl">
+                    {propertyName || "Your Energy Profile"}
+                  </h2>
 
-            )}
+                  <p className="mt-1 truncate text-xs text-slate-400 sm:text-sm">
+                    {propertyType}
+                  </p>
 
-            <button
-              type="button"
-              onClick={generateEnergyReport}
-              className="mt-5 w-full rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-black text-white transition hover:bg-blue-500 sm:mt-6 sm:py-4"
-            >
-              Generate Energy Report
-            </button>
+                  {results && (
+                    <div className="mt-4 space-y-2 sm:mt-7 sm:space-y-3">
+                      <div className="rounded-xl bg-slate-900/70 p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
+                          Connected load
+                        </p>
+                        <p className="mt-1 text-lg font-black sm:text-2xl">
+                          {results.applianceLoad.toFixed(0)} W
+                        </p>
+                      </div>
 
-            <p className="mt-3 text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:text-[11px] sm:leading-5">
-              Basic planning estimates only. Detailed engineering assessment
-              is available with an active Energy Tools subscription.
-            </p>
-          </div>
-        </aside>
-          </SubscriptionGate>
+                      <div className="rounded-xl bg-slate-900/70 p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
+                          Daily energy
+                        </p>
+                        <p className="mt-1 text-lg font-black sm:text-2xl">
+                          {results.applianceEnergy.toFixed(2)} kWh/day
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl bg-slate-900/70 p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
+                          Weekly energy
+                        </p>
+                        <p className="mt-1 text-lg font-black sm:text-2xl">
+                          {results.weeklyEnergy.toFixed(2)} kWh
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl bg-slate-900/70 p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
+                          Monthly energy
+                        </p>
+                        <p className="mt-1 text-lg font-black sm:text-2xl">
+                          {results.monthlyEnergy.toFixed(2)} kWh
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={generateEnergyReport}
+                    className="mt-5 w-full rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-black text-white transition hover:bg-blue-500 sm:mt-6 sm:py-4"
+                  >
+                    Generate Energy Report
+                  </button>
+
+                  <p className="mt-3 text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:text-[11px] sm:leading-5">
+                    Your overall energy calculation is now available.
+                  </p>
+                </div>
+              </aside>
+            </SubscriptionGate>
+          )}
       </div>
     </div>
   );
@@ -1540,3 +1847,22 @@ function PlanningMetric({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
