@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -298,7 +298,7 @@ export default function InverterSizingArticle() {
           </p>
 
           <Link
-            href="/energy-tools/calculator"
+            href="/energy-tools/solar"
             className="mt-6 inline-flex bg-blue-700 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-800"
           >
             Calculate Your Electrical Load →
@@ -332,7 +332,7 @@ export default function InverterSizingArticle() {
           </h2>
 
           <p className="mt-4 max-w-2xl leading-8 text-slate-600">
-            Samiz Tech Engineering provides electrical engineering, solar
+            Samiz Tech Engineering Ltd. provides electrical engineering, solar
             power, backup power and energy infrastructure services for homes,
             businesses, estates and other facilities.
           </p>
@@ -348,4 +348,3 @@ export default function InverterSizingArticle() {
     </main>
   );
 }
-

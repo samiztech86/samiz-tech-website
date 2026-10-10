@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
   description:
-    "Samiz Tech Engineering delivers electrical installations, solar EPC, power distribution, backup power and energy systems for estates, businesses, commercial facilities and industrial projects in Lagos and across Nigeria.",
+    "Samiz Tech Engineering Ltd delivers electrical installations, solar EPC, power distribution, backup power and energy systems for estates, businesses, commercial facilities and industrial projects in Lagos and across Nigeria.",
   keywords: [
     "electrical engineering company Lagos",
     "electrical contractor Lagos",
@@ -622,7 +622,7 @@ export default function Home() {
         <div className="absolute inset-0">
           <Image
             src="/images/engineering/engineering-solar-installation-01.jpg"
-            alt="Electrical installation engineered by Samiz Tech Engineering"
+            alt="Electrical installation engineered by Samiz Tech Engineering Ltd"
             fill
             priority
             className="object-cover"
@@ -773,7 +773,7 @@ export default function Home() {
             <div className="relative min-h-[340px] sm:min-h-[460px] lg:min-h-[540px]">
               <Image
                 src="/images/engineering/power-distribution-infrastructure.jpg"
-                alt="Electrical infrastructure installation by Samiz Tech Engineering"
+                alt="Electrical infrastructure installation by Samiz Tech Engineering Ltd"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 60vw"

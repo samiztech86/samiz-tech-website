@@ -92,10 +92,10 @@ export default function BatteryCapacityArticle() {
           <p className="mt-5 leading-8 text-slate-700">
             You can begin estimating your electrical demand with our{" "}
             <Link
-              href="/energy-tools/calculator"
+              href="/energy-tools/solar"
               className="font-semibold text-blue-700 underline underline-offset-4"
             >
-              Energy Calculator
+              Solar Calculator
             </Link>
             .
           </p>
@@ -358,10 +358,10 @@ export default function BatteryCapacityArticle() {
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Link
-              href="/energy-tools/calculator"
+              href="/energy-tools/solar"
               className="inline-flex items-center justify-center rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white transition hover:bg-blue-800"
             >
-              Open Energy Calculator
+              Open Solar Calculator
             </Link>
 
             <Link

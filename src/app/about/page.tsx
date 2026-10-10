@@ -1,14 +1,14 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Samiz Tech Engineering | Electrical & Energy Company Lagos",
+  title: "About Samiz Tech Engineering Ltd | Electrical & Energy Company Lagos",
   description:
-    "Samiz Tech Engineering is a Nigerian engineering company delivering electrical installations, solar EPC, power systems, energy infrastructure and automation for residential, commercial, estate and industrial projects.",
+    "Samiz Tech Engineering Ltd is a Nigerian engineering company delivering electrical installations, solar EPC, power systems, energy infrastructure and automation for residential, commercial, estate and industrial projects.",
   keywords: [
     "Samiz Tech Engineering Ltd.",
-    "Samiz Tech Engineering",
+    "Samiz Tech Engineering Ltd",
     "electrical engineering company Lagos",
     "electrical engineering company Nigeria",
     "electrical contractor Lagos",
@@ -30,17 +30,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/about",
-    title: "About Samiz Tech Engineering | Electrical & Energy Company Lagos",
+    title: "About Samiz Tech Engineering Ltd | Electrical & Energy Company Lagos",
     description:
-      "Learn about Samiz Tech Engineering and our approach to electrical installations, solar EPC, power systems, energy infrastructure and automation projects across Lagos and Nigeria.",
+      "Learn about Samiz Tech Engineering Ltd and our approach to electrical installations, solar EPC, power systems, energy infrastructure and automation projects across Lagos and Nigeria.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Samiz Tech Engineering | Electrical & Energy Company Lagos",
+    title: "About Samiz Tech Engineering Ltd | Electrical & Energy Company Lagos",
     description:
-      "Learn about Samiz Tech Engineering, our engineering capabilities and our approach to electrical, solar and energy infrastructure projects.",
+      "Learn about Samiz Tech Engineering Ltd, our engineering capabilities and our approach to electrical, solar and energy infrastructure projects.",
   },
 };
 
@@ -88,7 +88,7 @@ export default function AboutPage() {
             </h1>
 
             <p className="mt-7 max-w-3xl text-lg leading-8 text-slate-300">
-              Samiz Tech Engineering is an electrical and energy engineering
+              Samiz Tech Engineering Ltd is an electrical and energy engineering
               company focused on designing, installing and improving the
               infrastructure that keeps homes, businesses and facilities
               powered.
@@ -113,7 +113,7 @@ export default function AboutPage() {
 
             <div className="space-y-6 text-lg leading-8 text-slate-600">
               <p>
-                Samiz Tech Engineering works across electrical engineering,
+                Samiz Tech Engineering Ltd works across electrical engineering,
                 solar energy, backup power, smart infrastructure and energy
                 management.
               </p>
@@ -159,7 +159,7 @@ export default function AboutPage() {
               </h2>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-                Engr. Bode Samuel Ogidiolu founded Samiz Tech Engineering with a
+                Engr. Bode Samuel Ogidiolu founded Samiz Tech Engineering Ltd with a
                 focus on electrical engineering, solar energy, power systems and
                 the development of practical energy infrastructure.
               </p>
@@ -189,7 +189,7 @@ export default function AboutPage() {
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-200 sm:aspect-[3/2] lg:aspect-[16/10]">
               <Image
                 src="/images/team/team-electrical-engineer.jpg"
-                alt="Samiz Tech Engineering team"
+                alt="Samiz Tech Engineering Ltd team"
                 fill
                 className="object-cover object-center"
                 sizes="(max-width: 1024px) 100vw, 65vw"
@@ -463,9 +463,3 @@ export default function AboutPage() {
     </main>
   );
 }
-
-
-
-
-
-

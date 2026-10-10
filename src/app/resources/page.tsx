@@ -112,7 +112,7 @@ export default function ResourcesPage() {
       <section className="border-t border-slate-200 bg-[#07111f]">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-400">
-            Samiz Tech Engineering
+            Samiz Tech Engineering Ltd.
           </p>
 
           <h2 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">

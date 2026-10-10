@@ -1,11 +1,11 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Electrical, Solar & Power Systems Engineering Services | Lagos",
   description:
-    "Samiz Tech Engineering provides electrical installation, solar EPC, power distribution, backup power, automation and energy infrastructure services for estate, commercial, industrial and institutional projects in Lagos and Nigeria.",
+    "Samiz Tech Engineering Ltd provides electrical installation, solar EPC, power distribution, backup power, automation and energy infrastructure services for estate, commercial, industrial and institutional projects in Lagos and Nigeria.",
   keywords: [
     "electrical engineering services Lagos",
     "electrical contractor Lagos",
@@ -136,12 +136,19 @@ export default function ServicesPage() {
               engineers complete energy systems around your operational needs.
             </p>
 
-            <div className="mt-9">
+            <div className="mt-9 flex flex-wrap gap-3">
               <WhatsAppButton
                 label="Discuss your project"
                 message="Hello Samiz Tech, I would like to discuss an engineering/energy project."
                 className="bg-blue-600 px-7 py-4 text-sm font-bold text-white hover:bg-blue-500"
               />
+
+              <a
+                href="/engineering-assessment"
+                className="border border-blue-300 px-7 py-4 text-sm font-bold text-white hover:bg-blue-600"
+              >
+                Book an Engineering Assessment — ₦10,000
+              </a>
             </div>
           </div>
         </div>
@@ -155,7 +162,7 @@ export default function ServicesPage() {
             <div className="relative min-h-[340px] sm:min-h-[460px] lg:min-h-[520px]">
               <Image
                 src="/images/engineering/power-distribution-infrastructure.jpg"
-                alt="Power distribution infrastructure engineered by Samiz Tech Engineering"
+                alt="Power distribution infrastructure engineered by Samiz Tech Engineering Ltd"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 60vw"
@@ -356,8 +363,3 @@ export default function ServicesPage() {
 </main>
   );
 }
-
-
-
-
-

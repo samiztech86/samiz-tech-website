@@ -95,10 +95,10 @@ export default function SolarPanelSizingArticle() {
           <p className="mt-5 leading-8 text-slate-700">
             You can start with our{" "}
             <Link
-              href="/energy-tools/calculator"
+              href="/energy-tools/solar"
               className="font-semibold text-blue-700 underline underline-offset-4"
             >
-              Energy Calculator
+              Solar Calculator
             </Link>{" "}
             to estimate your electrical demand.
           </p>

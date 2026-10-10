@@ -59,14 +59,6 @@ export async function POST(request: NextRequest) {
     const secretKey =
       process.env.PAYSTACK_SECRET_KEY;
 
-    console.log("PAYSTACK ENV:", {
-      present: Boolean(secretKey),
-      length: secretKey?.length ?? 0,
-      prefix: secretKey?.slice(0, 8) ?? "",
-      hasWhitespace: secretKey ? secretKey !== secretKey.trim() : false,
-      hash: secretKey ? require("crypto").createHash("sha256").update(secretKey, "utf8").digest("hex") : "",
-    });
-
     if (!secretKey) {
       console.error(
         "PAYSTACK_SECRET_KEY is not configured.",
