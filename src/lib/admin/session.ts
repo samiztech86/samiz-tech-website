@@ -39,7 +39,7 @@ export function verifyAdminPassword(password: string): boolean {
     return false;
   }
 
-  const parts = stored.split("$");
+  const parts = stored.split(/[:$]/);
 
   if (
     parts.length !== 3 ||
