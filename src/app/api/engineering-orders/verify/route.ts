@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { createSignedAssessmentTrackingLink } from "@/lib/engineering-orders/tracking";
+import { sendAssessmentNotification } from "@/lib/email/resend";
 
 const EXPECTED_AMOUNT_KOBO = 1_000_000;
 
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
       await supabaseServer
         .from("engineering_orders")
         .select(
-          "id, payment_reference, amount_kobo, currency, payment_status, order_status, service_type, customer_email",
+          "id, payment_reference, amount_kobo, currency, payment_status, order_status, service_type, customer_name, customer_email, customer_phone, property_type, property_location, assessment_details",
         )
         .eq("id", orderId)
         .maybeSingle();
@@ -218,6 +219,91 @@ export async function POST(request: NextRequest) {
     }
 
     const trackingUrl = createSignedAssessmentTrackingLink(orderId);
+
+    const assessmentDetails =
+      typeof order.assessment_details === "string"
+        ? order.assessment_details
+        : JSON.stringify(order.assessment_details ?? {}, null, 2);
+
+    const emailDetails = {
+      orderId,
+      customerName: order.customer_name ?? "Customer",
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone ?? "Not provided",
+      propertyType: order.property_type ?? "Not provided",
+      propertyLocation: order.property_location ?? "Not provided",
+      assessmentDetails,
+      paymentReference: reference,
+      trackingUrl,
+    };
+
+    for (const notificationType of [
+      "admin_alert",
+      "customer_confirmation",
+    ] as const) {
+      try {
+        const { data: claimed, error: claimError } =
+          await supabaseServer.rpc(
+            "claim_engineering_order_notification",
+            {
+              p_order_id: orderId,
+              p_notification_type: notificationType,
+            },
+          );
+
+        if (claimError) {
+          console.error(
+            `Could not claim ${notificationType} notification:`,
+            claimError.message,
+          );
+          continue;
+        }
+
+        if (claimed !== true) {
+          continue;
+        }
+
+        const result = await sendAssessmentNotification(
+          notificationType,
+          emailDetails,
+        );
+
+        const now = new Date().toISOString();
+
+        const { error: recordError } = await supabaseServer
+          .from("engineering_order_notifications")
+          .update({
+            delivery_status: result.success ? "sent" : "failed",
+            last_error: result.success ? null : result.error,
+            sent_at: result.success ? now : null,
+            updated_at: now,
+          })
+          .eq("order_id", orderId)
+          .eq("notification_type", notificationType)
+          .eq("delivery_status", "sending");
+
+        if (recordError) {
+          console.error(
+            `Could not record ${notificationType} result:`,
+            recordError.message,
+          );
+        }
+
+        if (!result.success) {
+          console.error(
+            `${notificationType} email failed:`,
+            result.error,
+          );
+        }
+      } catch (notificationError) {
+        console.error(
+          `Unexpected ${notificationType} notification error:`,
+          notificationError instanceof Error
+            ? notificationError.message
+            : "Unknown error",
+        );
+      }
+    }
 
     return NextResponse.json({
       success: true,
