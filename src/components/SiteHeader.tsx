@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const navigation = [
@@ -8,6 +9,7 @@ const navigation = [
   { label: "Systems", href: "/systems" },
   { label: "EnergyOS", href: "/energyos" },
   { label: "Energy Tools", href: "/energy-tools" },
+  { label: "Energy Store", href: "/energy-store" },
   { label: "Resources", href: "/resources" },
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
@@ -25,7 +27,7 @@ export default function SiteHeader() {
       <div className="mx-auto flex h-[64px] max-w-[1400px] items-center justify-between px-4 sm:h-[72px] sm:px-6 lg:h-[78px] lg:px-10">
 
         {/* LOGO */}
-        <a
+        <Link
           href="/"
           className="flex shrink-0 items-center"
           onClick={() => setMenuOpen(false)}
@@ -38,7 +40,7 @@ export default function SiteHeader() {
             className="h-auto w-[78px] sm:w-[96px] lg:w-[112px]"
             priority
           />
-        </a>
+        </Link>
 
         {/* DESKTOP NAVIGATION */}
         <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
