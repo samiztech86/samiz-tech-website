@@ -414,8 +414,17 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      const gatewayMessage =
+        typeof gatewayResult.message === "string"
+          ? gatewayResult.message.slice(0, 300)
+          : "No gateway message returned";
+
       console.error(
         "Marketplace checkout: Paystack rejected initialization.",
+        {
+          httpStatus: gatewayResponse.status,
+          gatewayMessage,
+        },
       );
 
       return respond(
