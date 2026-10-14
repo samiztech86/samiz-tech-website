@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -225,9 +225,7 @@ export default function EnergyStorePage() {
               Explore Products
             </a>
             <a
-              href={buildEnquiryUrl("a product not listed in the catalogue")}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/marketplace"
               className="inline-flex items-center justify-center border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
             >
               Find a Product

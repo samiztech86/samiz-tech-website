@@ -10,6 +10,7 @@ const navigation = [
   { label: "EnergyOS", href: "/energyos" },
   { label: "Energy Tools", href: "/energy-tools" },
   { label: "Energy Store", href: "/energy-store" },
+  { label: "Marketplace", href: "/marketplace" },
   { label: "Resources", href: "/resources" },
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },

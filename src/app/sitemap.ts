@@ -1,4 +1,4 @@
-﻿import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.samiztech.com.ng";
@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/services", changeFrequency: "monthly", priority: 0.9 },
     { path: "/systems", changeFrequency: "monthly", priority: 0.9 },
     { path: "/energy-store", changeFrequency: "weekly", priority: 0.9 },
+    { path: "/marketplace", changeFrequency: "weekly", priority: 0.9 },
     { path: "/energy-tools", changeFrequency: "weekly", priority: 0.9 },
     { path: "/pricing", changeFrequency: "monthly", priority: 0.8 },
     { path: "/engineering-assessment", changeFrequency: "monthly", priority: 0.8 },
