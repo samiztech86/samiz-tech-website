@@ -1,7 +1,9 @@
-import "server-only";
+﻿import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
+import { sendMarketplaceQuoteRequestNotification } from "@/lib/email/marketplace";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,6 +39,35 @@ export async function POST(request: NextRequest) {
       return respond({ error: "Invalid request origin." }, 403);
     }
 
+    // Link signed-in quote requests to a server-verified Supabase user.
+    // Anonymous enquiries remain supported.
+    let buyerId: string | null = null;
+
+    const authClient = await createSupabaseRouteHandlerClient();
+    const { data: sessionData, error: sessionError } =
+      await authClient.auth.getSession();
+
+    if (sessionError) {
+      console.error("Quote request session lookup failed.");
+      return respond(
+        { error: "Unable to validate your session. Please try again." },
+        500,
+      );
+    }
+
+    if (sessionData.session) {
+      const { data: authData, error: authError } =
+        await authClient.auth.getUser();
+
+      if (authError || !authData.user) {
+        return respond(
+          { error: "Your session could not be verified. Please sign in again." },
+          401,
+        );
+      }
+
+      buyerId = authData.user.id;
+    }
     const contentType = request.headers.get("content-type") ?? "";
 
     if (!contentType.toLowerCase().includes("application/json")) {
@@ -142,7 +173,7 @@ export async function POST(request: NextRequest) {
 
     const { data: product, error: productError } = await supabaseServer
       .from("marketplace_products")
-      .select("id, supplier_id, product_status")
+      .select("id, supplier_id, product_status, name, price_type, is_available, is_listed")
       .eq("id", productId)
       .eq("product_status", "approved")
       .maybeSingle();
@@ -156,6 +187,17 @@ export async function POST(request: NextRequest) {
       return respond(
         { error: "This product is no longer available for quote requests." },
         404,
+      );
+    }
+
+    if (
+      product.price_type !== "quote_only" ||
+      product.is_available === false ||
+      product.is_listed === false
+    ) {
+      return respond(
+        { error: "This product is not currently accepting quote requests." },
+        409,
       );
     }
 
@@ -181,6 +223,7 @@ export async function POST(request: NextRequest) {
     const { data: quoteRequest, error: insertError } = await supabaseServer
       .from("marketplace_quote_requests")
       .insert({
+        buyer_id: buyerId,
         product_id: product.id,
         supplier_id: supplier.id,
         customer_name: customerName,
@@ -201,6 +244,50 @@ export async function POST(request: NextRequest) {
       return respond(
         { error: "We could not submit your enquiry. Please try again." },
         500,
+      );
+    }
+
+    // Notify the supplier after the request is saved. Email failure must not
+    // make the customer resubmit a request that already exists.
+    try {
+      const { data: supplierAuthData, error: supplierAuthError } =
+        await supabaseServer.auth.admin.getUserById(supplier.id);
+
+      const supplierEmail = supplierAuthData.user?.email;
+
+      if (supplierAuthError || !supplierEmail) {
+        console.error(
+          "Quote request saved, but supplier email lookup failed.",
+          supplierAuthError?.message ?? "Supplier email unavailable.",
+        );
+      } else {
+        const notification = await sendMarketplaceQuoteRequestNotification({
+          requestId: quoteRequest.id,
+          productName: product.name,
+          supplierEmail,
+          customerName,
+          customerEmail: email,
+          customerPhone,
+          organizationName,
+          quantity,
+          quantityUnit,
+          deliveryLocation,
+          customerMessage,
+        });
+
+        if (!notification.success) {
+          console.error(
+            "Quote request saved, but supplier email notification failed:",
+            notification.error,
+          );
+        }
+      }
+    } catch (notificationError) {
+      console.error(
+        "Quote request saved, but supplier notification could not be sent.",
+        notificationError instanceof Error
+          ? notificationError.message
+          : "Unknown notification error.",
       );
     }
 

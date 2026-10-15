@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
@@ -508,6 +508,24 @@ export default function MarketplacePage() {
               Request a Product
             </a>
             <a
+              href="/marketplace/my-quotes"
+              className="inline-flex items-center justify-center border border-blue-300 bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500"
+            >
+              My Quotes
+            </a>
+            <a
+              href="/marketplace/my-orders"
+              className="inline-flex items-center justify-center border border-blue-300 bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500"
+            >
+              My Orders
+            </a>
+            <a
+              href="/marketplace/how-it-works"
+              className="inline-flex items-center justify-center border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              How It Works
+            </a>
+            <a
               href="/marketplace/supplier/register"
               className="inline-flex items-center justify-center border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
             >
@@ -637,7 +655,7 @@ export default function MarketplacePage() {
                     <p className="mt-2 text-xs text-slate-500">
                       {[product.brand, product.model_number]
                         .filter(Boolean)
-                        .join(" · ")}
+                        .join(" Â· ")}
                     </p>
                   ) : null}
                   <h3 className="mt-2 text-lg font-bold leading-6">
@@ -773,22 +791,7 @@ export default function MarketplacePage() {
                     </p>
                   ) : null}
                 </div>
-                <p className="mt-4 text-sm leading-6 text-slate-600">
-                  You can also contact the supplier directly if you need to discuss the request.
-                </p>
-                <a
-                  href={buildEnquiryUrl(
-                    selectedQuoteProduct.name,
-                    true,
-                    selectedQuoteProduct.supplierWhatsapp,
-                    selectedQuoteProduct.supplierName,
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex w-full items-center justify-center border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-800 hover:border-blue-600"
-                >
-                  Continue on WhatsApp
-                </a>
+
                 <button
                   type="button"
                   onClick={() => setSelectedQuoteProduct(null)}
@@ -969,19 +972,7 @@ export default function MarketplacePage() {
                   Your details will be used to process this enquiry. Do not include passwords, payment card details or other sensitive information.
                 </p>
 
-                <a
-                  href={buildEnquiryUrl(
-                    selectedQuoteProduct.name,
-                    true,
-                    selectedQuoteProduct.supplierWhatsapp,
-                    selectedQuoteProduct.supplierName,
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-800 hover:border-blue-600"
-                >
-                  Prefer WhatsApp? Contact supplier
-                </a>
+
               </form>
             )}
           </div>
@@ -1033,7 +1024,7 @@ export default function MarketplacePage() {
               <div className="flex items-start justify-between gap-4 text-sm">
                 <span className="text-slate-600">Unit price</span>
                 <span className="font-semibold text-slate-900">
-                  ₦{selectedCheckoutProduct.indicative_price?.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  â‚¦{selectedCheckoutProduct.indicative_price?.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="mt-2 flex items-start justify-between gap-4 text-sm">
@@ -1043,7 +1034,7 @@ export default function MarketplacePage() {
               <div className="mt-3 flex items-start justify-between gap-4 border-t border-slate-200 pt-3">
                 <span className="font-semibold text-slate-900">Estimated subtotal</span>
                 <span className="text-lg font-bold text-slate-900">
-                  ₦{(selectedCheckoutProduct.indicative_price! * (Number.isSafeInteger(Number(checkoutQuantity)) && Number(checkoutQuantity) > 0 ? Number(checkoutQuantity) : 0)).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  â‚¦{(selectedCheckoutProduct.indicative_price! * (Number.isSafeInteger(Number(checkoutQuantity)) && Number(checkoutQuantity) > 0 ? Number(checkoutQuantity) : 0)).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
               <p className="mt-2 text-xs leading-5 text-slate-500">
@@ -1169,5 +1160,3 @@ export default function MarketplacePage() {
     </main>
   );
 }
-
-

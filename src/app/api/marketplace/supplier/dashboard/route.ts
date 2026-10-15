@@ -1,4 +1,4 @@
-import "server-only";
+﻿import "server-only";
 
 import { NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
@@ -93,6 +93,7 @@ export async function GET() {
         profile: null,
         products: [],
         requests: [],
+        orders: [],
         message: "Your supplier profile needs complete registration details. Please contact Samiz support.",
       });
     }
@@ -109,6 +110,17 @@ export async function GET() {
       return response({ error: "Unable to load your products." }, 500);
     }
 
+    const { data: orders, error: ordersError } = await supabaseServer
+      .from("marketplace_orders")
+      .select("id, product_id, product_name, quantity, unit_price_kobo, subtotal_kobo, commission_kobo, supplier_amount_kobo, currency, payment_status, paid_at, created_at, fulfilment_status, fulfilment_updated_at, dispatched_at, delivered_at")
+      .eq("supplier_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    if (ordersError) {
+      console.error("Supplier orders query failed:", ordersError.message);
+      return response({ error: "Unable to load your marketplace orders." }, 500);
+    }
     let requests: Array<Record<string, unknown>> = [];
 
     if (profile.verification_status === "approved" && products?.length) {
@@ -121,6 +133,7 @@ export async function GET() {
           profile,
           products: products ?? [],
           requests: [],
+          orders: orders ?? [],
           message: null,
         });
       }
@@ -146,6 +159,7 @@ export async function GET() {
       profile,
       products: products ?? [],
       requests,
+      orders: orders ?? [],
       message:
         profile.verification_status === "approved"
           ? null

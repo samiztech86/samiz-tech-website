@@ -1,6 +1,7 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
+import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -303,6 +304,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let buyerId: string | null = null;
+
+    try {
+      const authClient = await createSupabaseRouteHandlerClient();
+      const { data: authData, error: authError } =
+        await authClient.auth.getUser();
+
+      if (!authError && authData.user) {
+        buyerId = authData.user.id;
+      }
+    } catch {
+      // Guest checkout remains available if no usable session exists.
+    }
+
     const reference =
       `samiz-mkt-${Date.now()}-${crypto.randomUUID()}`;
 
@@ -310,6 +325,7 @@ export async function POST(request: NextRequest) {
       await supabaseServer
         .from("marketplace_orders")
         .insert({
+          buyer_id: buyerId,
           product_id: product.id,
           supplier_id: product.supplier_id,
           product_name: product.name,

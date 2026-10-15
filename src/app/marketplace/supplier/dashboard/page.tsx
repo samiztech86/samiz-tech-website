@@ -16,6 +16,7 @@ type DashboardData = {
     id: string;
     name: string;
     category: string;
+    price_type: string;
     product_status: string;
     is_available: boolean;
     is_listed: boolean;
@@ -34,6 +35,24 @@ type DashboardData = {
     customer_message: string | null;
     request_status: string;
     created_at: string;
+  }>;
+  orders: Array<{
+    id: string;
+    product_id: string;
+    product_name: string;
+    quantity: number;
+    unit_price_kobo: number;
+    subtotal_kobo: number;
+    commission_kobo: number;
+    supplier_amount_kobo: number;
+    currency: string;
+    payment_status: string;
+    paid_at: string | null;
+    created_at: string;
+    fulfilment_status: string;
+    fulfilment_updated_at: string | null;
+    dispatched_at: string | null;
+    delivered_at: string | null;
   }>;
   message?: string | null;
 };
@@ -66,6 +85,13 @@ export default function SupplierDashboardPage() {
   const [managementErrors, setManagementErrors] = useState<Record<string, string>>({});
   const [managementMessages, setManagementMessages] = useState<Record<string, string>>({});
   const [productImages, setProductImages] = useState<File[]>([]);
+  const [quoteSubmittingId, setQuoteSubmittingId] = useState<string | null>(null);
+  const [quoteErrors, setQuoteErrors] = useState<Record<string, string>>({});
+  const [quoteMessages, setQuoteMessages] = useState<Record<string, string>>({});
+  const [fulfilmentNotes, setFulfilmentNotes] = useState<Record<string, string>>({});
+  const [fulfilmentSubmittingId, setFulfilmentSubmittingId] = useState<string | null>(null);
+  const [fulfilmentErrors, setFulfilmentErrors] = useState<Record<string, string>>({});
+  const [fulfilmentMessages, setFulfilmentMessages] = useState<Record<string, string>>({});
   const imagePreviews = useMemo(
     () =>
       productImages.map((file) => ({
@@ -269,6 +295,118 @@ export default function SupplierDashboardPage() {
     }
   };
 
+  const submitSupplierQuote = async (
+    event: React.FormEvent<HTMLFormElement>,
+    requestId: string,
+  ) => {
+    event.preventDefault();
+
+    setQuoteErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    setQuoteMessages((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    setQuoteSubmittingId(requestId);
+
+    try {
+      const form = event.currentTarget;
+      const formData = new FormData(form);
+      const response = await fetch("/api/marketplace/supplier/quotes", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestId,
+          unitPrice: formData.get("unitPrice"),
+          estimatedLeadTime: formData.get("estimatedLeadTime"),
+          quoteValidUntil: formData.get("quoteValidUntil"),
+          supplierMessage: formData.get("supplierMessage"),
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setQuoteErrors((current) => ({
+          ...current,
+          [requestId]:
+            typeof payload.error === "string"
+              ? payload.error
+              : "Unable to submit this quotation.",
+        }));
+        return;
+      }
+
+      setQuoteMessages((current) => ({
+        ...current,
+        [requestId]: "Quotation submitted successfully.",
+      }));
+
+      await loadDashboard();
+    } catch {
+      setQuoteErrors((current) => ({
+        ...current,
+        [requestId]:
+          "A network error occurred. Refresh the dashboard before retrying.",
+      }));
+    } finally {
+      setQuoteSubmittingId(null);
+    }
+  };
+
+  const updateOrderFulfilment = async (
+    orderId: string,
+    status: string,
+  ) => {
+    setFulfilmentErrors((current) => ({ ...current, [orderId]: "" }));
+    setFulfilmentMessages((current) => ({ ...current, [orderId]: "" }));
+    setFulfilmentSubmittingId(orderId);
+
+    try {
+      const result = await fetch("/api/marketplace/supplier/orders/fulfilment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          status,
+          note: fulfilmentNotes[orderId] ?? "",
+        }),
+      });
+
+      const payload = await result.json();
+
+      if (!result.ok) {
+        setFulfilmentErrors((current) => ({
+          ...current,
+          [orderId]:
+            typeof payload.error === "string"
+              ? payload.error
+              : "Unable to update fulfilment.",
+        }));
+        return;
+      }
+
+      setFulfilmentMessages((current) => ({
+        ...current,
+        [orderId]: "Fulfilment status updated.",
+      }));
+      setFulfilmentNotes((current) => ({ ...current, [orderId]: "" }));
+
+      await loadDashboard();
+    } catch {
+      setFulfilmentErrors((current) => ({
+        ...current,
+        [orderId]: "A network error occurred. Please retry.",
+      }));
+    } finally {
+      setFulfilmentSubmittingId(null);
+    }
+  };
   const loadDashboard = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -1002,6 +1140,240 @@ export default function SupplierDashboardPage() {
             </section>
 
             <section className="mt-10">
+              <h2 className="text-xl font-bold">Marketplace orders</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Orders for your products, including payment status and the
+                calculated supplier share. The supplier share shown here is
+                not confirmation that funds have been settled to your bank.
+              </p>
+
+              {data.orders.length ? (
+                <div className="mt-4 space-y-4">
+                  {data.orders.map((order) => {
+                    const formatMoney = (amountKobo: number) =>
+                      new Intl.NumberFormat("en-NG", {
+                        style: "currency",
+                        currency: order.currency || "NGN",
+                      }).format(amountKobo / 100);
+
+                    return (
+                      <article
+                        key={order.id}
+                        className="border border-slate-200 bg-white p-5"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <h3 className="font-bold">{order.product_name}</h3>
+                            <p className="mt-1 text-xs text-slate-500">
+                              Order ID: {order.id}
+                            </p>
+                          </div>
+                          <span className="inline-flex border border-slate-200 px-3 py-1 text-sm capitalize text-slate-700">
+                            Payment: {order.payment_status}
+                          </span>
+                        </div>
+
+                        <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                          <div>
+                            <dt className="text-slate-500">Quantity</dt>
+                            <dd className="mt-1 font-medium">{order.quantity}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-slate-500">Unit price</dt>
+                            <dd className="mt-1 font-medium">
+                              {formatMoney(order.unit_price_kobo)}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-slate-500">Order subtotal</dt>
+                            <dd className="mt-1 font-medium">
+                              {formatMoney(order.subtotal_kobo)}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-slate-500">Marketplace commission</dt>
+                            <dd className="mt-1 font-medium">
+                              {formatMoney(order.commission_kobo)}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-slate-500">Calculated supplier share</dt>
+                            <dd className="mt-1 font-semibold">
+                              {formatMoney(order.supplier_amount_kobo)}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-slate-500">Order received</dt>
+                            <dd className="mt-1">
+                              {new Date(order.created_at).toLocaleString()}
+                            </dd>
+                          </div>
+                          {order.paid_at ? (
+                            <div>
+                              <dt className="text-slate-500">Payment confirmed</dt>
+                              <dd className="mt-1">
+                                {new Date(order.paid_at).toLocaleString()}
+                              </dd>
+                            </div>
+                          ) : null}
+                        </dl>
+
+                        <div className="mt-5 border-t border-slate-200 pt-4">
+                          <h4 className="font-semibold">Order fulfilment</h4>
+                          <p className="mt-1 text-sm text-slate-600">
+                            Current status:{" "}
+                            <span className="font-medium capitalize">
+                              {(order.fulfilment_status || "not_started").replaceAll("_", " ")}
+                            </span>
+                          </p>
+
+                          {order.payment_status === "paid" ? (
+                            <>
+                              <label
+                                htmlFor={`fulfilment-note-${order.id}`}
+                                className="mt-3 block text-sm font-medium text-slate-700"
+                              >
+                                Update note (required when reporting or resolving an issue)
+                              </label>
+                              <textarea
+                                id={`fulfilment-note-${order.id}`}
+                                value={fulfilmentNotes[order.id] ?? ""}
+                                onChange={(event) =>
+                                  setFulfilmentNotes((current) => ({
+                                    ...current,
+                                    [order.id]: event.target.value,
+                                  }))
+                                }
+                                maxLength={1000}
+                                rows={2}
+                                className="mt-1 w-full border border-slate-300 p-2 text-sm"
+                                placeholder="Add dispatch details, delivery information, or an issue note"
+                                disabled={fulfilmentSubmittingId === order.id}
+                              />
+
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {order.fulfilment_status === "not_started" ? (
+                                  <button
+                                    type="button"
+                                    disabled={fulfilmentSubmittingId === order.id}
+                                    onClick={() => void updateOrderFulfilment(order.id, "processing")}
+                                    className="border border-slate-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    Start processing
+                                  </button>
+                                ) : null}
+
+                                {order.fulfilment_status === "processing" ||
+                                order.fulfilment_status === "issue_reported" ? (
+                                  <button
+                                    type="button"
+                                    disabled={fulfilmentSubmittingId === order.id}
+                                    onClick={() => void updateOrderFulfilment(order.id, "ready_to_dispatch")}
+                                    className="border border-slate-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    Ready to dispatch
+                                  </button>
+                                ) : null}
+
+                                {order.fulfilment_status === "ready_to_dispatch" ||
+                                order.fulfilment_status === "issue_reported" ? (
+                                  <button
+                                    type="button"
+                                    disabled={fulfilmentSubmittingId === order.id}
+                                    onClick={() => void updateOrderFulfilment(order.id, "dispatched")}
+                                    className="border border-slate-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    Mark dispatched
+                                  </button>
+                                ) : null}
+
+                                {order.fulfilment_status === "dispatched" ? (
+                                  <button
+                                    type="button"
+                                    disabled={fulfilmentSubmittingId === order.id}
+                                    onClick={() => void updateOrderFulfilment(order.id, "delivered")}
+                                    className="border border-slate-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    Mark delivered
+                                  </button>
+                                ) : null}
+
+                                {["processing", "ready_to_dispatch", "dispatched"].includes(
+                                  order.fulfilment_status,
+                                ) ? (
+                                  <button
+                                    type="button"
+                                    disabled={fulfilmentSubmittingId === order.id}
+                                    onClick={() => {
+                                      if (!(fulfilmentNotes[order.id] ?? "").trim()) {
+                                        setFulfilmentErrors((current) => ({
+                                          ...current,
+                                          [order.id]: "Enter a note before reporting an issue.",
+                                        }));
+                                        return;
+                                      }
+                                      void updateOrderFulfilment(order.id, "issue_reported");
+                                    }}
+                                    className="border border-red-300 px-3 py-2 text-sm font-medium text-red-700 disabled:opacity-50"
+                                  >
+                                    Report issue
+                                  </button>
+                                ) : null}
+
+                                {order.fulfilment_status === "issue_reported" ? (
+                                  <button
+                                    type="button"
+                                    disabled={fulfilmentSubmittingId === order.id}
+                                    onClick={() => {
+                                      if (!(fulfilmentNotes[order.id] ?? "").trim()) {
+                                        setFulfilmentErrors((current) => ({
+                                          ...current,
+                                          [order.id]: "Enter a note explaining how the issue is being resolved.",
+                                        }));
+                                        return;
+                                      }
+                                      void updateOrderFulfilment(order.id, "processing");
+                                    }}
+                                    className="border border-slate-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
+                                  >
+                                    Resume processing
+                                  </button>
+                                ) : null}
+                              </div>
+
+                              {fulfilmentSubmittingId === order.id ? (
+                                <p className="mt-2 text-sm text-slate-600" role="status">
+                                  Saving fulfilment update…
+                                </p>
+                              ) : null}
+                              {fulfilmentErrors[order.id] ? (
+                                <p className="mt-2 text-sm text-red-700" role="alert">
+                                  {fulfilmentErrors[order.id]}
+                                </p>
+                              ) : null}
+                              {fulfilmentMessages[order.id] ? (
+                                <p className="mt-2 text-sm text-green-700" role="status">
+                                  {fulfilmentMessages[order.id]}
+                                </p>
+                              ) : null}
+                            </>
+                          ) : (
+                            <p className="mt-2 text-sm text-slate-600">
+                              Fulfilment updates become available after payment is confirmed.
+                            </p>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="mt-3 border border-slate-200 bg-white p-5 text-sm text-slate-600">
+                  No marketplace orders have been recorded for your products yet.
+                </p>
+              )}
+            </section>
+            <section className="mt-10">
               <h2 className="text-xl font-bold">Quote requests</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Customer names, email addresses and phone numbers are not
@@ -1053,6 +1425,117 @@ export default function SupplierDashboardPage() {
                           Received{" "}
                           {new Date(request.created_at).toLocaleDateString()}
                         </p>
+
+                        {product?.price_type === "quote_only" &&
+                        data.profile?.verification_status === "approved" &&
+                        ["new", "viewed"].includes(request.request_status) ? (
+                          <form
+                            className="mt-5 space-y-4 border-t border-slate-200 pt-5"
+                            onSubmit={(event) =>
+                              void submitSupplierQuote(event, request.id)
+                            }
+                          >
+                            <h4 className="font-semibold">Submit quotation</h4>
+                            <p className="text-sm leading-6 text-slate-600">
+                              Enter the price per unit in NGN. The marketplace
+                              will calculate the total using the requested quantity.
+                            </p>
+
+                            <div>
+                              <label
+                                htmlFor={`quote-unit-price-${request.id}`}
+                                className="mb-1 block text-sm font-medium"
+                              >
+                                Unit price (NGN)
+                              </label>
+                              <input
+                                id={`quote-unit-price-${request.id}`}
+                                name="unitPrice"
+                                type="number"
+                                min="0.01"
+                                max="999999999999"
+                                step="0.01"
+                                required
+                                className="w-full border border-slate-300 px-3 py-2 text-sm"
+                                placeholder="e.g. 189000"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`quote-lead-${request.id}`}
+                                className="mb-1 block text-sm font-medium"
+                              >
+                                Estimated lead time
+                              </label>
+                              <input
+                                id={`quote-lead-${request.id}`}
+                                name="estimatedLeadTime"
+                                type="text"
+                                maxLength={200}
+                                className="w-full border border-slate-300 px-3 py-2 text-sm"
+                                placeholder="e.g. 7–10 working days"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`quote-expiry-${request.id}`}
+                                className="mb-1 block text-sm font-medium"
+                              >
+                                Quotation valid until (optional)
+                              </label>
+                              <input
+                                id={`quote-expiry-${request.id}`}
+                                name="quoteValidUntil"
+                                type="date"
+                                min={new Date().toISOString().slice(0, 10)}
+                                className="w-full border border-slate-300 px-3 py-2 text-sm"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`quote-message-${request.id}`}
+                                className="mb-1 block text-sm font-medium"
+                              >
+                                Quotation details and terms
+                              </label>
+                              <textarea
+                                id={`quote-message-${request.id}`}
+                                name="supplierMessage"
+                                required
+                                minLength={1}
+                                maxLength={5000}
+                                rows={4}
+                                className="w-full border border-slate-300 px-3 py-2 text-sm"
+                                placeholder="Describe what is included, delivery terms, warranty, and any exclusions."
+                              />
+                            </div>
+
+                            {quoteErrors[request.id] ? (
+                              <p className="text-sm text-red-700" role="alert">
+                                {quoteErrors[request.id]}
+                              </p>
+                            ) : null}
+
+                            {quoteMessages[request.id] ? (
+                              <p className="text-sm text-green-700" role="status">
+                                {quoteMessages[request.id]}
+                              </p>
+                            ) : null}
+
+                            <button
+                              type="submit"
+                              disabled={quoteSubmittingId === request.id}
+                              className="bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {quoteSubmittingId === request.id
+                                ? "Submitting quotation..."
+                                : "Submit quotation"}
+                            </button>
+                          </form>
+                        ) : null}
                       </article>
                     );
                   })}

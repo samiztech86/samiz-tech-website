@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -37,13 +37,56 @@ type Product = {
   updated_at: string;
 };
 
+type MarketplaceOrder = {
+  id: string;
+  product_id: string;
+  supplier_id: string;
+  product_name: string;
+  quantity: number | string;
+  subtotal_kobo: number | string;
+  commission_kobo: number | string;
+  supplier_amount_kobo: number | string;
+  currency: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  payment_status: string;
+  paystack_reference: string;
+  paystack_transaction_id: number | null;
+  paid_at: string | null;
+  created_at: string;
+  fulfilment_status: string;
+  fulfilment_updated_at: string | null;
+  dispatched_at: string | null;
+  delivered_at: string | null;
+  settlement_status: string;
+  settlement_reference: string | null;
+  settlement_evidence_note: string | null;
+  settlement_verified_at: string | null;
+  settlement_verified_by: string | null;
+};
+
+type MarketplaceAuditEvent = {
+  id: string;
+  order_id: string;
+  event_type: string;
+  previous_status: string | null;
+  new_status: string;
+  actor_role: string;
+  note: string | null;
+  evidence_reference: string | null;
+  created_at: string;
+};
+
 type QueueResponse = {
   suppliers?: Supplier[];
   products?: Product[];
+  orders?: MarketplaceOrder[];
+  auditEvents?: MarketplaceAuditEvent[];
   error?: string;
 };
 
-type QueueTab = "suppliers" | "products";
+type QueueTab = "suppliers" | "products" | "orders";
 
 const supplierStatuses = [
   "all",
@@ -73,6 +116,19 @@ function formatDate(value: string) {
       });
 }
 
+function formatNairaFromKobo(value: number | string) {
+  const amount = Number(value) / 100;
+
+  if (!Number.isFinite(amount)) return "Amount unavailable";
+
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 function humanize(value: string) {
   return value.replaceAll("_", " ");
 }
@@ -81,6 +137,8 @@ export default function MarketplaceDashboard() {
   const [tab, setTab] = useState<QueueTab>("suppliers");
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<MarketplaceOrder[]>([]);
+  const [auditEvents, setAuditEvents] = useState<MarketplaceAuditEvent[]>([]);
   const [supplierFilter, setSupplierFilter] = useState("pending");
   const [productFilter, setProductFilter] = useState("draft");
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
@@ -115,6 +173,8 @@ export default function MarketplaceDashboard() {
 
       setSuppliers(data.suppliers ?? []);
       setProducts(data.products ?? []);
+      setOrders(data.orders ?? []);
+      setAuditEvents(data.auditEvents ?? []);
     } catch (err) {
       setError(
         err instanceof Error
@@ -128,7 +188,11 @@ export default function MarketplaceDashboard() {
   }, []);
 
   useEffect(() => {
-    void loadQueues();
+    const timer = window.setTimeout(() => {
+      void loadQueues();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [loadQueues]);
 
   async function moderate(
@@ -152,7 +216,7 @@ export default function MarketplaceDashboard() {
 
       if (!note || note.length > 1000) {
         setModerationMessage(
-          "Rejection cancelled: enter a reason of 1–1000 characters.",
+          "Rejection cancelled: enter a reason of 1-1000 characters.",
         );
         return;
       }
@@ -310,6 +374,18 @@ export default function MarketplaceDashboard() {
         >
           Product listings ({products.length})
         </button>
+        <button
+          type="button"
+          onClick={() => setTab("orders")}
+          aria-pressed={tab === "orders"}
+          className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+            tab === "orders"
+              ? "bg-blue-600 text-white"
+              : "bg-slate-800 text-slate-200 hover:bg-slate-700"
+          }`}
+        >
+          Marketplace orders ({orders.length})
+        </button>
       </div>
 
       {moderationMessage && (
@@ -423,7 +499,7 @@ export default function MarketplaceDashboard() {
             </div>
           )}
         </section>
-      ) : (
+      ) : tab === "products" ? (
         <section className="mt-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-bold">Product listings</h2>
@@ -529,6 +605,202 @@ export default function MarketplaceDashboard() {
                         </>
                       )}
                     </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      ) : (
+        <section className="mt-6">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">Marketplace orders</h2>
+            <p className="text-sm text-slate-400">
+              Showing up to {orders.length} most recent orders
+            </p>
+          </div>
+
+          {orders.length === 0 ? (
+            <p className="rounded-xl border border-slate-700 p-6 text-slate-300">
+              No marketplace orders were returned.
+            </p>
+          ) : (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {orders.map((order) => {
+                const supplier = suppliers.find(
+                  (item) => item.id === order.supplier_id,
+                );
+                const orderEvents = auditEvents.filter(
+                  (event) => event.order_id === order.id,
+                );
+
+                return (
+                  <article
+                    key={order.id}
+                    className="rounded-xl border border-slate-700 bg-slate-900 p-5"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <h3 className="text-lg font-bold">
+                        {order.product_name}
+                      </h3>
+                      <span className="rounded-full bg-slate-800 px-3 py-1 text-xs capitalize text-slate-200">
+                        {humanize(order.payment_status)}
+                      </span>
+                    </div>
+
+                    <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+                      <div>
+                        <dt className="text-slate-400">Customer</dt>
+                        <dd className="mt-1">{order.customer_name}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Phone</dt>
+                        <dd className="mt-1 break-words">
+                          {order.customer_phone}
+                        </dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="text-slate-400">Email</dt>
+                        <dd className="mt-1 break-words">
+                          {order.customer_email}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Supplier</dt>
+                        <dd className="mt-1">
+                          {supplier?.business_name ?? order.supplier_id}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Quantity</dt>
+                        <dd className="mt-1">{order.quantity}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Order subtotal</dt>
+                        <dd className="mt-1 font-semibold">
+                          {formatNairaFromKobo(order.subtotal_kobo)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Platform commission</dt>
+                        <dd className="mt-1">
+                          {formatNairaFromKobo(order.commission_kobo)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Supplier amount</dt>
+                        <dd className="mt-1">
+                          {formatNairaFromKobo(order.supplier_amount_kobo)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-400">Created</dt>
+                        <dd className="mt-1">{formatDate(order.created_at)}</dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="text-slate-400">Paystack reference</dt>
+                        <dd className="mt-1 break-all">
+                          {order.paystack_reference}
+                        </dd>
+                      </div>
+                      {order.paystack_transaction_id != null && (
+                        <div className="sm:col-span-2">
+                          <dt className="text-slate-400">
+                            Paystack transaction ID
+                          </dt>
+                          <dd className="mt-1">
+                            {order.paystack_transaction_id}
+                          </dd>
+                        </div>
+                      )}
+                      {order.paid_at && (
+                        <div className="sm:col-span-2">
+                          <dt className="text-slate-400">Paid at</dt>
+                          <dd className="mt-1">{formatDate(order.paid_at)}</dd>
+                        </div>
+                      )}
+                      <div>
+                        <dt className="text-slate-400">Fulfilment status</dt>
+                        <dd className="mt-1 font-medium">
+                          {humanize(order.fulfilment_status || "not_started")}
+                        </dd>
+                      </div>
+                      {order.fulfilment_updated_at && (
+                        <div>
+                          <dt className="text-slate-400">Last fulfilment update</dt>
+                          <dd className="mt-1">
+                            {formatDate(order.fulfilment_updated_at)}
+                          </dd>
+                        </div>
+                      )}
+                      {order.dispatched_at && (
+                        <div>
+                          <dt className="text-slate-400">Dispatched at</dt>
+                          <dd className="mt-1">{formatDate(order.dispatched_at)}</dd>
+                        </div>
+                      )}
+                      {order.delivered_at && (
+                        <div>
+                          <dt className="text-slate-400">Delivered at</dt>
+                          <dd className="mt-1">{formatDate(order.delivered_at)}</dd>
+                        </div>
+                      )}
+                      <div className="sm:col-span-2 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
+                        <dt className="font-semibold text-slate-200">
+                          Payment allocation
+                        </dt>
+                        <dd className="mt-2 text-sm text-slate-300">
+                          The order subtotal, platform commission, and supplier amount above show the recorded allocation for this order. Payment status and fulfilment status are tracked separately.
+                        </dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="text-slate-400">Audit history</dt>
+                        <dd className="mt-2">
+                          {orderEvents.length === 0 ? (
+                            <p className="text-slate-400">No audit events recorded.</p>
+                          ) : (
+                            <ol className="space-y-3">
+                              {orderEvents.slice(0, 5).map((event) => (
+                                <li
+                                  key={event.id}
+                                  className="rounded-lg border border-slate-700 p-3"
+                                >
+                                  <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <span className="font-medium">
+                                      {humanize(event.event_type)}:{" "}
+                                      {event.previous_status
+                                        ? `${humanize(event.previous_status)} -> `
+                                        : ""}
+                                      {humanize(event.new_status)}
+                                    </span>
+                                    <span className="text-xs text-slate-400">
+                                      {formatDate(event.created_at)}
+                                    </span>
+                                  </div>
+                                  <p className="mt-1 text-xs text-slate-400">
+                                    Actor role: {humanize(event.actor_role)}
+                                  </p>
+                                  {event.note && (
+                                    <p className="mt-2 whitespace-pre-wrap break-words text-sm">
+                                      {event.note}
+                                    </p>
+                                  )}
+                                  {event.evidence_reference && (
+                                    <p className="mt-2 break-all text-xs text-slate-400">
+                                      Evidence reference: {event.evidence_reference}
+                                    </p>
+                                  )}
+                                </li>
+                              ))}
+                            </ol>
+                          )}
+                        </dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="text-slate-400">Order ID</dt>
+                        <dd className="mt-1 break-all">{order.id}</dd>
+                      </div>
+                    </dl>
                   </article>
                 );
               })}
