@@ -651,11 +651,15 @@ export default function MarketplacePage() {
                       Approved supplier listing
                     </p>
                   ) : null}
-                  {product.brand || product.model_number ? (
+                  {(product.isSupplierListing
+                    ? product.supplierName || product.brand || product.model_number
+                    : product.brand || product.model_number) ? (
                     <p className="mt-2 text-xs text-slate-500">
-                      {[product.brand, product.model_number]
+                      {(product.isSupplierListing
+                        ? [product.supplierName || product.brand, product.model_number]
+                        : [product.brand, product.model_number])
                         .filter(Boolean)
-                        .join(" Â· ")}
+                        .join(" \u00B7 ")}
                     </p>
                   ) : null}
                   <h3 className="mt-2 text-lg font-bold leading-6">
