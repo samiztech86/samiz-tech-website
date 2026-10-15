@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
@@ -1024,7 +1024,7 @@ export default function MarketplacePage() {
               <div className="flex items-start justify-between gap-4 text-sm">
                 <span className="text-slate-600">Unit price</span>
                 <span className="font-semibold text-slate-900">
-                  â‚¦{selectedCheckoutProduct.indicative_price?.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ₦{selectedCheckoutProduct.indicative_price?.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="mt-2 flex items-start justify-between gap-4 text-sm">
@@ -1034,7 +1034,7 @@ export default function MarketplacePage() {
               <div className="mt-3 flex items-start justify-between gap-4 border-t border-slate-200 pt-3">
                 <span className="font-semibold text-slate-900">Estimated subtotal</span>
                 <span className="text-lg font-bold text-slate-900">
-                  â‚¦{(selectedCheckoutProduct.indicative_price! * (Number.isSafeInteger(Number(checkoutQuantity)) && Number(checkoutQuantity) > 0 ? Number(checkoutQuantity) : 0)).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ₦{(selectedCheckoutProduct.indicative_price! * (Number.isSafeInteger(Number(checkoutQuantity)) && Number(checkoutQuantity) > 0 ? Number(checkoutQuantity) : 0)).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
               <p className="mt-2 text-xs leading-5 text-slate-500">
