@@ -70,6 +70,7 @@ export default function BuyerOrdersPage() {
   const [orders, setOrders] = useState<BuyerOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -161,6 +162,83 @@ export default function BuyerOrdersPage() {
       );
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleResumePayment(order: BuyerOrder) {
+    setError("");
+    setNotice("");
+    setPayingOrderId(order.id);
+
+    try {
+      const response = await fetch("/api/marketplace/checkout/resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: order.id }),
+      });
+
+      const payload = (await response.json()) as {
+        success?: boolean;
+        needsVerification?: boolean;
+        authorizationUrl?: string;
+        reference?: string;
+        error?: string;
+        message?: string;
+      };
+
+      if (!response.ok || !payload.success) {
+        throw new Error(
+          payload.error || "Unable to resume payment. Please try again.",
+        );
+      }
+
+      if (payload.needsVerification && payload.reference) {
+        const verifyResponse = await fetch(
+          "/api/marketplace/checkout/verify",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reference: payload.reference }),
+          },
+        );
+
+        const verifyPayload = (await verifyResponse.json()) as {
+          verified?: boolean;
+          paymentStatus?: string;
+          error?: string;
+          message?: string;
+        };
+
+        if (
+          !verifyResponse.ok ||
+          verifyPayload.verified !== true ||
+          verifyPayload.paymentStatus?.toLowerCase() !== "paid"
+        ) {
+          throw new Error(
+            verifyPayload.error ||
+              verifyPayload.message ||
+              "An existing transaction was found but payment is not yet confirmed. Refresh your orders before taking any further action.",
+          );
+        }
+
+        setNotice("Payment verified successfully. Your orders are refreshing.");
+        await loadOrders();
+        return;
+      }
+
+      if (!payload.authorizationUrl) {
+        throw new Error("Paystack did not return a checkout URL.");
+      }
+
+      window.location.assign(payload.authorizationUrl);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to resume payment. Please refresh and try again.",
+      );
+    } finally {
+      setPayingOrderId(null);
     }
   }
 
@@ -367,11 +445,27 @@ export default function BuyerOrdersPage() {
                       </div>
 
                       {!paid ? (
-                        <p className="mt-4 text-sm text-slate-600">
-                          Payment is not yet confirmed. Refresh to check for
-                          the latest status; avoid initiating another payment
-                          for an order already being processed.
-                        </p>
+                        <div className="mt-4 space-y-3">
+                          <p className="text-sm text-slate-600">
+                            Payment is not yet confirmed. If you previously
+                            started checkout, this action checks the existing
+                            payment reference before attempting to resume it.
+                          </p>
+
+                          {order.order_type === "fixed_price" &&
+                          paymentStatus === "pending" ? (
+                            <button
+                              type="button"
+                              onClick={() => void handleResumePayment(order)}
+                              disabled={payingOrderId !== null}
+                              className="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {payingOrderId === order.id
+                                ? "Checking payment..."
+                                : "Pay / Resume Payment"}
+                            </button>
+                          ) : null}
+                        </div>
                       ) : null}
                     </article>
                   );
@@ -458,3 +552,4 @@ export default function BuyerOrdersPage() {
     </main>
   );
 }
+

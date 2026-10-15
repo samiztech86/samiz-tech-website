@@ -268,7 +268,7 @@ export async function POST(request: NextRequest) {
       await supabaseServer
         .from("marketplace_supplier_profiles")
         .select(
-          "id, verification_status, payout_status, payout_subaccount_code",
+          "id, verification_status, payout_status, payout_subaccount_code, payout_subaccount_code_test",
         )
         .eq("id", product.supplier_id)
         .maybeSingle();
@@ -288,12 +288,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const subaccountCode =
+      secretKey.startsWith("sk_test_")
+        ? supplier.payout_subaccount_code_test
+        : secretKey.startsWith("sk_live_")
+          ? supplier.payout_subaccount_code
+          : null;
+
     if (
       supplier.payout_status !== "active" ||
-      typeof supplier.payout_subaccount_code !== "string" ||
-      !/^ACCT_[A-Za-z0-9]+$/.test(
-        supplier.payout_subaccount_code,
-      )
+      typeof subaccountCode !== "string" ||
+      !/^ACCT_[A-Za-z0-9]+$/.test(subaccountCode)
     ) {
       return respond(
         {
@@ -376,7 +381,7 @@ export async function POST(request: NextRequest) {
             currency: "NGN",
             reference,
             callback_url: callbackUrl,
-            subaccount: supplier.payout_subaccount_code,
+            subaccount: subaccountCode,
             metadata: {
               marketplace_order_id: order.id,
               product_id: product.id,
