@@ -1,4 +1,5 @@
 import Image from "next/image";
+import MarketplacePromoCarousel from "@/components/MarketplacePromoCarousel";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -698,6 +699,8 @@ export default function Home() {
         </div>
       </section>
 
+      <MarketplacePromoCarousel />
+
       {/* SERVICES */}
       <section id="services" className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10">
@@ -1023,30 +1026,3 @@ export default function Home() {
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
