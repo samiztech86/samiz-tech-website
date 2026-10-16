@@ -69,6 +69,7 @@ export default function SupplierDashboardPage() {
   const [payoutBankError, setPayoutBankError] = useState("");
   const [payoutError, setPayoutError] = useState("");
   const [payoutSuccess, setPayoutSuccess] = useState("");
+  const [payoutChangeMode, setPayoutChangeMode] = useState(false);
   const [productName, setProductName] = useState("");
   const [productCategory, setProductCategory] = useState("solar_backup_power");
   const [productDescription, setProductDescription] = useState("");
@@ -448,7 +449,7 @@ export default function SupplierDashboardPage() {
   useEffect(() => {
     if (
       payoutVerificationStatus !== "approved" ||
-      payoutStatus === "active" ||
+      (payoutStatus === "active" && !payoutChangeMode) ||
       payoutStatus === "pending"
     ) {
       return;
@@ -502,7 +503,7 @@ export default function SupplierDashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [payoutVerificationStatus, payoutStatus]);
+  }, [payoutVerificationStatus, payoutStatus, payoutChangeMode]);
 
   const handlePayoutSubmit = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -519,7 +520,10 @@ export default function SupplierDashboardPage() {
     setPayoutSubmitting(true);
 
     try {
-      const result = await fetch("/api/marketplace/supplier/payout", {
+      const payoutEndpoint = payoutChangeMode
+        ? "/api/marketplace/supplier/payout/change"
+        : "/api/marketplace/supplier/payout";
+      const result = await fetch(payoutEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -539,6 +543,8 @@ export default function SupplierDashboardPage() {
       }
 
       setPayoutAccountNumber("");
+      setPayoutBankCode("");
+      setPayoutChangeMode(false);
       setPayoutSuccess(
         typeof payload.message === "string"
           ? payload.message
@@ -663,7 +669,7 @@ export default function SupplierDashboardPage() {
                 <p className="mt-4 border-l-4 border-amber-400 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
                   Payout setup is available only to approved suppliers.
                 </p>
-              ) : data.profile.payout_status === "active" ? (
+              ) : data.profile.payout_status === "active" && !payoutChangeMode ? (
                 <div className="mt-5 border border-emerald-200 bg-emerald-50 p-4">
                   <p className="font-semibold text-emerald-900">
                     Payout account active
@@ -688,6 +694,20 @@ export default function SupplierDashboardPage() {
                       </dd>
                     </div>
                   </dl>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPayoutChangeMode(true);
+                      setPayoutBankCode("");
+                      setPayoutAccountNumber("");
+                      setPayoutError("");
+                      setPayoutBankError("");
+                      setPayoutSuccess("");
+                    }}
+                    className="mt-5 bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800"
+                  >
+                    Change payout account
+                  </button>
                 </div>
               ) : data.profile.payout_status === "pending" ? (
                 <p className="mt-4 border-l-4 border-amber-400 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
@@ -698,6 +718,15 @@ export default function SupplierDashboardPage() {
                 </p>
               ) : (
                 <form onSubmit={handlePayoutSubmit} className="mt-5 space-y-4">
+                  {payoutChangeMode ? (
+                    <p className="border-l-4 border-amber-400 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+                      You are changing the bank account linked to marketplace
+                      payouts. Payouts may be temporarily unavailable while the
+                      existing Paystack subaccount is updated and verified.
+                      If confirmation fails, do not submit another change;
+                      contact Samiz support.
+                    </p>
+                  ) : null}
                   <div>
                     <label htmlFor="payout-bank" className="mb-2 block text-sm font-medium">
                       Bank
@@ -773,8 +802,26 @@ export default function SupplierDashboardPage() {
                     }
                     className="bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {payoutSubmitting ? "Verifying account..." : "Verify and save payout account"}
+                    {payoutSubmitting ? "Verifying account..." : payoutChangeMode ? "Verify and update payout account" : "Verify and save payout account"}
                   </button>
+
+                  {payoutChangeMode ? (
+                    <button
+                      type="button"
+                      disabled={payoutSubmitting}
+                      onClick={() => {
+                        setPayoutChangeMode(false);
+                        setPayoutBankCode("");
+                        setPayoutAccountNumber("");
+                        setPayoutError("");
+                        setPayoutBankError("");
+                        setPayoutSuccess("");
+                      }}
+                      className="ml-3 border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Cancel
+                    </button>
+                  ) : null}
 
                   <p className="text-xs leading-5 text-slate-500">
                     Your account number is sent to the server for verification.
