@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
-import { sendMarketplaceSupplierQuoteNotification } from "@/lib/email/marketplace";
+import { sendMarketplaceSupplierQuoteNotification, sendMarketplaceEventNotifications } from "@/lib/email/marketplace";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -307,6 +307,48 @@ export async function POST(request: NextRequest) {
     } catch (notificationError) {
       console.error(
         "Quotation saved, but customer notification could not be sent.",
+        notificationError instanceof Error
+          ? notificationError.message
+          : "Unknown notification error.",
+      );
+    }
+
+// Notify the supplier and marketplace admin after the quotation is saved.
+// The existing buyer notification above remains unchanged.
+    try {
+      const notification = await sendMarketplaceEventNotifications({
+        recipientEmails: [authData.user.email],
+        subject: `Quotation submitted: ${product.name}`,
+        adminSubject: "Marketplace admin alert: supplier quotation submitted",
+        lines: [
+          "A supplier quotation has been saved in the Samiz Tech marketplace.",
+          "",
+          `Request ID: ${quoteRequest.id}`,
+          `Quotation ID: ${quote.id}`,
+          `Product: ${product.name}`,
+          `Supplier email: ${authData.user.email || "Not available"}`,
+          `Buyer: ${quoteRequest.customer_name}`,
+          `Buyer email: ${quoteRequest.customer_email}`,
+          `Quoted total: ${quote.currency.trim()} ${Number(quote.quote_amount).toLocaleString("en-NG", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`,
+          `Estimated lead time: ${quote.estimated_lead_time || "Not specified"}`,
+          `Quotation valid until: ${quote.quote_valid_until || "Not specified"}`,
+          "",
+          "The quotation is saved. Acceptance and payment status must be checked in the marketplace.",
+        ],
+      });
+
+      if (!notification.success) {
+        console.error(
+          "Quotation saved, but supplier/admin notification failed:",
+          notification.error,
+        );
+      }
+    } catch (notificationError) {
+      console.error(
+        "Quotation saved, but supplier/admin notification could not be sent.",
         notificationError instanceof Error
           ? notificationError.message
           : "Unknown notification error.",

@@ -1,9 +1,9 @@
-﻿import "server-only";
+import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
-import { sendMarketplaceQuoteRequestNotification } from "@/lib/email/marketplace";
+import { sendMarketplaceQuoteRequestNotification, sendMarketplaceEventNotifications } from "@/lib/email/marketplace";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -285,6 +285,45 @@ export async function POST(request: NextRequest) {
     } catch (notificationError) {
       console.error(
         "Quote request saved, but supplier notification could not be sent.",
+        notificationError instanceof Error
+          ? notificationError.message
+          : "Unknown notification error.",
+      );
+    }
+
+    // Send buyer confirmation and admin alert after the request is persisted.
+    // Notification failure must not cause the buyer to resubmit the request.
+    try {
+      const notification = await sendMarketplaceEventNotifications({
+        recipientEmails: [email],
+        subject: `Quote request submitted: ${product.name}`,
+        adminSubject: "Marketplace admin alert: new quote request",
+        lines: [
+          "A new marketplace quote request has been saved.",
+          "",
+          `Request ID: ${quoteRequest.id}`,
+          `Product: ${product.name}`,
+          `Buyer: ${customerName}`,
+          `Buyer email: ${email}`,
+          `Buyer phone: ${customerPhone}`,
+          `Organization: ${organizationName || "Not provided"}`,
+          `Quantity: ${quantity} ${quantityUnit || ""}`.trim(),
+          `Delivery location: ${deliveryLocation || "Not provided"}`,
+          `Buyer message: ${customerMessage || "Not provided"}`,
+          "",
+          "Review the request in the Samiz Tech marketplace dashboard.",
+        ],
+      });
+
+      if (!notification.success) {
+        console.error(
+          "Quote request saved, but buyer/admin notification failed:",
+          notification.error,
+        );
+      }
+    } catch (notificationError) {
+      console.error(
+        "Quote request saved, but buyer/admin notification could not be sent.",
         notificationError instanceof Error
           ? notificationError.message
           : "Unknown notification error.",

@@ -1,7 +1,8 @@
-﻿import "server-only";
+import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { sendMarketplaceEventNotifications } from "@/lib/email/marketplace";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -327,6 +328,82 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Notify only after this request successfully changes pending -> paid.
+    // Already-paid retries and concurrent updates return through earlier branches.
+    try {
+      const [
+        { data: product, error: productLookupError },
+        { data: supplierAuthData, error: supplierAuthError },
+      ] = await Promise.all([
+        supabaseServer
+          .from("marketplace_products")
+          .select("id, name")
+          .eq("id", order.product_id)
+          .maybeSingle(),
+        supabaseServer.auth.admin.getUserById(order.supplier_id),
+      ]);
+
+      if (productLookupError) {
+        console.error(
+          "Payment saved, but marketplace product lookup failed.",
+          productLookupError.message,
+        );
+      }
+
+      if (supplierAuthError) {
+        console.error(
+          "Payment saved, but supplier email lookup failed.",
+          supplierAuthError.message,
+        );
+      }
+
+      const productName = product?.name || "Marketplace product";
+      const supplierEmail = supplierAuthData.user?.email;
+      const amountKobo = Number(updatedOrder.subtotal_kobo);
+      const amount = Number.isFinite(amountKobo)
+        ? (amountKobo / 100).toLocaleString("en-NG", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        : "Amount unavailable";
+
+      const notification = await sendMarketplaceEventNotifications({
+        recipientEmails: [order.customer_email, supplierEmail],
+        subject: `Payment confirmed: ${productName}`,
+        adminSubject: "Marketplace admin alert: payment confirmed",
+        lines: [
+          "Paystack payment verification succeeded and the marketplace order is now marked paid.",
+          "",
+          `Order ID: ${updatedOrder.id}`,
+          `Product: ${productName}`,
+          `Buyer email: ${order.customer_email}`,
+          `Supplier ID: ${order.supplier_id}`,
+          `Supplier email: ${supplierEmail || "Not available"}`,
+          `Quantity: ${order.quantity}`,
+          `Payment reference: ${reference}`,
+          `Paystack transaction ID: ${transaction.id}`,
+          `Amount paid: ${updatedOrder.currency} ${amount}`,
+          `Payment status: ${updatedOrder.payment_status}`,
+          `Paid at: ${updatedOrder.paid_at || paidAt}`,
+          "",
+          "The payment is confirmed. The supplier should review the order in the Samiz Tech marketplace and proceed with fulfilment.",
+        ],
+      });
+
+      if (!notification.success) {
+        console.error(
+          "Payment saved, but payment notification delivery failed:",
+          notification.error,
+        );
+      }
+    } catch (notificationError) {
+      console.error(
+        "Payment saved, but payment notifications could not be processed.",
+        notificationError instanceof Error
+          ? notificationError.message
+          : "Unknown notification error.",
+      );
+    }
     return respond({
       success: true,
       verified: true,

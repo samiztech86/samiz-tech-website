@@ -143,7 +143,7 @@ export async function sendMarketplaceSupplierQuoteNotification(
     "Supplier terms and message:",
     details.supplierMessage,
     "",
-    "Please keep this quotation reference for your records. Payment and formal quotation acceptance must be completed through the marketplace once that functionality is available.",
+    "You can review this quotation and accept it through the Samiz Tech marketplace. If you accept, complete payment through the marketplace checkout. This email does not confirm that the quotation has been accepted or paid.",
   ];
 
   return sendMarketplaceEmail(
@@ -151,4 +151,59 @@ export async function sendMarketplaceSupplierQuoteNotification(
     `Supplier quotation received: ${details.productName}`,
     lines,
   );
+}
+
+// Reusable notification helper for persisted marketplace events.
+// Email delivery failures must not undo the associated database operation.
+export async function sendMarketplaceEventNotifications(details: {
+  recipientEmails: Array<string | null | undefined>;
+  subject: string;
+  adminSubject?: string;
+  lines: string[];
+}): Promise<MarketplaceEmailResult> {
+  const recipients = new Map<string, string>();
+
+  for (const email of details.recipientEmails) {
+    const normalized = email?.trim().toLowerCase();
+
+    if (normalized && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+      recipients.set(normalized, details.subject);
+    }
+  }
+
+  const adminEmail = process.env.MARKETPLACE_ADMIN_EMAIL?.trim().toLowerCase();
+
+  if (adminEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
+    recipients.set(adminEmail, details.adminSubject || details.subject);
+  } else {
+    console.error(
+      "Marketplace admin notification skipped: MARKETPLACE_ADMIN_EMAIL is not configured with a valid email address.",
+    );
+  }
+
+  if (recipients.size === 0) {
+    return {
+      success: false,
+      error: "No valid recipients are configured for this marketplace notification.",
+    };
+  }
+
+  const results = await Promise.all(
+    Array.from(recipients.entries()).map(([email, subject]) =>
+      sendMarketplaceEmail(email, subject, details.lines),
+    ),
+  );
+
+  const failures = results.filter(
+    (result): result is { success: false; error: string } => !result.success,
+  );
+
+  if (failures.length > 0) {
+    return {
+      success: false,
+      error: `${failures.length} marketplace notification email(s) failed.`,
+    };
+  }
+
+  return { success: true };
 }

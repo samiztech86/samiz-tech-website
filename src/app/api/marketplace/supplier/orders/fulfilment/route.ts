@@ -1,8 +1,9 @@
-﻿import "server-only";
+import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
+import { sendMarketplaceEventNotifications } from "@/lib/email/marketplace";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -146,6 +147,82 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Notify parties only after the fulfilment RPC succeeds.
+    // Notification failures must not undo a saved status change.
+    try {
+      const { data: order, error: orderLookupError } =
+        await supabaseServer
+          .from("marketplace_orders")
+          .select(
+            "id, buyer_id, product_id, supplier_id, product_name, quantity, currency, customer_email, fulfilment_status, fulfilment_updated_at, dispatched_at, delivered_at",
+          )
+          .eq("id", orderId)
+          .eq("supplier_id", user.id)
+          .maybeSingle();
+
+      if (orderLookupError || !order) {
+        console.error(
+          "Fulfilment updated, but notification order details could not be loaded.",
+          orderLookupError?.message || "Order not found.",
+        );
+      } else {
+        let buyerEmail = order.customer_email || null;
+
+        if (!buyerEmail && order.buyer_id) {
+          const { data: buyerAuthData, error: buyerAuthError } =
+            await supabaseServer.auth.admin.getUserById(order.buyer_id);
+
+          if (buyerAuthError) {
+            console.error(
+              "Fulfilment updated, but buyer email lookup failed.",
+              buyerAuthError.message,
+            );
+          }
+
+          buyerEmail = buyerAuthData.user?.email || null;
+        }
+
+        const statusLabel = status.replace(/_/g, " ");
+        const notification = await sendMarketplaceEventNotifications({
+          recipientEmails: [buyerEmail, user.email],
+          subject: `Order ${statusLabel}: ${order.product_name || "Marketplace order"}`,
+          adminSubject: `Marketplace admin alert: order ${statusLabel}`,
+          lines: [
+            "A marketplace order fulfilment status has been updated.",
+            "",
+            `Order ID: ${order.id}`,
+            `Product: ${order.product_name || "Marketplace product"}`,
+            `Quantity: ${order.quantity}`,
+            `Fulfilment status: ${statusLabel}`,
+            `Buyer email: ${buyerEmail || "Not available"}`,
+            `Supplier email: ${user.email || "Not available"}`,
+            `Supplier ID: ${order.supplier_id}`,
+            `Fulfilment updated at: ${order.fulfilment_updated_at || "Not available"}`,
+            `Dispatched at: ${order.dispatched_at || "Not applicable"}`,
+            `Delivered at: ${order.delivered_at || "Not applicable"}`,
+            `Supplier note: ${note || "None provided"}`,
+            "",
+            status === "issue_reported"
+              ? "An order issue has been reported. Please review the order and coordinate the next steps through the marketplace."
+              : "Please review the latest order status in the Samiz Tech marketplace.",
+          ],
+        });
+
+        if (!notification.success) {
+          console.error(
+            "Fulfilment updated, but notification delivery failed:",
+            notification.error,
+          );
+        }
+      }
+    } catch (notificationError) {
+      console.error(
+        "Fulfilment updated, but notifications could not be processed.",
+        notificationError instanceof Error
+          ? notificationError.message
+          : "Unknown notification error.",
+      );
+    }
     return respond({
       success: true,
       fulfilment: data,
