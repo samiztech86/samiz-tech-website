@@ -1,4 +1,23 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "How to Use the Marketplace | Samiz Tech",
+  description:
+    "Learn how to browse Samiz Tech Marketplace, buy products at listed prices, request supplier quotations, complete payments and track orders.",
+  alternates: {
+    canonical: "https://www.samiztech.com.ng/marketplace/how-it-works",
+  },
+  openGraph: {
+    type: "article",
+    url: "https://www.samiztech.com.ng/marketplace/how-it-works",
+    title: "How to Use the Marketplace | Samiz Tech",
+    description:
+      "Learn how to purchase electrical and solar products, request quotations and track marketplace orders.",
+    siteName: "Samiz Tech Engineering Ltd.",
+    locale: "en_NG",
+  },
+};
 
 const buyingMethods = [
   {
@@ -22,8 +41,8 @@ const buyingMethods = [
     steps: [
       "Open the relevant product or quotation request option.",
       "Provide the requested product, quantity and project details.",
-      "Submit your request and wait for the supplier&apos;s response.",
-      "Open My Quotes to review the supplier&apos;s quotation.",
+      "Submit your request and wait for the supplier's response.",
+      "Open My Quotes to review the supplier's quotation.",
       "If the quotation is suitable, accept it and follow the payment instructions provided.",
       "After payment, open My Orders to track the resulting order.",
     ],

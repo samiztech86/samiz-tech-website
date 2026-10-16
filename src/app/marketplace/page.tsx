@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
@@ -17,6 +18,7 @@ type Category = (typeof categories)[number];
 
 type Product = {
   id: string;
+  slug?: string;
   name: string;
   category: Exclude<Category, "All Products">;
   description: string;
@@ -121,6 +123,7 @@ const products: Product[] = [
 
 type SupplierApiProduct = {
   id: string;
+  slug: string;
   name: string;
   category: string;
   description: string;
@@ -163,6 +166,7 @@ function mapSupplierProduct(product: SupplierApiProduct): Product {
 
   return {
     id: `supplier-${product.id}`,
+    slug: product.slug,
     supplierProductId: product.id,
     name: product.name,
     category,
@@ -663,7 +667,16 @@ export default function MarketplacePage() {
                     </p>
                   ) : null}
                   <h3 className="mt-2 text-lg font-bold leading-6">
-                    {product.name}
+                    {product.isSupplierListing && product.slug ? (
+                      <Link
+                        href={`/marketplace/products/${encodeURIComponent(product.slug)}`}
+                        className="hover:text-blue-700 hover:underline"
+                      >
+                        {product.name}
+                      </Link>
+                    ) : (
+                      product.name
+                    )}
                   </h3>
                   <p className="mt-3 flex-1 text-sm leading-6 text-slate-600">
                     {product.description}
