@@ -94,6 +94,7 @@ export default function BuyerQuotesPage() {
   const [items, setItems] = useState<BuyerQuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [resetSubmitting, setResetSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [actionBusyId, setActionBusyId] = useState<string | null>(null);
@@ -191,6 +192,41 @@ export default function BuyerQuotesPage() {
     }
   }
 
+  async function handlePasswordReset() {
+    setError("");
+    setNotice("");
+
+    if (!email.trim()) {
+      setError("Enter your email address first, then select Forgot password.");
+      return;
+    }
+
+    setResetSubmitting(true);
+
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email.trim(),
+        {
+          redirectTo: `${window.location.origin}/marketplace/reset-password`,
+        },
+      );
+
+      if (resetError) throw resetError;
+
+      setNotice(
+        "If an account exists for that email, a password-reset link will be sent. Check your inbox and spam folder.",
+      );
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to request a password reset. Please try again.",
+      );
+    } finally {
+      setResetSubmitting(false);
+    }
+  }
   async function handleSignOut() {
     setError("");
     setNotice("");
@@ -675,6 +711,18 @@ export default function BuyerQuotesPage() {
                     a stronger password policy.
                   </p>
                 ) : null}
+              {!isSignUp ? (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => void handlePasswordReset()}
+                    disabled={resetSubmitting || submitting}
+                    className="text-sm font-semibold text-blue-800 underline disabled:opacity-60"
+                  >
+                    {resetSubmitting ? "Sending reset link..." : "Forgot password?"}
+                  </button>
+                </div>
+              ) : null}
               </div>
 
               <button
