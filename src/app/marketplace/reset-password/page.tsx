@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -34,25 +34,13 @@ export default function BuyerPasswordResetPage() {
         return;
       }
 
+      // createBrowserClient handles the PKCE code during initialization.
+      const { data, error: sessionError } = await supabase.auth.getSession();
+
       if (code) {
-        const { error: exchangeError } =
-          await supabase.auth.exchangeCodeForSession(code);
-
-        if (exchangeError) {
-          if (active) {
-            setError(
-              "This reset link is invalid or has expired. Request a new password-reset email.",
-            );
-          }
-          return;
-        }
-
-        // Remove the one-time code from the visible URL after exchanging it.
         url.searchParams.delete("code");
         window.history.replaceState({}, "", url.toString());
       }
-
-      const { data, error: sessionError } = await supabase.auth.getSession();
 
       if (!active) return;
 
