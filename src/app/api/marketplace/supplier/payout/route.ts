@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
@@ -43,6 +43,16 @@ export async function POST(request: NextRequest) {
     if (!secretKey) {
       console.error("Marketplace payout: Paystack is not configured.");
       return response({ error: "Payout service is not configured." }, 500);
+    }
+
+    if (!secretKey.startsWith("sk_live_")) {
+      return response(
+        {
+          error:
+            "Supplier payout setup requires the live Paystack configuration. No payout account was created.",
+        },
+        409,
+      );
     }
 
     let body: unknown;

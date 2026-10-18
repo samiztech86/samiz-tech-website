@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
       await supabaseServer
         .from("marketplace_supplier_profiles")
         .select(
-          "id, verification_status, payout_status, payout_subaccount_code",
+          "id, verification_status, payout_status, payout_subaccount_code, payout_subaccount_code_test",
         )
         .eq("id", quoteRequest.supplier_id)
         .maybeSingle();
@@ -241,11 +241,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (
-      supplier.payout_status !== "active" ||
-      typeof supplier.payout_subaccount_code !== "string" ||
-      !/^ACCT_[A-Za-z0-9]+$/.test(supplier.payout_subaccount_code)
-    ) {
+    if (supplier.payout_status !== "active") {
       return respond(
         {
           error:
@@ -277,6 +273,26 @@ export async function POST(request: NextRequest) {
       return respond(
         { error: "Marketplace checkout is not configured." },
         500,
+      );
+    }
+
+    const subaccountCode =
+      secretKey.startsWith("sk_test_")
+        ? supplier.payout_subaccount_code_test
+        : secretKey.startsWith("sk_live_")
+          ? supplier.payout_subaccount_code
+          : null;
+
+    if (
+      typeof subaccountCode !== "string" ||
+      !/^ACCT_[A-Za-z0-9]+$/.test(subaccountCode)
+    ) {
+      return respond(
+        {
+          error:
+            "This supplier has not completed payout setup for the configured payment environment.",
+        },
+        409,
       );
     }
 
@@ -500,7 +516,7 @@ export async function POST(request: NextRequest) {
             currency: "NGN",
             reference,
             callback_url: callbackUrl,
-            subaccount: supplier.payout_subaccount_code,
+            subaccount: subaccountCode,
             metadata: {
               marketplace_order_id: orderId,
               quote_request_id: requestId,
@@ -550,7 +566,18 @@ export async function POST(request: NextRequest) {
         console.error("Quote payment: gateway rejection update failed.");
       }
 
-      console.error("Quote payment: Paystack rejected initialization.");
+      const gatewayMessage =
+        typeof gatewayResult.message === "string"
+          ? gatewayResult.message.slice(0, 300)
+          : "No gateway message returned";
+
+      console.error(
+        "Quote payment: Paystack rejected initialization.",
+        {
+          httpStatus: gatewayResponse.status,
+          gatewayMessage,
+        },
+      );
 
       return respond(
         {
