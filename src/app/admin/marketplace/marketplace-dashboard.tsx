@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -86,7 +86,28 @@ type QueueResponse = {
   error?: string;
 };
 
-type QueueTab = "suppliers" | "products" | "orders";
+type QueueTab = "suppliers" | "products" | "orders" | "agreements";
+type SupplierAgreementRecord = {
+  id: string;
+  supplier_id: string;
+  agreement_version: string;
+  agreement_sha256: string;
+  signatory_name: string;
+  acceptance_method: string;
+  acceptance_statement: string;
+  accepted_at: string;
+  supplier: {
+    id: string;
+    business_name: string;
+    contact_name: string;
+    contact_email: string;
+  } | null;
+};
+
+type SupplierAgreementResponse = {
+  records?: SupplierAgreementRecord[];
+  error?: string;
+};
 
 const supplierStatuses = [
   "all",
@@ -139,6 +160,9 @@ export default function MarketplaceDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<MarketplaceOrder[]>([]);
   const [auditEvents, setAuditEvents] = useState<MarketplaceAuditEvent[]>([]);
+  const [agreementRecords, setAgreementRecords] = useState<SupplierAgreementRecord[]>([]);
+  const [agreementLoading, setAgreementLoading] = useState(false);
+  const [agreementError, setAgreementError] = useState("");
   const [supplierFilter, setSupplierFilter] = useState("pending");
   const [productFilter, setProductFilter] = useState("draft");
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
@@ -187,6 +211,40 @@ export default function MarketplaceDashboard() {
     }
   }, []);
 
+  const loadAgreementRecords = useCallback(async (refresh = false) => {
+    if (refresh) {
+      setRefreshing(true);
+    } else {
+      setAgreementLoading(true);
+    }
+
+    setAgreementError("");
+
+    try {
+      const response = await fetch("/api/admin/marketplace/supplier-agreements", {
+        method: "GET",
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+
+      const data = (await response.json()) as SupplierAgreementResponse;
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to load supplier agreement records.");
+      }
+
+      setAgreementRecords(data.records ?? []);
+    } catch (err) {
+      setAgreementError(
+        err instanceof Error
+          ? err.message
+          : "Unable to load supplier agreement records.",
+      );
+    } finally {
+      setAgreementLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       void loadQueues();
@@ -195,6 +253,15 @@ export default function MarketplaceDashboard() {
     return () => window.clearTimeout(timer);
   }, [loadQueues]);
 
+  useEffect(() => {
+    if (tab !== "agreements") return;
+
+    const timer = window.setTimeout(() => {
+      void loadAgreementRecords();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [tab, loadAgreementRecords]);
   async function moderate(
     entity: "supplier" | "product",
     id: string,
@@ -319,11 +386,17 @@ export default function MarketplaceDashboard() {
           </a>
           <button
             type="button"
-            onClick={() => void loadQueues(true)}
+            onClick={() => {
+              if (tab === "agreements") {
+                void loadAgreementRecords(true);
+              } else {
+                void loadQueues(true);
+              }
+            }}
             disabled={loading || refreshing}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold hover:bg-blue-500 disabled:opacity-60"
           >
-            {refreshing ? "Refreshing..." : "Refresh queues"}
+            {refreshing ? "Refreshing..." : tab === "agreements" ? "Refresh agreements" : "Refresh queues"}
           </button>
         </div>
       </header>
@@ -385,6 +458,18 @@ export default function MarketplaceDashboard() {
           }`}
         >
           Marketplace orders ({orders.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("agreements")}
+          aria-pressed={tab === "agreements"}
+          className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+            tab === "agreements"
+              ? "bg-blue-600 text-white"
+              : "bg-slate-800 text-slate-200 hover:bg-slate-700"
+          }`}
+        >
+          Supplier Agreements ({agreementRecords.length})
         </button>
       </div>
 
@@ -611,7 +696,7 @@ export default function MarketplaceDashboard() {
             </div>
           )}
         </section>
-      ) : (
+      ) : tab === "orders" ? (
         <section className="mt-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-bold">Marketplace orders</h2>
@@ -804,6 +889,83 @@ export default function MarketplaceDashboard() {
                   </article>
                 );
               })}
+            </div>
+          )}
+        </section>
+      ) : (
+        <section className="mt-6">
+          <div className="mb-5">
+            <h2 className="text-xl font-bold">Supplier Agreement Acceptance</h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Review recorded supplier agreement acceptances, signatories, timestamps, and agreement hashes.
+            </p>
+          </div>
+          {agreementLoading ? (
+            <p className="rounded-xl border border-slate-700 p-6 text-slate-300">
+              Loading supplier agreement records...
+            </p>
+          ) : agreementError ? (
+            <div role="alert" className="rounded-xl border border-red-800 bg-red-950 p-6 text-red-200">
+              {agreementError}
+            </div>
+          ) : agreementRecords.length === 0 ? (
+            <p className="rounded-xl border border-slate-700 p-6 text-slate-300">
+              No supplier agreement acceptance records found.
+            </p>
+          ) : (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {agreementRecords.map((record) => (
+                <article key={record.id} className="rounded-xl border border-slate-700 bg-slate-900 p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        {record.supplier?.business_name || "Supplier profile unavailable"}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-300">
+                        {record.supplier?.contact_name || "Contact name unavailable"}
+                      </p>
+                      <p className="mt-1 break-all text-sm text-slate-400">
+                        {record.supplier?.contact_email || "Contact email unavailable"}
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-emerald-700 bg-emerald-950 px-3 py-1 text-xs font-semibold text-emerald-200">
+                      Agreement accepted
+                    </span>
+                  </div>
+                  <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
+                    <div>
+                      <dt className="text-slate-400">Signatory</dt>
+                      <dd className="mt-1 font-medium">{record.signatory_name}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-slate-400">Accepted at</dt>
+                      <dd className="mt-1">{formatDate(record.accepted_at)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-slate-400">Agreement version</dt>
+                      <dd className="mt-1">{record.agreement_version}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-slate-400">Acceptance method</dt>
+                      <dd className="mt-1">{humanize(record.acceptance_method)}</dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="text-slate-400">Supplier ID</dt>
+                      <dd className="mt-1 break-all">{record.supplier_id}</dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="text-slate-400">Agreement SHA-256</dt>
+                      <dd className="mt-1 break-all font-mono text-xs">{record.agreement_sha256}</dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="text-slate-400">Recorded acceptance statement</dt>
+                      <dd className="mt-2 whitespace-pre-wrap break-words rounded-lg border border-slate-700 bg-slate-800/50 p-3 text-slate-200">
+                        {record.acceptance_statement}
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
             </div>
           )}
         </section>

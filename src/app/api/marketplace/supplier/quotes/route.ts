@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
+import { requireCurrentSupplierAgreementAcceptance } from "@/lib/marketplace/supplier-agreement";
 import { sendMarketplaceSupplierQuoteNotification, sendMarketplaceEventNotifications } from "@/lib/email/marketplace";
 
 export const runtime = "nodejs";
@@ -143,6 +144,23 @@ export async function POST(request: NextRequest) {
       return respond(
         { error: "Only approved suppliers can submit quotations." },
         403,
+      );
+    }
+
+
+    const agreementGuard = await requireCurrentSupplierAgreementAcceptance(
+      authData.user.id,
+    );
+    if (!agreementGuard.ok) {
+      return respond(
+        {
+          error: agreementGuard.error,
+          code: agreementGuard.code,
+          agreementRequired:
+            agreementGuard.code === "SUPPLIER_AGREEMENT_ACCEPTANCE_REQUIRED" ||
+            agreementGuard.code === "SUPPLIER_AGREEMENT_VERSION_MISMATCH",
+        },
+        agreementGuard.status,
       );
     }
 

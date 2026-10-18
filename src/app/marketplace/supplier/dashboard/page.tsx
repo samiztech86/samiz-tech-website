@@ -57,10 +57,38 @@ type DashboardData = {
   message?: string | null;
 };
 
+type SupplierAgreementData = {
+  agreement_version: string;
+  title: string;
+  agreement_body: string;
+  content_sha256: string;
+  effective_at: string;
+};
+
+type SupplierAgreementPayload = {
+  agreement?: SupplierAgreementData;
+  acceptance_statement?: string;
+  accepted?: boolean;
+  acceptance?: {
+    accepted_at: string;
+    signatory_name: string;
+  } | null;
+  error?: string;
+  success?: boolean;
+  alreadyAccepted?: boolean;
+  agreementVersion?: string;
+  acceptedAt?: string;
+};
 export default function SupplierDashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [agreementData, setAgreementData] = useState<SupplierAgreementPayload | null>(null);
+  const [agreementLoading, setAgreementLoading] = useState(false);
+  const [agreementError, setAgreementError] = useState("");
+  const [agreementSubmitting, setAgreementSubmitting] = useState(false);
+  const [agreementSignatoryName, setAgreementSignatoryName] = useState("");
+  const [agreementChecked, setAgreementChecked] = useState(false);
   const [payoutBanks, setPayoutBanks] = useState<Array<{ name: string; code: string }>>([]);
   const [payoutBankCode, setPayoutBankCode] = useState("");
   const [payoutAccountNumber, setPayoutAccountNumber] = useState("");
@@ -408,6 +436,92 @@ export default function SupplierDashboardPage() {
       setFulfilmentSubmittingId(null);
     }
   };
+  const loadSupplierAgreement = useCallback(async () => {
+    setAgreementLoading(true);
+    setAgreementError("");
+
+    try {
+      const response = await fetch("/api/marketplace/supplier/agreement", {
+        method: "GET",
+        cache: "no-store",
+      });
+      const payload = (await response.json()) as SupplierAgreementPayload;
+
+      if (!response.ok || !payload.agreement) {
+        setAgreementData(null);
+        setAgreementError(
+          typeof payload.error === "string"
+            ? payload.error
+            : "Unable to load the current Supplier Agreement.",
+        );
+        return;
+      }
+
+      setAgreementData(payload);
+      if (payload.accepted && payload.acceptance?.signatory_name) {
+        setAgreementSignatoryName(payload.acceptance.signatory_name);
+      }
+    } catch {
+      setAgreementData(null);
+      setAgreementError("A network error occurred while loading the agreement.");
+    } finally {
+      setAgreementLoading(false);
+    }
+  }, []);
+
+  const submitAgreementAcceptance = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    setAgreementError("");
+
+    const agreement = agreementData?.agreement;
+    const statement = agreementData?.acceptance_statement;
+
+    if (!agreement || !statement || agreementData?.accepted) {
+      setAgreementError("Reload the current agreement before continuing.");
+      return;
+    }
+
+    if (!agreementChecked) {
+      setAgreementError("Confirm that you have read and agree to the Supplier Agreement.");
+      return;
+    }
+
+    setAgreementSubmitting(true);
+
+    try {
+      const response = await fetch("/api/marketplace/supplier/agreement", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accepted: true,
+          signatoryName: agreementSignatoryName.trim(),
+          acceptanceStatement: statement,
+          agreementVersion: agreement.agreement_version,
+          agreementSha256: agreement.content_sha256,
+        }),
+      });
+
+      const payload = (await response.json()) as SupplierAgreementPayload;
+
+      if (!response.ok) {
+        setAgreementError(
+          typeof payload.error === "string"
+            ? payload.error
+            : "Unable to record your agreement acceptance.",
+        );
+        return;
+      }
+
+      await loadSupplierAgreement();
+    } catch {
+      setAgreementError("A network error occurred. Please try again.");
+    } finally {
+      setAgreementSubmitting(false);
+    }
+  };
   const loadDashboard = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -431,13 +545,14 @@ export default function SupplierDashboardPage() {
       }
 
       setData(payload as DashboardData);
+      void loadSupplierAgreement();
     } catch {
       setError("A network error occurred. Please try again.");
       setData(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadSupplierAgreement]);
 
   useEffect(() => {
     void loadDashboard();
@@ -657,7 +772,108 @@ export default function SupplierDashboardPage() {
               </div>
             </section>
 
-            <section className="mt-8 border border-slate-200 bg-white p-6">
+                        <section className="mt-8 border border-slate-200 bg-white p-6">
+              <h2 className="text-xl font-bold">Supplier Agreement</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Review and accept the current agreement for this supplier account.
+                Product submission and quotation access will require acceptance.
+              </p>
+
+              {agreementLoading ? (
+                <p className="mt-4 text-sm text-slate-600" role="status">
+                  Loading the current Supplier Agreement...
+                </p>
+              ) : agreementError && !agreementData?.agreement ? (
+                <div className="mt-4">
+                  <p className="text-sm text-red-700" role="alert">{agreementError}</p>
+                  <button
+                    type="button"
+                    onClick={() => void loadSupplierAgreement()}
+                    className="mt-3 border border-slate-300 px-4 py-2 text-sm font-semibold"
+                  >
+                    Reload agreement
+                  </button>
+                </div>
+              ) : agreementData?.agreement ? (
+                <>
+                  <div className="mt-4 border border-slate-200 bg-slate-50 p-4">
+                    <h3 className="font-semibold">{agreementData.agreement.title}</h3>
+                    <p className="mt-1 text-xs text-slate-600">
+                      Version {agreementData.agreement.agreement_version}
+                      {" · Effective "}
+                      {new Date(agreementData.agreement.effective_at).toLocaleString()}
+                    </p>
+                    <div className="mt-4 max-h-96 overflow-y-auto whitespace-pre-wrap text-sm leading-6 text-slate-800">
+                      {agreementData.agreement.agreement_body}
+                    </div>
+                  </div>
+
+                  {agreementData.accepted ? (
+                    <div className="mt-4 border border-emerald-200 bg-emerald-50 p-4">
+                      <p className="font-semibold text-emerald-900">
+                        Agreement accepted
+                      </p>
+                      <p className="mt-1 text-sm text-emerald-900">
+                        Accepted by {agreementData.acceptance?.signatory_name}
+                        {agreementData.acceptance?.accepted_at
+                          ? ` on ${new Date(agreementData.acceptance.accepted_at).toLocaleString()}`
+                          : ""}
+                      </p>
+                    </div>
+                  ) : (
+                    <form onSubmit={submitAgreementAcceptance} className="mt-5 space-y-4">
+                      <div>
+                        <label htmlFor="agreement-signatory-name" className="block text-sm font-semibold">
+                          Authorised signatory&apos;s full name
+                        </label>
+                        <input
+                          id="agreement-signatory-name"
+                          name="signatoryName"
+                          type="text"
+                          minLength={2}
+                          maxLength={120}
+                          required
+                          autoComplete="name"
+                          value={agreementSignatoryName}
+                          onChange={(event) => setAgreementSignatoryName(event.target.value)}
+                          className="mt-2 w-full border border-slate-300 px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <label className="flex items-start gap-3 text-sm leading-6">
+                        <input
+                          type="checkbox"
+                          checked={agreementChecked}
+                          onChange={(event) => setAgreementChecked(event.target.checked)}
+                          required
+                          className="mt-1"
+                        />
+                        <span>{agreementData.acceptance_statement}</span>
+                      </label>
+
+                      {agreementError ? (
+                        <p className="text-sm text-red-700" role="alert">
+                          {agreementError}
+                        </p>
+                      ) : null}
+
+                      <button
+                        type="submit"
+                        disabled={agreementSubmitting || agreementLoading || !agreementChecked}
+                        className="bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {agreementSubmitting ? "Recording acceptance..." : "I Agree and Accept"}
+                      </button>
+                    </form>
+                  )}
+                </>
+              ) : (
+                <p className="mt-4 text-sm text-slate-600">
+                  The agreement has not loaded yet.
+                </p>
+              )}
+            </section>
+<section className="mt-8 border border-slate-200 bg-white p-6">
               <h2 className="text-xl font-bold">Supplier payout account</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Configure the Nigerian bank account where marketplace proceeds
@@ -1607,4 +1823,3 @@ export default function SupplierDashboardPage() {
     </main>
   );
 }
-
