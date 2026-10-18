@@ -7,65 +7,99 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export default function BuyerPasswordResetPage() {
   const router = useRouter();
+  const [tokenHash, setTokenHash] = useState("");
+  const [ready, setReady] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [ready, setReady] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    let active = true;
-
-    async function prepareRecoverySession() {
-      const supabase = createSupabaseBrowserClient();
+    const timer = window.setTimeout(() => {
       const url = new URL(window.location.href);
-      const code = url.searchParams.get("code");
+      const hashParams = new URLSearchParams(url.hash.replace(/^#/, ""));
       const authError =
         url.searchParams.get("error_description") ||
-        url.searchParams.get("error");
+        url.searchParams.get("error") ||
+        hashParams.get("error_description") ||
+        hashParams.get("error");
 
       if (authError) {
-        if (active) {
-          setError(
-            "This reset link could not be validated. Request a new password-reset email and use its latest link.",
-          );
-        }
-        return;
-      }
-
-      // createBrowserClient handles the PKCE code during initialization.
-      const { data, error: sessionError } = await supabase.auth.getSession();
-
-      if (code) {
-        url.searchParams.delete("code");
-        window.history.replaceState({}, "", url.toString());
-      }
-
-      if (!active) return;
-
-      if (sessionError || !data.session) {
         setError(
-          "A valid password-reset session was not found. Request a new reset email and open its link on this device.",
+          "This reset link could not be validated. Request a new password-reset email.",
         );
         return;
       }
 
-      setReady(true);
-    }
+      const suppliedToken = url.searchParams.get("token_hash");
+      const type = url.searchParams.get("type");
 
-    void prepareRecoverySession().catch(() => {
-      if (active) {
+      if (!suppliedToken || type !== "recovery") {
         setError(
-          "Unable to validate this reset link. Request a new password-reset email.",
+          "The reset link is missing or invalid. Request a new password-reset email and open its latest link.",
         );
+        return;
       }
-    });
 
-    return () => {
-      active = false;
-    };
+      setTokenHash(suppliedToken);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
+
+  async function handleVerify() {
+    if (!tokenHash || verifying) return;
+
+    setError("");
+    setNotice("");
+    setVerifying(true);
+
+    try {
+      const response = await fetch(
+        "/api/marketplace/buyer/password-reset/verify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token_hash: tokenHash }),
+        },
+      );
+
+      const result = (await response.json()) as {
+        verified?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok || !result.verified) {
+        throw new Error(
+          result.error ||
+            "This reset link is invalid or expired. Request a new password-reset email.",
+        );
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("token_hash");
+      url.searchParams.delete("type");
+      url.searchParams.delete("error");
+      url.searchParams.delete("error_code");
+      url.searchParams.delete("error_description");
+      url.hash = "";
+      window.history.replaceState({}, "", url.toString());
+
+      setTokenHash("");
+      setReady(true);
+      setNotice("Reset link verified. You can now choose a new password.");
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to verify this reset link. Request a new reset email if necessary.",
+      );
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,10 +120,9 @@ export default function BuyerPasswordResetPage() {
 
     try {
       const supabase = createSupabaseBrowserClient();
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
+      const { data, error: sessionError } = await supabase.auth.getSession();
 
-      if (sessionError || !sessionData.session) {
+      if (sessionError || !data.session) {
         throw new Error(
           "Your reset session has expired. Request a new password-reset email.",
         );
@@ -101,11 +134,12 @@ export default function BuyerPasswordResetPage() {
 
       if (updateError) throw updateError;
 
-      setNotice("Your password has been updated. You can now sign in.");
       setPassword("");
       setConfirmPassword("");
+      setNotice("Your password has been updated. You can now sign in.");
 
       await supabase.auth.signOut();
+
       window.setTimeout(() => {
         router.replace("/marketplace/my-quotes");
       }, 1200);
@@ -136,7 +170,8 @@ export default function BuyerPasswordResetPage() {
           </p>
           <h1 className="mt-2 text-2xl font-bold">Reset your password</h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Enter a new password for your buyer account.
+            Verify your reset link, then enter a new password for your buyer
+            account.
           </p>
 
           {error ? (
@@ -157,7 +192,24 @@ export default function BuyerPasswordResetPage() {
             </div>
           ) : null}
 
-          {ready ? (
+          {!ready ? (
+            tokenHash ? (
+              <button
+                type="button"
+                onClick={handleVerify}
+                disabled={verifying}
+                className="mt-6 w-full rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {verifying ? "Verifying reset link..." : "Verify reset link"}
+              </button>
+            ) : (
+              <p className="mt-6 text-sm text-slate-600" role="status">
+                {error
+                  ? "Return to sign in and request a fresh reset email."
+                  : "Preparing your reset link..."}
+              </p>
+            )
+          ) : (
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
                 <label
@@ -205,12 +257,6 @@ export default function BuyerPasswordResetPage() {
                 {submitting ? "Updating password..." : "Update password"}
               </button>
             </form>
-          ) : (
-            <p className="mt-6 text-sm text-slate-600" role="status">
-              {error
-                ? "Use the link below to return and request another reset email."
-                : "Validating your password-reset link..."}
-            </p>
           )}
 
           <p className="mt-5 text-sm text-slate-600">
