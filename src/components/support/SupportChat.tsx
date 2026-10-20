@@ -200,7 +200,7 @@ const [name, setName] = useState("");
   }
 
   const panelClass = compact
-    ? "fixed bottom-3 right-3 z-50 flex max-h-[calc(100dvh-1.5rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:bottom-5 sm:right-5 sm:max-h-[calc(100dvh-2.5rem)]"
+    ? "fixed bottom-3 left-3 z-[110] flex max-h-[calc(100dvh-1.5rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:bottom-5 sm:left-5 sm:max-h-[calc(100dvh-2.5rem)]"
     : "mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm";
 
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
