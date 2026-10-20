@@ -171,10 +171,7 @@ function mapSupplierProduct(product: SupplierApiProduct): Product {
     name: product.name,
     category,
     description: product.description,
-    image:
-      product.image_urls?.find((url) => typeof url === "string" && url.trim()) ??
-      products.find((item) => item.category === category)?.image ??
-      products[0].image,
+    image: product.image_urls?.find((url) => typeof url === "string" && url.trim()) ?? "",
     imageAlt: product.name,
     priceLabel,
     price_type: product.price_type,
@@ -636,14 +633,20 @@ export default function MarketplacePage() {
                 className="flex h-full flex-col overflow-hidden border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="relative aspect-[4/3] bg-slate-100">
-                  <Image
-                    src={product.image}
-                    alt={product.imageAlt}
-                    fill
-                    unoptimized={product.isSupplierListing === true}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-contain p-4"
-                  />
+                  {product.isSupplierListing && !product.image ? (
+                    <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-slate-500">
+                      Product image unavailable
+                    </div>
+                  ) : (
+                    <Image
+                      src={product.image}
+                      alt={product.imageAlt}
+                      fill
+                      unoptimized={product.isSupplierListing === true}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-contain p-4"
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-1 flex-col p-5">

@@ -16,6 +16,9 @@ type DashboardData = {
     id: string;
     name: string;
     category: string;
+    description: string;
+    brand: string | null;
+    model_number: string | null;
     price_type: string;
     product_status: string;
     is_available: boolean;
@@ -114,6 +117,8 @@ export default function SupplierDashboardPage() {
   const [managementErrors, setManagementErrors] = useState<Record<string, string>>({});
   const [managementMessages, setManagementMessages] = useState<Record<string, string>>({});
   const [productImages, setProductImages] = useState<File[]>([]);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [existingProductImages, setExistingProductImages] = useState<string[]>([]);
   const [quoteSubmittingId, setQuoteSubmittingId] = useState<string | null>(null);
   const [quoteErrors, setQuoteErrors] = useState<Record<string, string>>({});
   const [quoteMessages, setQuoteMessages] = useState<Record<string, string>>({});
@@ -130,6 +135,39 @@ export default function SupplierDashboardPage() {
     [productImages],
   );
 
+  const resetProductForm = () => {
+    setEditingProductId(null);
+    setExistingProductImages([]);
+    setProductName("");
+    setProductCategory("solar_backup_power");
+    setProductDescription("");
+    setProductBrand("");
+    setProductModel("");
+    setProductPriceType("quote_only");
+    setProductPrice("");
+    setProductImages([]);
+    setProductError("");
+    setProductSuccess("");
+  };
+
+  const startEditingProduct = (product: DashboardData["products"][number]) => {
+    setEditingProductId(product.id);
+    setExistingProductImages(product.image_urls ?? []);
+    setProductName(product.name);
+    setProductCategory(product.category);
+    setProductDescription(product.description ?? "");
+    setProductBrand(product.brand ?? "");
+    setProductModel(product.model_number ?? "");
+    setProductPriceType(product.price_type);
+    setProductPrice(
+      product.indicative_price === null ? "" : String(product.indicative_price),
+    );
+    setProductImages([]);
+    setProductError("");
+    setProductSuccess("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const submitProductListing = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -140,6 +178,9 @@ export default function SupplierDashboardPage() {
 
     try {
       const formData = new FormData();
+      if (editingProductId) {
+        formData.append("productId", editingProductId);
+      }
       formData.append("name", productName);
       formData.append("category", productCategory);
       formData.append("description", productDescription);
@@ -154,7 +195,11 @@ export default function SupplierDashboardPage() {
         formData.append("images", file);
       }
 
-      const response = await fetch("/api/marketplace/supplier/products", {
+      const endpoint = editingProductId
+        ? "/api/marketplace/supplier/products/edit"
+        : "/api/marketplace/supplier/products";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         cache: "no-store",
         body: formData,
@@ -171,14 +216,7 @@ export default function SupplierDashboardPage() {
         return;
       }
 
-      setProductName("");
-      setProductCategory("solar_backup_power");
-      setProductDescription("");
-      setProductBrand("");
-      setProductModel("");
-      setProductPriceType("quote_only");
-      setProductPrice("");
-      setProductImages([]);
+      resetProductForm();
       setProductSuccess(
         typeof payload.message === "string"
           ? payload.message
@@ -1048,7 +1086,7 @@ export default function SupplierDashboardPage() {
             </section>
 
             <section className="mt-8 border border-slate-200 bg-white p-6">
-              <h2 className="text-xl font-bold">Add a product listing</h2>
+              <h2 className="text-xl font-bold">{editingProductId ? "Edit product listing" : "Add a product listing"}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Create a product draft for review. Drafts are not publicly
                 visible until the marketplace approval process is completed.
@@ -1190,7 +1228,29 @@ export default function SupplierDashboardPage() {
                     <p className="mb-2 text-sm text-slate-600">
                       JPEG, PNG or WebP. Maximum 5 MB per image.
                     </p>
+                    {existingProductImages.length > 0 ? (
+                      <div className="mb-4">
+                        <p className="mb-2 text-sm font-semibold text-slate-700">
+                          Current product images
+                        </p>
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+                          {existingProductImages.map((url, index) => (
+                            <div key={`${url}-${index}`} className="border border-slate-200 p-2">
+                              <img
+                                src={url}
+                                alt={`Current product image ${index + 1}`}
+                                className="h-28 w-full object-contain"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <p className="mt-2 text-xs text-slate-600">
+                          Leave the upload field empty to keep these images. Upload new images to replace the current set.
+                        </p>
+                      </div>
+                    ) : null}
                     <input
+                      key={editingProductId ?? "new-product"}
                       id="product-images"
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -1271,8 +1331,22 @@ export default function SupplierDashboardPage() {
                       disabled={productSubmitting}
                       className="bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {productSubmitting ? "Saving product..." : "Save product draft"}
+                      {productSubmitting
+                        ? "Saving product..."
+                        : editingProductId
+                          ? "Save changes"
+                          : "Save product draft"}
                     </button>
+                    {editingProductId ? (
+                      <button
+                        type="button"
+                        disabled={productSubmitting}
+                        onClick={resetProductForm}
+                        className="ml-3 border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        Cancel editing
+                      </button>
+                    ) : null}
                   </div>
                 </form>
               )}
@@ -1303,6 +1377,16 @@ export default function SupplierDashboardPage() {
                       <p className="mt-2 text-sm text-slate-600">
                         {product.category}
                       </p>
+                      {data.profile?.verification_status === "approved" &&
+                      ["draft", "approved", "rejected"].includes(product.product_status) ? (
+                        <button
+                          type="button"
+                          onClick={() => startEditingProduct(product)}
+                          className="mt-3 w-full border border-blue-700 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                        >
+                          Edit listing
+                        </button>
+                      ) : null}
                       <p className="mt-3 text-sm">
                         Status:{" "}
                         <span className="font-semibold capitalize">
