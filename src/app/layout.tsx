@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import SupportChat from "@/components/support/SupportChat";
 import StructuredData from "@/components/StructuredData";
 import { SubscriptionProvider } from "@/lib/subscription/provider";
 
@@ -112,11 +113,9 @@ export default function RootLayout({
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />
+          <SupportChat compact />
         </SubscriptionProvider>
       </body>
     </html>
   );
 }
-
-
-

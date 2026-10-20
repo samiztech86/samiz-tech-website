@@ -121,7 +121,7 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    void loadOrders();
+    void Promise.resolve().then(() => loadOrders());
   }, [loadOrders]);
 
   async function updateStatus(
@@ -207,15 +207,15 @@ export default function AdminDashboard() {
     <main className="mx-auto min-h-screen w-full max-w-6xl bg-slate-950 px-5 py-10 text-white">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
+          <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">
             Samiz Tech Engineering Ltd
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold text-slate-900">
+          <h1 className="mt-2 text-3xl font-bold text-white">
             Engineering assessment orders
           </h1>
 
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-blue-100">
             Review paid remote energy assessments and update their delivery
             status.
           </p>
@@ -223,8 +223,14 @@ export default function AdminDashboard() {
 
         <div className="flex flex-wrap items-center gap-3">
           <a
+            href="/admin/support"
+            className="rounded-lg border border-blue-300 bg-blue-950/40 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-900"
+          >
+            Support Inbox
+          </a>
+          <a
             href="/admin/marketplace"
-            className="rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800 hover:border-blue-500"
+            className="rounded-lg border border-blue-300 bg-blue-950/40 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-900"
           >
             Marketplace Moderation
           </a>
@@ -232,7 +238,7 @@ export default function AdminDashboard() {
             type="button"
             onClick={() => void loadOrders(true)}
             disabled={refreshing || loading}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-blue-300 bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {refreshing ? "Refreshing..." : "Refresh"}
           </button>
@@ -305,7 +311,7 @@ export default function AdminDashboard() {
           <p className="text-base font-semibold text-slate-800">
             No engineering orders yet
           </p>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-blue-100">
             Paid remote assessments will appear here once they are submitted.
           </p>
         </div>
