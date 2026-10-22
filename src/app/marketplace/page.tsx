@@ -227,7 +227,7 @@ function buildEnquiryUrl(
 
   const message = [
     greeting,
-    "I found this product on the Samiz Engineering Marketplace.",
+    "I found this product on the Samiz Tech Marketplace.",
     "",
     `Product: ${productName}`,
     "Quantity: To be confirmed",
@@ -484,7 +484,7 @@ export default function MarketplacePage() {
           </p>
 
           <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Samiz Engineering Marketplace
+            Samiz Tech Marketplace
           </h1>
 
           <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:text-lg">

@@ -608,12 +608,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
 
-      <div className="fixed bottom-6 right-6 z-[100]">
-        <WhatsAppButton
-          label="Chat with us"
-          className="rounded-full bg-white px-4 py-2.5 text-sm font-bold text-slate-900 shadow-2xl ring-1 ring-slate-200 hover:-translate-y-1"
-        />
-      </div>
 
 
 
