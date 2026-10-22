@@ -207,3 +207,16 @@ export async function sendMarketplaceEventNotifications(details: {
 
   return { success: true };
 }
+
+/**
+ * Sends a direct operational message to exactly one supplier.
+ * Unlike marketplace event notifications, this does not copy the admin
+ * or any other recipient on the email.
+ */
+export async function sendMarketplaceSupplierCampaignEmail(
+  recipient: string,
+  subject: string,
+  message: string,
+) {
+  return sendMarketplaceEmail(recipient, subject, message.split(/\r?\n/));
+}

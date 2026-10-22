@@ -1,7 +1,8 @@
-﻿import "server-only";
+import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { createAdminNotification } from "@/lib/admin/notifications";
 import {
   hashSupportVisitorToken,
   isValidSupportVisitorToken,
@@ -181,6 +182,29 @@ export async function POST(
       // The message is already saved; report this for operational follow-up.
       console.error("Support conversation timestamp update failed:", updateError.message);
     }
+
+    await createAdminNotification({
+      eventType: "support_message",
+      title: "New visitor support message",
+      message: `A visitor sent a new message in support conversation ${conversation.id}.`,
+      entityType: "support_conversation",
+      entityId: conversation.id,
+      metadata: {
+        conversationId: conversation.id,
+        messageId: savedMessage.id,
+        messagePreview: message.slice(0, 300),
+      },
+      emailSubject: "Samiz Tech support: new visitor message",
+      emailLines: [
+        "A visitor has sent a new message in an existing support conversation.",
+        "",
+        `Conversation ID: ${conversation.id}`,
+        `Message ID: ${savedMessage.id}`,
+        "",
+        "Message preview:",
+        message.slice(0, 1000),
+      ],
+    });
 
     return respond({
       success: true,

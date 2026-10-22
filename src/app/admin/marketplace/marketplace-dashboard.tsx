@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SupplierCommunicationsPanel from "./supplier-communications-panel";
 
 type Supplier = {
   id: string;
@@ -86,7 +87,25 @@ type QueueResponse = {
   error?: string;
 };
 
-type QueueTab = "suppliers" | "products" | "orders" | "agreements";
+type QueueTab = "suppliers" | "products" | "orders" | "agreements" | "communications";
+
+type AdminNotification = {
+  id: string;
+  event_type: string;
+  title: string;
+  message: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  read_at: string | null;
+};
+
+type AdminNotificationsResponse = {
+  notifications?: AdminNotification[];
+  unreadCount?: number;
+  error?: string;
+};
 type SupplierAgreementRecord = {
   id: string;
   supplier_id: string;
@@ -151,7 +170,31 @@ function formatNairaFromKobo(value: number | string) {
 }
 
 function humanize(value: string) {
+
   return value.replaceAll("_", " ");
+
+}
+
+
+
+function playAdminNotificationTone(context: AudioContext) {
+  if (context.state !== "running") return;
+
+  const now = context.currentTime;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(880, now);
+  oscillator.frequency.setValueAtTime(1174.66, now + 0.12);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.34);
 }
 
 export default function MarketplaceDashboard() {
@@ -172,6 +215,128 @@ export default function MarketplaceDashboard() {
   const [error, setError] = useState("");
   const [moderatingId, setModeratingId] = useState<string | null>(null);
   const [moderationMessage, setModerationMessage] = useState("");
+
+  const [adminNotifications, setAdminNotifications] = useState<AdminNotification[]>([]);
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
+  const [notificationError, setNotificationError] = useState("");
+  const [notificationSoundEnabled, setNotificationSoundEnabled] = useState(false);
+  const notificationAudioContext = useRef<AudioContext | null>(null);
+  const knownNotificationIds = useRef<Set<string>>(new Set());
+  const hasNotificationBaseline = useRef(false);
+
+  const loadAdminNotifications = useCallback(async () => {
+    try {
+      const response = await fetch("/api/admin/notifications", {
+        cache: "no-store",
+        credentials: "same-origin",
+      });
+      const payload = (await response.json()) as AdminNotificationsResponse;
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to load admin notifications.");
+      }
+
+      const nextNotifications = Array.isArray(payload.notifications)
+        ? payload.notifications
+        : [];
+      const nextIds = new Set(nextNotifications.map((item) => item.id));
+      const hasNewNotification =
+        hasNotificationBaseline.current &&
+        nextNotifications.some((item) => !knownNotificationIds.current.has(item.id));
+
+      knownNotificationIds.current = nextIds;
+      hasNotificationBaseline.current = true;
+      setAdminNotifications(nextNotifications);
+      setNotificationUnreadCount(
+        typeof payload.unreadCount === "number" ? payload.unreadCount : 0
+      );
+      setNotificationError("");
+
+      if (
+        hasNewNotification &&
+        notificationSoundEnabled &&
+        notificationAudioContext.current
+      ) {
+        playAdminNotificationTone(notificationAudioContext.current);
+      }
+    } catch (error) {
+      setNotificationError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load admin notifications."
+      );
+    }
+  }, [notificationSoundEnabled]);
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => {
+      void loadAdminNotifications();
+    }, 0);
+    const timer = window.setInterval(() => {
+      void loadAdminNotifications();
+    }, 15000);
+
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(timer);
+    };
+  }, [loadAdminNotifications]);
+
+  const enableNotificationSound = useCallback(async () => {
+    try {
+      const AudioContextConstructor = window.AudioContext;
+      if (!AudioContextConstructor) {
+        setNotificationError("This browser does not support notification sound.");
+        return;
+      }
+
+      const context =
+        notificationAudioContext.current ?? new AudioContextConstructor();
+      notificationAudioContext.current = context;
+      await context.resume();
+
+      if (context.state !== "running") {
+        setNotificationError(
+          "Sound could not be enabled. Check your browser audio settings."
+        );
+        return;
+      }
+
+      setNotificationSoundEnabled(true);
+      setNotificationError("");
+      playAdminNotificationTone(context);
+    } catch {
+      setNotificationError(
+        "Sound could not be enabled. Check your browser audio settings."
+      );
+    }
+  }, []);
+
+  const markAdminNotificationsRead = useCallback(
+    async (id?: string) => {
+      try {
+        const response = await fetch("/api/admin/notifications", {
+          method: "PATCH",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(id ? { id } : { markAllRead: true }),
+        });
+        const payload = (await response.json()) as { error?: string };
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Unable to update notifications.");
+        }
+
+        await loadAdminNotifications();
+      } catch (error) {
+        setNotificationError(
+          error instanceof Error
+            ? error.message
+            : "Unable to update notifications."
+        );
+      }
+    },
+    [loadAdminNotifications]
+  );
 
   const loadQueues = useCallback(async (refresh = false) => {
     if (refresh) {
@@ -384,6 +549,12 @@ export default function MarketplaceDashboard() {
           >
             Engineering orders
           </a>
+          <a
+            href="/admin/support"
+            className="rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-100 hover:border-blue-400 hover:text-white"
+          >
+            Support Inbox
+          </a>
           <button
             type="button"
             onClick={() => {
@@ -401,6 +572,100 @@ export default function MarketplaceDashboard() {
         </div>
       </header>
 
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">
+              Admin notifications
+              {notificationUnreadCount > 0 && (
+                <span className="ml-2 inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                  {notificationUnreadCount} unread
+                </span>
+              )}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Supplier registrations, product submissions and support messages.
+              Updates automatically every 15 seconds.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => void enableNotificationSound()}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              {notificationSoundEnabled ? "Sound enabled" : "Enable sound"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void loadAdminNotifications()}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Refresh
+            </button>
+            <button
+              type="button"
+              onClick={() => void markAdminNotificationsRead()}
+              disabled={notificationUnreadCount === 0}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Mark all read
+            </button>
+          </div>
+        </div>
+
+        {notificationError && (
+          <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {notificationError}
+          </p>
+        )}
+
+        <div className="mt-4 divide-y divide-slate-100">
+          {adminNotifications.length === 0 && !notificationError ? (
+            <p className="py-6 text-sm text-slate-500">
+              No notifications yet. New marketplace activity will appear here.
+            </p>
+          ) : (
+            adminNotifications.map((notification) => (
+              <article
+                key={notification.id}
+                className={`flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between ${
+                  notification.read_at ? "opacity-75" : ""
+                }`}
+              >
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-medium text-slate-900">
+                      {notification.title}
+                    </h3>
+                    {!notification.read_at && (
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                        New
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-600">
+                    {notification.message}
+                  </p>
+                  <p className="mt-2 text-xs text-slate-400">
+                    {humanize(notification.event_type)} ·{" "}
+                    {new Date(notification.created_at).toLocaleString()}
+                  </p>
+                </div>
+                {!notification.read_at && (
+                  <button
+                    type="button"
+                    onClick={() => void markAdminNotificationsRead(notification.id)}
+                    className="shrink-0 self-start rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    Mark read
+                  </button>
+                )}
+              </article>
+            ))
+          )}
+        </div>
+      </section>
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
           <p className="text-sm text-slate-300">Pending suppliers</p>
@@ -458,6 +723,18 @@ export default function MarketplaceDashboard() {
           }`}
         >
           Marketplace orders ({orders.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("communications")}
+          aria-pressed={tab === "communications"}
+          className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+            tab === "communications"
+              ? "bg-blue-600 text-white"
+              : "bg-slate-800 text-slate-200 hover:bg-slate-700"
+          }`}
+        >
+          Supplier Communications
         </button>
         <button
           type="button"
@@ -892,6 +1169,8 @@ export default function MarketplaceDashboard() {
             </div>
           )}
         </section>
+      ) : tab === "communications" ? (
+        <SupplierCommunicationsPanel />
       ) : (
         <section className="mt-6">
           <div className="mb-5">
@@ -1093,4 +1372,3 @@ export default function MarketplaceDashboard() {
     </main>
   );
 }
-

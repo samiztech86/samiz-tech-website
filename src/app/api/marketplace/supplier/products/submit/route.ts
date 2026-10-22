@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
 import { requireCurrentSupplierAgreementAcceptance } from "@/lib/marketplace/supplier-agreement";
+import { createAdminNotification } from "@/lib/admin/notifications";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -103,6 +104,26 @@ export async function POST(request: NextRequest) {
         409,
       );
     }
+
+    await createAdminNotification({
+      eventType: "product_submitted",
+      title: "Product submitted for approval",
+      message: `${product.name} has been submitted for admin review.`,
+      entityType: "product",
+      entityId: product.id,
+      metadata: {
+        productName: product.name,
+        supplierId: authData.user.id,
+      },
+      emailSubject: "Samiz Tech marketplace: product awaiting approval",
+      emailLines: [
+        "A supplier has submitted a product for admin review.",
+        "",
+        `Product: ${product.name}`,
+        `Product ID: ${product.id}`,
+        `Supplier user ID: ${authData.user.id}`,
+      ],
+    });
 
     return respond({
       success: true,

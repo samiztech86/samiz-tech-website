@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { createSupportVisitorToken, hashSupportVisitorToken } from "@/lib/support/visitor-token";
 import { getSamizAutoReply, SAMIZ_AI_MARKER } from "@/lib/support/auto-reply";
+import { createAdminNotification } from "@/lib/admin/notifications";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -143,6 +144,32 @@ export async function POST(request: NextRequest) {
 
       return respond({ error: "Unable to send your first support message." }, 500);
     }
+
+    await createAdminNotification({
+      eventType: "support_message",
+      title: "New support conversation",
+      message: `A new support request was received from ${name}.`,
+      entityType: "support_conversation",
+      entityId: conversationId,
+      metadata: {
+        visitorName: name,
+        visitorEmail: email,
+        subject: subject || "No subject",
+        messagePreview: message.slice(0, 300),
+      },
+      emailSubject: "Samiz Tech support: new visitor conversation",
+      emailLines: [
+        "A visitor has started a new support conversation.",
+        "",
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Subject: ${subject || "No subject"}`,
+        `Conversation ID: ${conversationId}`,
+        "",
+        "Message preview:",
+        message.slice(0, 1000),
+      ],
+    });
 
     let autoReplySent = false;
 

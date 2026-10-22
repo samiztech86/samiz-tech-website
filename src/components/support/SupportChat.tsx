@@ -200,7 +200,9 @@ const [name, setName] = useState("");
   }
 
   const panelClass = compact
-    ? "fixed bottom-3 left-3 z-[110] flex max-h-[calc(100dvh-1.5rem)] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:bottom-5 sm:left-5 sm:max-h-[calc(100dvh-2.5rem)]"
+    ? expanded
+      ? "fixed bottom-4 right-4 z-[110] flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+      : "fixed bottom-24 right-4 z-[110]"
     : "mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm";
 
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
@@ -210,33 +212,53 @@ const [name, setName] = useState("");
   return (
     <section className={panelClass} aria-label="Samiz customer support">
       {compact ? (
-        <button
-          type="button"
-          onClick={() => setExpanded((current) => !current)}
-          className="flex w-full items-center justify-between gap-3 bg-blue-800 px-5 py-4 text-left text-white"
-          aria-expanded={expanded}
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden">
-              <Image
-                src="/samiz-logo.png"
-                alt="Samiz Tech logo"
-                width={44}
-                height={44}
-                className="h-full w-full object-contain"
-              />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-base font-bold">Chat with Support</span>
-              <span className="mt-1 block text-xs text-blue-100">
-                Samiz Tech customer assistance
+        expanded ? (
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="flex w-full items-center justify-between gap-3 bg-blue-800 px-5 py-4 text-left text-white"
+            aria-expanded={expanded}
+            aria-label="Close Samiz customer support chat"
+          >
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden">
+                <Image
+                  src="/samiz-logo.png"
+                  alt="Samiz Tech logo"
+                  width={44}
+                  height={44}
+                  className="h-full w-full object-contain"
+                />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-base font-bold">Chat with Support</span>
+                <span className="mt-1 block text-xs text-blue-100">
+                  Samiz Tech customer assistance
+                </span>
               </span>
             </span>
-          </span>
-          <span aria-hidden="true" className="text-xl">
-            {expanded ? "−" : "+"}
-          </span>
-        </button>
+            <span aria-hidden="true" className="text-2xl leading-none">
+              X
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            className="inline-flex items-center gap-2 rounded-full bg-blue-800 px-4 py-3 text-sm font-semibold text-white shadow-xl transition hover:bg-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            aria-expanded={expanded}
+            aria-label="Open Samiz customer support chat"
+          >
+            <Image
+              src="/samiz-logo.png"
+              alt=""
+              width={24}
+              height={24}
+              className="h-6 w-6 object-contain"
+            />
+            <span>Support</span>
+          </button>
+        )
       ) : (
         <div className="flex items-center gap-4 bg-blue-800 px-6 py-5 text-white sm:px-8">
           <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden">
@@ -280,7 +302,7 @@ const [name, setName] = useState("");
               >
                 {messages.length === 0 ? (
                   <p className="p-3 text-sm text-slate-500">
-                    Loading your conversation…
+                    Loading your conversationâ€¦
                   </p>
                 ) : (
                   messages.map((message) => (
@@ -311,7 +333,7 @@ const [name, setName] = useState("");
                             ? "Samiz AI Assistant"
                             : "Samiz Support"}
                         {message.created_at
-                          ? ` · ${formatTime(message.created_at)}`
+                          ? ` Â· ${formatTime(message.created_at)}`
                           : ""}
                       </p>
                     </article>
@@ -330,7 +352,7 @@ const [name, setName] = useState("");
                     maxLength={5000}
                     required
                     rows={3}
-                    placeholder="Type your reply…"
+                    placeholder="Type your replyâ€¦"
                     className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm !text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
                   />
                 </label>
@@ -339,7 +361,7 @@ const [name, setName] = useState("");
                   disabled={sending || !draft.trim()}
                   className="w-full rounded-xl bg-blue-800 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {sending ? "Sending…" : "Send message"}
+                  {sending ? "Sendingâ€¦" : "Send message"}
                 </button>
               </form>
             </>
@@ -397,7 +419,7 @@ const [name, setName] = useState("");
                   maxLength={5000}
                   required
                   rows={4}
-                  placeholder="Describe your question or issue…"
+                  placeholder="Describe your question or issueâ€¦"
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm !text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
                 />
               </label>
@@ -406,7 +428,7 @@ const [name, setName] = useState("");
                 disabled={loading || !name.trim() || !email.trim() || !draft.trim()}
                 className="w-full rounded-xl bg-blue-800 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? "Sending your request…" : "Start support conversation"}
+                {loading ? "Sending your requestâ€¦" : "Start support conversation"}
               </button>
             </form>
           )}

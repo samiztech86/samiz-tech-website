@@ -1,8 +1,9 @@
-﻿import "server-only";
+import "server-only";
 
 import { NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
+import { createAdminNotification } from "@/lib/admin/notifications";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -85,6 +86,31 @@ export async function GET() {
         }
 
         profile = createdProfile;
+
+        await createAdminNotification({
+          eventType: "supplier_registered",
+          title: "New supplier registration",
+          message: `${businessName} has registered and is awaiting admin approval.`,
+          entityType: "supplier",
+          entityId: createdProfile.id,
+          metadata: {
+            businessName,
+            contactName,
+            contactEmail,
+            contactPhone,
+            verificationStatus: "pending",
+          },
+          emailSubject: "New Samiz Tech supplier registration",
+          emailLines: [
+            "A new supplier profile has been created and is awaiting admin approval.",
+            "",
+            `Business: ${businessName}`,
+            `Contact: ${contactName}`,
+            `Email: ${contactEmail}`,
+            `Phone: ${contactPhone}`,
+            `Supplier ID: ${createdProfile.id}`,
+          ],
+        });
       }
     }
 
@@ -174,4 +200,3 @@ export async function GET() {
     return response({ error: "Unable to load the supplier dashboard." }, 500);
   }
 }
-

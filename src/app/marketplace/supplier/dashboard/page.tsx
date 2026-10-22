@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -746,6 +746,12 @@ export default function SupplierDashboardPage() {
           >
             View marketplace
           </Link>
+          <Link
+            href="/support"
+            className="border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 hover:border-blue-600"
+          >
+            Get Help
+          </Link>
         </div>
 
         {loading ? (
@@ -838,7 +844,7 @@ export default function SupplierDashboardPage() {
                     <h3 className="font-semibold">{agreementData.agreement.title}</h3>
                     <p className="mt-1 text-xs text-slate-600">
                       Version {agreementData.agreement.agreement_version}
-                      {" · Effective "}
+                      {" Â· Effective "}
                       {new Date(agreementData.agreement.effective_at).toLocaleString()}
                     </p>
                     <div className="mt-4 max-h-96 overflow-y-auto whitespace-pre-wrap text-sm leading-6 text-slate-800">
@@ -1690,7 +1696,7 @@ export default function SupplierDashboardPage() {
 
                               {fulfilmentSubmittingId === order.id ? (
                                 <p className="mt-2 text-sm text-slate-600" role="status">
-                                  Saving fulfilment update…
+                                  Saving fulfilment updateâ€¦
                                 </p>
                               ) : null}
                               {fulfilmentErrors[order.id] ? (
@@ -1821,7 +1827,7 @@ export default function SupplierDashboardPage() {
                                 type="text"
                                 maxLength={200}
                                 className="w-full border border-slate-300 px-3 py-2 text-sm"
-                                placeholder="e.g. 7–10 working days"
+                                placeholder="e.g. 7â€“10 working days"
                               />
                             </div>
 
