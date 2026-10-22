@@ -202,7 +202,7 @@ const [name, setName] = useState("");
   const panelClass = compact
     ? expanded
       ? "fixed bottom-4 right-4 z-[110] flex max-h-[calc(100dvh-2rem)] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
-      : "fixed bottom-24 right-4 z-[110]"
+      : "fixed bottom-1 right-4 z-[110]"
     : "mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm";
 
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
