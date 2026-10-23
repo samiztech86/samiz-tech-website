@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import MarketplaceAdSlot from "@/components/MarketplaceAdSlot";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
@@ -149,6 +150,18 @@ const supplierCategoryMap: Record<
   smart_energy_automation: "Smart Energy & Automation",
   tools_accessories: "Tools & Accessories",
 };
+
+const advertisingCategoryMap: Record<
+  Exclude<Category, "All Products">,
+  string
+> = {
+  "Solar & Backup Power": "solar_backup_power",
+  "Electrical Materials": "electrical_materials",
+  "Industrial & Distribution": "industrial_distribution",
+  "Smart Energy & Automation": "smart_energy_automation",
+  "Tools & Accessories": "tools_accessories",
+};
+
 
 function mapSupplierProduct(product: SupplierApiProduct): Product {
   const category =
@@ -551,6 +564,8 @@ export default function MarketplacePage() {
         </div>
       </section>
 
+      <MarketplaceAdSlot placement="marketplace_featured" />
+
       <section
         id="marketplace-products"
         className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10"
@@ -608,6 +623,13 @@ export default function MarketplacePage() {
             );
           })}
         </div>
+
+        {selectedCategory !== "All Products" ? (
+          <MarketplaceAdSlot
+            placement="category_featured"
+            category={advertisingCategoryMap[selectedCategory]}
+          />
+        ) : null}
 
         <div className="mt-5 flex items-center justify-between gap-4">
           <p className="text-sm text-slate-600" aria-live="polite">

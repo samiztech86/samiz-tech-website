@@ -587,12 +587,20 @@ export default function SupplierDashboardPage() {
             </p>
           </div>
 
-          <Link
-            href="/marketplace"
-            className="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:border-blue-600"
-          >
-            View marketplace
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/marketplace"
+              className="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:border-blue-600"
+            >
+              View marketplace
+            </Link>
+            <Link
+              href="/marketplace/advertising"
+              className="border border-blue-700 bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+            >
+              Advertise your products
+            </Link>
+          </div>
         </div>
 
         {loading ? (
