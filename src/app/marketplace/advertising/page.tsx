@@ -522,7 +522,7 @@ export default function MarketplaceAdvertisingPage() {
               value={headline}
               onChange={(event) => setHeadline(event.target.value)}
               placeholder="e.g. Reliable Solar Inverters for Homes and Businesses"
-              className="w-full border border-slate-300 px-3 py-3 text-sm outline-none focus:border-blue-700"
+              className="w-full border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200"
             />
             <p className="mt-1 text-xs text-slate-500">{headline.length}/160 characters</p>
           </div>
@@ -538,7 +538,7 @@ export default function MarketplaceAdvertisingPage() {
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               placeholder="Briefly describe the product or offer you want to promote."
-              className="w-full border border-slate-300 px-3 py-3 text-sm outline-none focus:border-blue-700"
+              className="w-full border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200"
             />
             <p className="mt-1 text-xs text-slate-500">{description.length}/2000 characters</p>
           </div>
@@ -555,7 +555,7 @@ export default function MarketplaceAdvertisingPage() {
               readOnly={advertMode === "product"}
               onChange={(event) => setImageUrl(event.target.value)}
               placeholder={advertMode === "product" ? "Select a product to fill in its image" : "https://example.com/advert-image.jpg"}
-              className="w-full border border-slate-300 px-3 py-3 text-sm outline-none focus:border-blue-700"
+              className="w-full border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200"
             />
             <p className="mt-1 text-xs text-slate-500">
               {advertMode === "product"
@@ -576,7 +576,7 @@ export default function MarketplaceAdvertisingPage() {
               readOnly={advertMode === "product"}
               onChange={(event) => setTargetUrl(event.target.value)}
               placeholder={advertMode === "product" ? "Select a product to fill in its public page" : "https://example.com/your-page"}
-              className="w-full border border-slate-300 px-3 py-3 text-sm outline-none focus:border-blue-700"
+              className="w-full border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200"
             />
             <p className="mt-1 text-xs text-slate-500">
               {advertMode === "product"
