@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import AdminNotificationCenter from "./admin-notification-center";
 
 type EngineeringOrder = {
   id: string;
@@ -246,6 +247,8 @@ export default function AdminDashboard() {
           </button>
         </div>
       </header>
+
+      <AdminNotificationCenter />
 
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
