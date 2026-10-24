@@ -333,7 +333,7 @@ const [name, setName] = useState("");
                             ? "Samiz AI Assistant"
                             : "Samiz Support"}
                         {message.created_at
-                          ? ` Â· ${formatTime(message.created_at)}`
+                          ? ` · ${formatTime(message.created_at)}`
                           : ""}
                       </p>
                     </article>
