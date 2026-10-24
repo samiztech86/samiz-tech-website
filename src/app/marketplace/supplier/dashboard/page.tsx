@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -745,6 +745,12 @@ export default function SupplierDashboardPage() {
             className="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:border-blue-600"
           >
             View marketplace
+          </Link>
+          <Link
+            href="/marketplace/advertising"
+            className="border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:border-emerald-600"
+          >
+            Advertise your products
           </Link>
           <Link
             href="/support"

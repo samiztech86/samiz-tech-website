@@ -1,5 +1,6 @@
 import Image from "next/image";
 import MarketplacePromoCarousel from "@/components/MarketplacePromoCarousel";
+import MarketplaceAdSlot from "@/components/MarketplaceAdSlot";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -694,6 +695,7 @@ export default function Home() {
       </section>
 
       <MarketplacePromoCarousel />
+      <MarketplaceAdSlot placement="homepage_banner" />
 
       {/* SERVICES */}
       <section id="services" className="border-b border-slate-200 bg-white">

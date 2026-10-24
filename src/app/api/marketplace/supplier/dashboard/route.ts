@@ -126,7 +126,7 @@ export async function GET() {
 
     const { data: products, error: productsError } = await supabaseServer
       .from("marketplace_products")
-      .select("id, name, category, description, brand, model_number, price_type, indicative_price, currency, product_status, is_available, is_listed, image_urls, created_at")
+      .select("id, name, slug, category, description, brand, model_number, price_type, indicative_price, currency, product_status, is_available, is_listed, image_urls, created_at")
       .eq("supplier_id", user.id)
       .order("created_at", { ascending: false })
       .limit(100);

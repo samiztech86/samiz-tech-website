@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import MarketplaceAdSlot from "@/components/MarketplaceAdSlot";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
@@ -543,12 +544,13 @@ export default function MarketplacePage() {
           <p className="mt-6 max-w-3xl text-sm leading-6 text-slate-400">
             Product availability, specifications, prices and delivery are
             confirmed individually. Listings do not imply that stock is held
-            by Samiz.
+       by Samiz.
           </p>
         </div>
       </section>
 
-      <section
+      <MarketplaceAdSlot placement="marketplace_featured" />
+<section
         id="marketplace-products"
         className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10"
       >

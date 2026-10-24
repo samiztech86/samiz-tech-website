@@ -87,7 +87,7 @@ type QueueResponse = {
   error?: string;
 };
 
-type QueueTab = "suppliers" | "products" | "orders" | "agreements" | "communications";
+type QueueTab = "suppliers" | "products" | "orders" | "agreements" | "communications" | "advertising";
 
 type AdminNotification = {
   id: string;
@@ -125,6 +125,44 @@ type SupplierAgreementRecord = {
 
 type SupplierAgreementResponse = {
   records?: SupplierAgreementRecord[];
+  error?: string;
+};
+
+type AdvertisingCampaign = {
+  id: string;
+  supplier_id: string;
+  product_id: string | null;
+  package_id: string;
+  package_name: string;
+  amount_kobo: number;
+  currency: string;
+  headline: string;
+  description: string | null;
+  image_url: string;
+  target_url: string;
+  placement: string;
+  payment_status: string;
+  paystack_reference: string;
+  paid_at: string | null;
+  campaign_status: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  admin_review_note: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+  supplier: { business_name: string } | null;
+};
+
+type AdvertisingCampaignResponse = {
+  success?: boolean;
+  campaigns?: AdvertisingCampaign[];
+  error?: string;
+};
+
+type AdvertisingReviewResponse = {
+  success?: boolean;
+  campaign?: AdvertisingCampaign;
+  message?: string;
   error?: string;
 };
 
@@ -206,6 +244,12 @@ export default function MarketplaceDashboard() {
   const [agreementRecords, setAgreementRecords] = useState<SupplierAgreementRecord[]>([]);
   const [agreementLoading, setAgreementLoading] = useState(false);
   const [agreementError, setAgreementError] = useState("");
+  const [advertisingCampaigns, setAdvertisingCampaigns] = useState<AdvertisingCampaign[]>([]);
+  const [advertisingLoading, setAdvertisingLoading] = useState(false);
+  const [advertisingRefreshing, setAdvertisingRefreshing] = useState(false);
+  const [advertisingError, setAdvertisingError] = useState("");
+  const [advertisingMessage, setAdvertisingMessage] = useState("");
+  const [advertisingActionId, setAdvertisingActionId] = useState<string | null>(null);
   const [supplierFilter, setSupplierFilter] = useState("pending");
   const [productFilter, setProductFilter] = useState("draft");
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
@@ -410,6 +454,124 @@ export default function MarketplaceDashboard() {
       setRefreshing(false);
     }
   }, []);
+  const loadAdvertisingCampaigns = useCallback(async (refresh = false) => {
+    if (refresh) {
+      setAdvertisingRefreshing(true);
+    } else {
+      setAdvertisingLoading(true);
+    }
+
+    setAdvertisingError("");
+
+    try {
+      const response = await fetch("/api/admin/marketplace/advertising", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+
+      const payload = (await response.json()) as AdvertisingCampaignResponse;
+
+      if (!response.ok || !payload.success || !Array.isArray(payload.campaigns)) {
+        setAdvertisingError(payload.error || "Unable to load advertising campaigns.");
+        return;
+      }
+
+      setAdvertisingCampaigns(payload.campaigns);
+    } catch {
+      setAdvertisingError("Could not reach the advertising campaign service.");
+    } finally {
+      setAdvertisingLoading(false);
+      setAdvertisingRefreshing(false);
+    }
+  }, []);
+
+  const reviewAdvertisingCampaign = useCallback(async (
+    campaign: AdvertisingCampaign,
+    action: "approve" | "reject",
+  ) => {
+    if (
+      campaign.payment_status !== "paid" ||
+      campaign.campaign_status !== "pending_review"
+    ) {
+      setAdvertisingError("Only paid campaigns awaiting review can be reviewed.");
+      return;
+    }
+
+    let note = "";
+
+    if (action === "reject") {
+      const enteredNote = window.prompt(
+        "Enter the reason for rejecting this campaign. This does not refund the payment:",
+      );
+
+      if (enteredNote === null) return;
+
+      note = enteredNote.trim();
+
+      if (!note) {
+        setAdvertisingError("A rejection reason is required.");
+        return;
+      }
+
+      if (note.length > 1000) {
+        setAdvertisingError("The rejection reason must not exceed 1,000 characters.");
+        return;
+      }
+    } else if (!window.confirm(
+      "Approve this paid campaign? Its seven-day campaign period will start now.",
+    )) {
+      return;
+    }
+
+    setAdvertisingActionId(campaign.id);
+    setAdvertisingError("");
+    setAdvertisingMessage("");
+
+    try {
+      const response = await fetch("/api/admin/marketplace/advertising", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          campaignId: campaign.id,
+          action,
+          ...(action === "reject" ? { note } : {}),
+        }),
+      });
+
+      const payload = (await response.json()) as AdvertisingReviewResponse;
+
+      if (!response.ok || !payload.success) {
+        setAdvertisingError(payload.error || "Unable to save the campaign review.");
+        return;
+      }
+
+      setAdvertisingMessage(
+        payload.message ||
+          (action === "approve" ? "Campaign approved." : "Campaign rejected."),
+      );
+
+      await loadAdvertisingCampaigns(true);
+    } catch {
+      setAdvertisingError("Could not reach the campaign review service.");
+    } finally {
+      setAdvertisingActionId(null);
+    }
+  }, [loadAdvertisingCampaigns]);
+
+  useEffect(() => {
+    if (tab !== "advertising") return;
+
+    const timer = window.setTimeout(() => {
+      void loadAdvertisingCampaigns();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [tab, loadAdvertisingCampaigns]);
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       void loadQueues();
@@ -558,16 +720,22 @@ export default function MarketplaceDashboard() {
           <button
             type="button"
             onClick={() => {
-              if (tab === "agreements") {
+              if (tab === "advertising") {
+                void loadAdvertisingCampaigns(true);
+              } else if (tab === "agreements") {
                 void loadAgreementRecords(true);
               } else {
                 void loadQueues(true);
               }
             }}
-            disabled={loading || refreshing}
+            disabled={
+              tab === "advertising"
+                ? advertisingLoading || advertisingRefreshing
+                : loading || refreshing
+            }
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold hover:bg-blue-500 disabled:opacity-60"
           >
-            {refreshing ? "Refreshing..." : tab === "agreements" ? "Refresh agreements" : "Refresh queues"}
+            {tab === "advertising" ? (advertisingRefreshing ? "Refreshing ads..." : "Refresh advertising") : refreshing ? "Refreshing..." : tab === "agreements" ? "Refresh agreements" : "Refresh queues"}
           </button>
         </div>
       </header>
@@ -726,6 +894,18 @@ export default function MarketplaceDashboard() {
         </button>
         <button
           type="button"
+          onClick={() => setTab("advertising")}
+          aria-pressed={tab === "advertising"}
+          className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+            tab === "advertising"
+              ? "bg-blue-600 text-white"
+              : "bg-slate-800 text-slate-200 hover:bg-slate-700"
+          }`}
+        >
+          Advertising ({advertisingCampaigns.filter((campaign) => campaign.payment_status === "paid" && campaign.campaign_status === "pending_review").length} pending)
+        </button>
+        <button
+          type="button"
           onClick={() => setTab("communications")}
           aria-pressed={tab === "communications"}
           className={`rounded-lg px-4 py-2 text-sm font-semibold ${
@@ -768,7 +948,163 @@ export default function MarketplaceDashboard() {
         </div>
       )}
 
-      {loading ? (
+      {tab === "advertising" ? (
+        <section className="mt-6">
+          <div className="mb-5">
+            <h2 className="text-xl font-bold">Marketplace advertising campaigns</h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Review paid campaigns. Approval starts the seven-day schedule; it does not itself publish an advert on the public marketplace.
+              Rejection does not automatically refund the payment.
+            </p>
+          </div>
+
+          {advertisingMessage && (
+            <div role="status" className="mb-4 rounded-lg border border-emerald-800 bg-emerald-950 p-4 text-sm text-emerald-200">
+              {advertisingMessage}
+            </div>
+          )}
+
+          {advertisingError && (
+            <div role="alert" className="mb-4 rounded-lg border border-red-800 bg-red-950 p-4 text-sm text-red-200">
+              {advertisingError}
+            </div>
+          )}
+
+          {advertisingLoading && advertisingCampaigns.length === 0 ? (
+            <p className="rounded-xl border border-slate-700 p-6 text-slate-300">
+              Loading advertising campaigns...
+            </p>
+          ) : advertisingCampaigns.length === 0 ? (
+            <p className="rounded-xl border border-slate-700 p-6 text-slate-300">
+              No advertising campaigns were returned.
+            </p>
+          ) : (
+            <div className="grid gap-4 xl:grid-cols-2">
+              {advertisingCampaigns.map((campaign) => {
+                const canReview =
+                  campaign.payment_status === "paid" &&
+                  campaign.campaign_status === "pending_review";
+                const isProcessing = advertisingActionId === campaign.id;
+
+                return (
+                  <article key={campaign.id} className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
+                    <div className="p-5">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-lg font-bold">{campaign.headline}</h3>
+                          <p className="mt-1 text-sm text-slate-300">
+                            {campaign.supplier?.business_name || "Supplier profile unavailable"}
+                          </p>
+                        </div>
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          canReview
+                            ? "bg-amber-950 text-amber-200"
+                            : campaign.campaign_status === "approved"
+                              ? "bg-emerald-950 text-emerald-200"
+                              : "bg-slate-800 text-slate-200"
+                        }`}>
+                          {humanize(campaign.campaign_status)}
+                        </span>
+                      </div>
+
+                      {campaign.image_url && (
+                        <div className="mt-4">
+                          <a href={campaign.image_url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-300 underline">
+                            Open advertising image
+                          </a>
+                        </div>
+                      )}
+
+                      {campaign.description && (
+                        <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-300">
+                          {campaign.description}
+                        </p>
+                      )}
+
+                      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                        <div>
+                          <dt className="text-slate-400">Package</dt>
+                          <dd className="mt-1 font-medium">{campaign.package_name}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Amount</dt>
+                          <dd className="mt-1 font-medium">{formatNairaFromKobo(campaign.amount_kobo)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Payment</dt>
+                          <dd className="mt-1 font-medium">{humanize(campaign.payment_status)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Placement</dt>
+                          <dd className="mt-1 font-medium">{humanize(campaign.placement)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Submitted</dt>
+                          <dd className="mt-1">{formatDate(campaign.created_at)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Paid at</dt>
+                          <dd className="mt-1">{campaign.paid_at ? formatDate(campaign.paid_at) : "—"}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Campaign starts</dt>
+                          <dd className="mt-1">{campaign.starts_at ? formatDate(campaign.starts_at) : "—"}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-400">Campaign ends</dt>
+                          <dd className="mt-1">{campaign.ends_at ? formatDate(campaign.ends_at) : "—"}</dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <dt className="text-slate-400">Payment reference</dt>
+                          <dd className="mt-1 break-all font-mono text-xs">{campaign.paystack_reference}</dd>
+                        </div>
+                      </dl>
+
+                      <p className="mt-4 text-sm">
+                        <a href={campaign.target_url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline underline-offset-4">
+                          Open campaign destination
+                        </a>
+                      </p>
+
+                      {campaign.admin_review_note && (
+                        <div className="mt-4 rounded-lg border border-slate-700 p-3 text-sm text-slate-300">
+                          <span className="font-semibold">Review note: </span>
+                          {campaign.admin_review_note}
+                        </div>
+                      )}
+
+                      {canReview ? (
+                        <div className="mt-5 flex flex-wrap gap-3 border-t border-slate-700 pt-4">
+                          <button
+                            type="button"
+                            disabled={advertisingActionId !== null}
+                            onClick={() => void reviewAdvertisingCampaign(campaign, "approve")}
+                            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold hover:bg-emerald-600 disabled:opacity-50"
+                          >
+                            {isProcessing ? "Processing..." : "Approve campaign"}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={advertisingActionId !== null}
+                            onClick={() => void reviewAdvertisingCampaign(campaign, "reject")}
+                            className="rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-200 hover:bg-red-950 disabled:opacity-50"
+                          >
+                            {isProcessing ? "Processing..." : "Reject campaign"}
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="mt-4 text-xs text-slate-400">
+                          No review actions are available for this campaign status.
+                        </p>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      ) : loading ? (
         <p className="py-12 text-slate-300">Loading marketplace queues...</p>
       ) : tab === "suppliers" ? (
         <section className="mt-6">
