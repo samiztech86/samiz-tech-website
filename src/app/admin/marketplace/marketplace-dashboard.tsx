@@ -692,6 +692,12 @@ export default function MarketplaceDashboard() {
           >
             Engineering orders
           </a>
+          <a
+            href="/admin/support"
+            className="rounded-lg border border-emerald-500/60 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-200 hover:bg-emerald-500/20"
+          >
+            Support Chat
+          </a>
           <button
             type="button"
             onClick={() => void loadQueues(true)}
@@ -1246,6 +1252,8 @@ export default function MarketplaceDashboard() {
             </div>
           )}
         </section>
+      ) : tab === "communications" ? (
+        <SupplierCommunicationsPanel />
       ) : tab === "agreements" ? (
         <section className="mt-6">
           <div className="mb-5">
