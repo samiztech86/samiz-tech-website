@@ -740,10 +740,10 @@ export default function MarketplaceDashboard() {
         </div>
       </header>
 
-      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="mt-6 rounded-2xl border border-slate-700 bg-slate-900 p-5 text-white shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-white">
               Admin notifications
               {notificationUnreadCount > 0 && (
                 <span className="ml-2 inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
@@ -751,7 +751,7 @@ export default function MarketplaceDashboard() {
                 </span>
               )}
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-300">
               Supplier registrations, product submissions and support messages.
               Updates automatically every 15 seconds.
             </p>
@@ -760,14 +760,14 @@ export default function MarketplaceDashboard() {
             <button
               type="button"
               onClick={() => void enableNotificationSound()}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:border-blue-400 hover:bg-blue-900"
             >
               {notificationSoundEnabled ? "Sound enabled" : "Enable sound"}
             </button>
             <button
               type="button"
               onClick={() => void loadAdminNotifications()}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:border-blue-400 hover:bg-blue-900"
             >
               Refresh
             </button>
@@ -775,7 +775,7 @@ export default function MarketplaceDashboard() {
               type="button"
               onClick={() => void markAdminNotificationsRead()}
               disabled={notificationUnreadCount === 0}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Mark all read
             </button>
@@ -788,9 +788,9 @@ export default function MarketplaceDashboard() {
           </p>
         )}
 
-        <div className="mt-4 divide-y divide-slate-100">
+        <div className="mt-4 divide-y divide-slate-700">
           {adminNotifications.length === 0 && !notificationError ? (
-            <p className="py-6 text-sm text-slate-500">
+            <p className="py-6 text-sm text-slate-300">
               No notifications yet. New marketplace activity will appear here.
             </p>
           ) : (
@@ -798,21 +798,21 @@ export default function MarketplaceDashboard() {
               <article
                 key={notification.id}
                 className={`flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between ${
-                  notification.read_at ? "opacity-75" : ""
+                  notification.read_at ? "opacity-80" : "rounded-xl border border-blue-800 bg-blue-950/60 px-4"
                 }`}
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-medium text-slate-900">
+                    <h3 className="font-semibold text-white">
                       {notification.title}
                     </h3>
                     {!notification.read_at && (
-                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                      <span className="rounded-full border border-blue-400 bg-blue-900 px-2 py-0.5 text-xs font-semibold text-blue-100">
                         New
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-600">
+                  <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-slate-200">
                     {notification.message}
                   </p>
                   <p className="mt-2 text-xs text-slate-400">
@@ -824,7 +824,7 @@ export default function MarketplaceDashboard() {
                   <button
                     type="button"
                     onClick={() => void markAdminNotificationsRead(notification.id)}
-                    className="shrink-0 self-start rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    className="shrink-0 self-start rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-semibold text-white transition hover:border-blue-400 hover:bg-blue-900"
                   >
                     Mark read
                   </button>

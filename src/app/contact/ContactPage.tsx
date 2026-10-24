@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { useState } from "react";
@@ -333,7 +333,7 @@ ${message}`;
         href="https://wa.me/2348155721739?text=Hello%20Samiz%20Tech%2C%20I%20would%20like%20to%20discuss%20a%20project."
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-[100] rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-2xl transition hover:-translate-y-1"
+        className="hidden sm:inline-flex fixed bottom-2 left-6 z-[100] rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white shadow-2xl transition hover:-translate-y-1"
       >
         WhatsApp
       </a>
