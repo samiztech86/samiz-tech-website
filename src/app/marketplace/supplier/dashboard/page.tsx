@@ -850,7 +850,7 @@ export default function SupplierDashboardPage() {
                     <h3 className="font-semibold">{agreementData.agreement.title}</h3>
                     <p className="mt-1 text-xs text-slate-600">
                       Version {agreementData.agreement.agreement_version}
-                      {" Â· Effective "}
+                      {" · Effective "}
                       {new Date(agreementData.agreement.effective_at).toLocaleString()}
                     </p>
                     <div className="mt-4 max-h-96 overflow-y-auto whitespace-pre-wrap text-sm leading-6 text-slate-800">
