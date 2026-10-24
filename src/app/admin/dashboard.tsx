@@ -204,18 +204,18 @@ export default function AdminDashboard() {
   ).length;
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl bg-slate-950 px-5 py-10 text-white">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <main className="mx-auto min-h-screen w-full max-w-6xl bg-[#071a33] px-5 py-10 text-white">
+      <header className="flex flex-col gap-5 rounded-2xl border border-blue-400/30 bg-[#0b2547] p-6 shadow-xl shadow-black/20 sm:flex-row sm:items-start sm:justify-between sm:p-8">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-200">
             Samiz Tech Engineering Ltd
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold text-slate-900">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Engineering assessment orders
           </h1>
 
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-3 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">
             Review paid remote energy assessments and update their delivery
             status.
           </p>
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
         <div className="flex flex-wrap items-center gap-3">
           <a
             href="/admin/marketplace"
-            className="rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-800 hover:border-blue-500"
+            className="rounded-lg border border-blue-300 bg-[#12365f] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#194675] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b2547]"
           >
             Marketplace Moderation
           </a>
@@ -232,7 +232,7 @@ export default function AdminDashboard() {
             type="button"
             onClick={() => void loadOrders(true)}
             disabled={refreshing || loading}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-blue-200/60 bg-[#102f52] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#194675] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {refreshing ? "Refreshing..." : "Refresh"}
           </button>
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
           <button
             type="button"
             onClick={() => void signOut()}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+            className="rounded-lg border border-red-300/50 bg-red-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200"
           >
             Sign out
           </button>

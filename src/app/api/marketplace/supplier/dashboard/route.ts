@@ -3,6 +3,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
 import { supabaseServer } from "@/lib/supabase/server";
+import { createAdminNotification } from "@/lib/admin/notifications";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -85,6 +86,29 @@ export async function GET() {
         }
 
         profile = createdProfile;
+
+        // Notify the admin only after the new supplier profile is persisted.
+        await createAdminNotification({
+          eventType: "supplier_registered",
+          title: "New marketplace supplier registration",
+          message: `A new supplier profile has been created for ${createdProfile.business_name || createdProfile.contact_name || "an unnamed supplier"}. The account is pending admin review.`,
+          entityType: "supplier",
+          entityId: createdProfile.id,
+          metadata: {
+            businessName: createdProfile.business_name,
+            verificationStatus: createdProfile.verification_status,
+          },
+          emailSubject: "New marketplace supplier registration",
+          emailLines: [
+            "A new marketplace supplier profile has been created.",
+            `Business: ${createdProfile.business_name || "Not provided"}`,
+            `Contact: ${createdProfile.contact_name || "Not provided"}`,
+            `Email: ${createdProfile.contact_email || "Not provided"}`,
+            `Supplier reference: ${createdProfile.id}`,
+            "Status: Pending admin review.",
+            "Please review the supplier in the admin marketplace dashboard.",
+          ],
+        });
       }
     }
 
