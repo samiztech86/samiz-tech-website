@@ -267,6 +267,26 @@ export default function MarketplaceDashboard() {
   const notificationAudioContext = useRef<AudioContext | null>(null);
   const knownNotificationIds = useRef<Set<string>>(new Set());
   const hasNotificationBaseline = useRef(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = window.localStorage.getItem("samiz-admin-notification-sound");
+
+        if (saved === null) {
+          window.localStorage.setItem("samiz-admin-notification-sound", "true");
+          setNotificationSoundEnabled(true);
+        } else {
+          setNotificationSoundEnabled(saved === "true");
+        }
+      } catch {
+        setNotificationError("Sound preference could not be read in this browser.");
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+
 
   const loadAdminNotifications = useCallback(async () => {
     try {
@@ -345,6 +365,11 @@ export default function MarketplaceDashboard() {
         return;
       }
 
+      try {
+        window.localStorage.setItem("samiz-admin-notification-sound", "true");
+      } catch {
+        // Sound can still work when browser storage is unavailable.
+      }
       setNotificationSoundEnabled(true);
       setNotificationError("");
       playAdminNotificationTone(context);
@@ -759,7 +784,24 @@ export default function MarketplaceDashboard() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => void enableNotificationSound()}
+              onClick={() => {
+                if (
+                  !notificationSoundEnabled ||
+                  !notificationAudioContext.current ||
+                  notificationAudioContext.current.state !== "running"
+                ) {
+                  void enableNotificationSound();
+                  return;
+                }
+
+                try {
+                  window.localStorage.setItem("samiz-admin-notification-sound", "false");
+                  setNotificationSoundEnabled(false);
+                  void notificationAudioContext.current.suspend();
+                } catch {
+                  setNotificationError("Could not update the sound preference.");
+                }
+              }}
               className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:border-blue-400 hover:bg-blue-900"
             >
               {notificationSoundEnabled ? "Sound enabled" : "Enable sound"}
