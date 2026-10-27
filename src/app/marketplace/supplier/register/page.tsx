@@ -1,29 +1,27 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export default function SupplierRegisterPage() {
   const [fullName, setFullName] = useState("");
   const [businessName, setBusinessName] = useState("");
+  const [businessAddress, setBusinessAddress] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const params = new URLSearchParams(window.location.search);
+    return params.get("confirmed") === "1"
+      ? "Your email confirmation link has been opened. You can now proceed to supplier sign-in once that page is available."
+      : "";
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get("confirmed") === "1") {
-      setMessage(
-        "Your email confirmation link has been opened. You can now proceed to supplier sign-in once that page is available.",
-      );
-    }
-  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,6 +52,8 @@ export default function SupplierRegisterPage() {
           data: {
             full_name: fullName.trim(),
             business_name: businessName.trim(),
+            business_address: businessAddress.trim(),
+            website_url: websiteUrl.trim(),
             phone: phone.trim(),
             account_type: "marketplace_supplier",
           },
@@ -132,7 +132,7 @@ export default function SupplierRegisterPage() {
           <form onSubmit={handleSubmit} className="mt-7 space-y-5">
             <div>
               <label htmlFor="fullName" className="mb-2 block text-sm font-medium">
-                Contact person's full name
+                Contact person&apos;s full name
               </label>
               <input
                 id="fullName"
@@ -161,6 +161,45 @@ export default function SupplierRegisterPage() {
                 maxLength={160}
                 value={businessName}
                 onChange={(event) => setBusinessName(event.target.value)}
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="businessAddress"
+                className="mb-2 block text-sm font-medium"
+              >
+                Business address (optional)
+              </label>
+              <textarea
+                id="businessAddress"
+                name="businessAddress"
+                autoComplete="street-address"
+                maxLength={500}
+                rows={3}
+                value={businessAddress}
+                onChange={(event) => setBusinessAddress(event.target.value)}
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="websiteUrl"
+                className="mb-2 block text-sm font-medium"
+              >
+                Business website (optional)
+              </label>
+              <input
+                id="websiteUrl"
+                name="websiteUrl"
+                type="url"
+                autoComplete="url"
+                maxLength={500}
+                placeholder="https://example.com"
+                value={websiteUrl}
+                onChange={(event) => setWebsiteUrl(event.target.value)}
                 className={inputClass}
               />
             </div>

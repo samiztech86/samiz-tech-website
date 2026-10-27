@@ -1,4 +1,4 @@
-import "server-only";
+﻿import "server-only";
 
 import { NextResponse } from "next/server";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase/route-handler";
@@ -30,7 +30,7 @@ export async function GET() {
     const { data: existingProfile, error: profileError } =
       await supabaseServer
         .from("marketplace_supplier_profiles")
-        .select("id, business_name, contact_name, contact_email, contact_phone, verification_status, payout_status, payout_bank_name, payout_account_name, payout_account_last4, created_at")
+        .select("id, business_name, contact_name, contact_email, contact_phone, business_address, website_url, verification_status, payout_status, payout_bank_name, payout_account_name, payout_account_last4, created_at")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -54,6 +54,41 @@ export async function GET() {
           : "";
       const contactPhone =
         typeof metadata.phone === "string" ? metadata.phone.trim() : "";
+      const businessAddress =
+        typeof metadata.business_address === "string"
+          ? metadata.business_address.trim()
+          : "";
+      const rawWebsiteUrl =
+        typeof metadata.website_url === "string"
+          ? metadata.website_url.trim()
+          : "";
+      let websiteUrl = "";
+
+      if (businessAddress.length > 500 || rawWebsiteUrl.length > 500) {
+        return response({
+          error: "Business address and website must each be 500 characters or fewer.",
+        }, 400);
+      }
+
+      if (rawWebsiteUrl) {
+        try {
+          const parsedWebsiteUrl = new URL(rawWebsiteUrl);
+
+          if (
+            !["http:", "https:"].includes(parsedWebsiteUrl.protocol) ||
+            !parsedWebsiteUrl.hostname.includes(".")
+          ) {
+            throw new Error("Invalid website URL");
+          }
+
+          websiteUrl = parsedWebsiteUrl.toString();
+        } catch {
+          return response({
+            error: "Please register again with a valid business website URL beginning with https:// or http://.",
+          }, 400);
+        }
+      }
+
       const contactEmail = user.email?.trim() ?? "";
 
       if (
@@ -75,9 +110,11 @@ export async function GET() {
               contact_name: contactName,
               contact_email: contactEmail,
               contact_phone: contactPhone,
+              business_address: businessAddress || null,
+              website_url: websiteUrl || null,
               verification_status: "pending",
             })
-            .select("id, business_name, contact_name, contact_email, contact_phone, verification_status, payout_status, payout_bank_name, payout_account_name, payout_account_last4, created_at")
+            .select("id, business_name, contact_name, contact_email, contact_phone, business_address, website_url, verification_status, payout_status, payout_bank_name, payout_account_name, payout_account_last4, created_at")
             .single();
 
         if (createError) {

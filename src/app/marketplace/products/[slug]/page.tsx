@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import MarketplaceProductShare from "@/components/MarketplaceProductShare";
 import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 
@@ -198,6 +199,12 @@ export default async function MarketplaceProductPage({
             {product.name}
           </h1>
 
+          <MarketplaceProductShare
+            productName={product.name}
+            slug={product.slug}
+            priceLabel={formatPrice(product)}
+          />
+
           {supplierName ? (
             <p className="mt-3 text-sm text-slate-600">
               Listed by{" "}
@@ -216,7 +223,7 @@ export default async function MarketplaceProductPage({
                   : null,
               ]
                 .filter(Boolean)
-                .join(" · ")}
+                .join(" Â· ")}
             </p>
           ) : null}
 

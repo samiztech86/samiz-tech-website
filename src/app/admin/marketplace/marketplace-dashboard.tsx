@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SupplierCommunicationsPanel from "./supplier-communications-panel";
@@ -858,7 +858,7 @@ export default function MarketplaceDashboard() {
                     {notification.message}
                   </p>
                   <p className="mt-2 text-xs text-slate-400">
-                    {humanize(notification.event_type)} ·{" "}
+                    {humanize(notification.event_type)} Â·{" "}
                     {new Date(notification.created_at).toLocaleString()}
                   </p>
                 </div>
@@ -1197,6 +1197,23 @@ export default function MarketplaceDashboard() {
                       <dd className="mt-1 break-words">{supplier.contact_email}</dd>
                     </div>
                     <div className="sm:col-span-2">
+                      <dt className="text-slate-400">Business address</dt>
+                      <dd className="mt-1 break-words">
+                        {supplier.business_address || "Not provided"}
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <dt className="text-slate-400">Business website</dt>
+                      <dd className="mt-1 break-all">
+                        {supplier.website_url ? (
+                          <a href={supplier.website_url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline hover:text-blue-200">
+                            {supplier.website_url}
+                          </a>
+                        ) : (
+                          "Not provided"
+                        )}
+                      </dd>
+                    </div>                    <div className="sm:col-span-2">
                       <dt className="text-slate-400">Registered</dt>
                       <dd className="mt-1">{formatDate(supplier.created_at)}</dd>
                     </div>

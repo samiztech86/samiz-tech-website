@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import MarketplaceAdSlot from "@/components/MarketplaceAdSlot";
+import MarketplaceProductShare from "@/components/MarketplaceProductShare";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
@@ -683,6 +684,14 @@ export default function MarketplacePage() {
                       product.name
                     )}
                   </h3>
+                  {product.isSupplierListing && product.slug ? (
+                    <MarketplaceProductShare
+                      productName={product.name}
+                      slug={product.slug}
+                      priceLabel={product.priceLabel}
+                      compact
+                    />
+                  ) : null}
                   <p className="mt-3 flex-1 text-sm leading-6 text-slate-600">
                     {product.description}
                   </p>
