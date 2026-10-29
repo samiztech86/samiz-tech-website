@@ -1,4 +1,4 @@
-﻿export type SubscriptionPlan =
+export type SubscriptionPlan =
   | "free"
   | "starter"
   | "pro"
@@ -32,21 +32,21 @@ export const PLAN_CONFIG = {
 
   starter: {
     name: "Samiz Energy Tools Starter",
-    price: 8500,
+    price: 1500,
     interval: "monthly",
     coins: Infinity,
   },
 
   pro: {
     name: "Samiz Energy Tools Pro",
-    price: 15000,
+    price: 5000,
     interval: "monthly",
     coins: Infinity,
   },
 
   business: {
     name: "Samiz Energy Tools Business",
-    price: 45000,
+    price: 8000,
     interval: "monthly",
     coins: Infinity,
   },
