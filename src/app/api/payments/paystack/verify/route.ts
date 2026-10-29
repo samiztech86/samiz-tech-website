@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { getBillingPlan } from "@/lib/billing";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -148,6 +148,17 @@ export async function POST(request: NextRequest) {
 
     const metadata = transaction.metadata || {};
 
+    if (metadata.product !== "samiz-energy-tools") {
+      return NextResponse.json(
+        {
+          success: false,
+          verified: false,
+          error: "This transaction is not an Energy Tools payment.",
+        },
+        { status: 400 },
+      );
+    }
+
     const metadataPlan =
       typeof metadata.plan === "string"
         ? metadata.plan
@@ -195,10 +206,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (
-      transaction.currency &&
-      transaction.currency !== "NGN"
-    ) {
+    if (transaction.currency !== "NGN") {
       return NextResponse.json(
         {
           success: false,

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,7 @@ type PlanId = "starter" | "pro" | "business";
 const plans = {
   starter: {
     name: "Starter",
-    price: "NGN 8,500",
+    price: "NGN 1,500",
     description: "For homeowners and individuals who need practical energy planning.",
     features: [
       "Energy assessment",
@@ -23,7 +23,7 @@ const plans = {
   },
   pro: {
     name: "Pro",
-    price: "NGN 15,000",
+    price: "NGN 5,000",
     description: "For professionals, installers and users who need deeper energy analysis.",
     features: [
       "Everything in Starter",
@@ -38,7 +38,7 @@ const plans = {
   },
   business: {
     name: "Business",
-    price: "NGN 45,000",
+    price: "NGN 8,000",
     description: "For companies, consultants, facilities and organisations using Energy Tools professionally.",
     features: [
       "Everything in Pro",
