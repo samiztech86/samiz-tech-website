@@ -72,10 +72,10 @@ export default function SiteFooter() {
               </a>
 
               <a
-                href="mailto:info@samiztech.com"
+                href="mailto:info@samiztech.com.ng"
                 className="hover:text-white"
               >
-                info@samiztech.com
+                info@samiztech.com.ng
               </a>
 
               <span>Lagos, Nigeria</span>

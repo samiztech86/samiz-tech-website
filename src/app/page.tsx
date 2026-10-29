@@ -1005,7 +1005,7 @@ export default function Home() {
               </a>
 
               <a
-                href="mailto:info@samiztech.com"
+                href="mailto:info@samiztech.com.ng"
                 className="inline-flex items-center border border-blue-300 px-8 py-4 text-sm font-bold text-white transition hover:bg-blue-600"
               >
                 Send an Email

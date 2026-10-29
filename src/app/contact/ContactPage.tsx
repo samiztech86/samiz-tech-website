@@ -262,10 +262,10 @@ ${message}`;
                     </p>
 
                     <a
-                      href="mailto:info@samiztech.com"
+                      href="mailto:info@samiztech.com.ng"
                       className="mt-2 block text-lg font-semibold text-white hover:text-blue-400"
                     >
-                      info@samiztech.com
+                      info@samiztech.com.ng
                     </a>
                   </div>
 
