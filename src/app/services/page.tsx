@@ -141,7 +141,7 @@ export default function ServicesPage() {
               <span className="text-blue-400">actually used.</span>
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
+            <p className="mt-4 max-w-2xl text-[13px] leading-6 text-slate-300 sm:mt-6 sm:text-base sm:leading-7 lg:mt-7 lg:text-lg lg:leading-8">
               From electrical infrastructure and solar power to smart
               automation and intelligent energy management, Samiz Tech
               engineers complete energy systems around your operational needs.

@@ -98,7 +98,7 @@ export default function AboutPage() {
               <span className="text-blue-400">energy.</span>
             </h1>
 
-            <p className="mt-7 max-w-3xl text-lg leading-8 text-slate-300">
+            <p className="mt-4 max-w-3xl text-[13px] leading-6 text-slate-300 sm:mt-6 sm:text-base sm:leading-7 lg:mt-7 lg:text-lg lg:leading-8">
               Samiz Tech Engineering Ltd is an electrical and energy engineering
               company focused on designing, installing and improving the
               infrastructure that keeps homes, businesses and facilities

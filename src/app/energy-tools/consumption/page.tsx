@@ -176,7 +176,7 @@ export default function EnergyConsumptionPage() {
             href="/energy-tools"
             className="text-xs font-bold uppercase tracking-[0.2em] text-blue-400"
           >
-            â† Energy Tools
+            &larr; Energy Tools
           </Link>
 
           <p className="mt-8 text-xs font-bold uppercase tracking-[0.25em] text-blue-400">

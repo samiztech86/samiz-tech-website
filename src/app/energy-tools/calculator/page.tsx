@@ -1082,7 +1082,7 @@ export default function CalculatorPage() {
           <h1 className="mt-3 text-2xl font-black leading-tight tracking-tight text-white sm:mt-4 sm:text-4xl lg:text-6xl">
             Build your property&apos;s energy profile.
           </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-300 sm:mt-5 sm:text-lg sm:leading-8">
+          <p className="mt-3 max-w-3xl text-[13px] leading-6 text-slate-300 sm:mt-5 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
             Enter your property structure, appliance loads, common-area meter
             readings and main grid energy data to build a practical energy
             profile.

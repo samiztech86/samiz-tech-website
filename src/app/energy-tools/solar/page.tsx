@@ -351,7 +351,7 @@ export default function SolarPage() {
             Find out how much solar your home or business may need.
           </h1>
 
-          <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8 lg:text-lg">
+          <p className="mt-4 max-w-3xl text-[13px] leading-6 text-slate-300 sm:mt-5 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
             You don&apos;t need to know your monthly electricity
             consumption. Tell us what appliances you use,
             and Samiz will estimate your energy demand,

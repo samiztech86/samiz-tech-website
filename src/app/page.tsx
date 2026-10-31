@@ -641,7 +641,7 @@ export default function Home() {
               <span className="text-blue-400">reliable power.</span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 sm:mt-7 sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-xl text-[13px] leading-6 text-slate-300 sm:mt-6 sm:text-base sm:leading-7 lg:mt-7 lg:text-lg lg:leading-8">
               Samiz Tech Engineering Ltd. delivers electrical, solar, automation and
               intelligent energy solutions for homes, estates, businesses and
               critical facilities.
