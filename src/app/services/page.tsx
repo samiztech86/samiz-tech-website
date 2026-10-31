@@ -115,8 +115,19 @@ export default function ServicesPage() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
 {/* HERO */}
-      <section className="bg-[#07111f]">
-        <div className="mx-auto max-w-[1400px] px-6 py-24 lg:px-10 lg:py-32">
+      <section className="relative overflow-hidden bg-[#07111f]">
+        <div className="relative aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:aspect-auto">
+          <Image
+            src="/images/engineering/engineering-solar-installation-02.png"
+            alt="Electrical and solar engineering installation by Samiz Tech Engineering Ltd"
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07111f]/20 to-[#07111f] lg:bg-gradient-to-r lg:from-[#020817]/90 lg:via-[#020817]/65 lg:to-[#020817]/35" />
+        </div>
+        <div className="relative z-10 mx-auto max-w-[1400px] px-6 py-12 sm:py-16 lg:px-10 lg:py-32">
           <div className="max-w-4xl">
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />

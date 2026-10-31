@@ -615,19 +615,19 @@ export default function Home() {
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#07111f]">
-        <div className="absolute inset-0">
+        <div className="relative aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:aspect-auto">
           <Image
-            src="/images/engineering/engineering-solar-installation-01.jpg"
+            src="/images/engineering/engineering-solar-installation-02.png"
             alt="Electrical installation engineered by Samiz Tech Engineering Ltd"
             fill
             priority
-            className="object-cover"
+            className="object-cover object-center"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#020817]/90 via-[#020817]/55 to-[#020817]/15" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07111f]/10 to-[#07111f] lg:bg-gradient-to-r lg:from-[#020817]/90 lg:via-[#020817]/55 lg:to-[#020817]/15" />
         </div>
 
-        <div className="relative mx-auto grid max-w-[1400px] items-center gap-8 px-5 py-14 sm:gap-10 sm:px-6 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
+        <div className="relative mx-auto grid max-w-[1400px] items-center gap-8 px-5 py-8 sm:gap-10 sm:px-6 sm:py-10 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
           <div>
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
