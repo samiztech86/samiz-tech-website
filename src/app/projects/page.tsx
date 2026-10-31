@@ -113,20 +113,20 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen bg-white text-slate-950">
 {/* HERO */}
-      <section className="relative overflow-hidden bg-[#07111f]">
-        <div className="absolute inset-0">
+      <section className="relative overflow-hidden bg-[#07111f] text-white">
+        <div className="relative aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:aspect-auto">
           <Image
             src="/images/engineering/engineering-solar-installation-01.jpg"
             alt="Solar installation engineered by Samiz Tech Engineering"
             fill
             priority
-            className="object-cover"
+            className="object-cover object-center"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-[#07111f]/75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07111f]/10 to-[#07111f] lg:bg-gradient-to-r lg:from-[#07111f]/90 lg:via-[#07111f]/65 lg:to-[#07111f]/25" />
         </div>
 
-        <div className="relative mx-auto max-w-[1400px] px-6 py-24 lg:px-10 lg:py-32">
+        <div className="relative mx-auto max-w-[1400px] px-5 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-32">
           <div className="max-w-5xl">
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />

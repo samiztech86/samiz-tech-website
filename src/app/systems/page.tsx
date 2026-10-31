@@ -1,4 +1,4 @@
-﻿
+
 import Image from "next/image";
 import type { Metadata } from "next";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -112,19 +112,19 @@ export default function SystemsPage() {
     <main className="bg-white text-slate-950">
       {/* HERO */}
       <section className="relative overflow-hidden bg-[#07111f] text-white">
-        <div className="absolute inset-0">
+        <div className="relative aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:aspect-auto">
           <Image
             src="/images/engineering/power-distribution-infrastructure.jpg"
             alt="Electrical power infrastructure"
             fill
             priority
-            className="object-cover opacity-30"
+            className="object-cover object-center"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07111f] via-[#07111f]/90 to-[#07111f]/55" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07111f]/10 to-[#07111f] lg:bg-gradient-to-r lg:from-[#07111f]/90 lg:via-[#07111f]/65 lg:to-[#07111f]/25" />
         </div>
 
-        <div className="relative mx-auto max-w-[1400px] px-6 py-24 sm:py-32 lg:px-10 lg:py-36">
+        <div className="relative mx-auto max-w-[1400px] px-5 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-36">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-300">
             Systems Engineering
           </p>
