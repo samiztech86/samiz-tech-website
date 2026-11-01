@@ -480,7 +480,7 @@ export default function MarketplacePage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-        <div className="absolute inset-0">
+        <div className="relative aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:aspect-auto">
           <Image
             src="/images/marketplace/marketplace-showroom-hero.png"
             alt="Premium selection of solar and electrical equipment at the Samiz Tech Marketplace"
