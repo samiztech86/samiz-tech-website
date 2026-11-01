@@ -628,7 +628,7 @@ export default function Home() {
         </div>
 
         <div className="relative mx-auto grid max-w-[1400px] items-center gap-8 px-5 py-8 sm:gap-10 sm:px-6 sm:py-10 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
-          <div>
+          <div className="rounded-2xl border border-white/10 bg-[#07111f]/55 p-5 shadow-xl backdrop-blur-md sm:p-7 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
               <span className="text-xs font-bold uppercase tracking-[0.25em] text-blue-400">
