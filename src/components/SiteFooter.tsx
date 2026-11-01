@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 
 export default function SiteFooter() {
   return (
@@ -48,6 +48,9 @@ export default function SiteFooter() {
 
               <a href="/about" className="hover:text-white">
                 About
+              </a>
+              <a href="/join-the-team" className="hover:text-white">
+                Join Our Team
               </a>
 
               <a href="/contact" className="hover:text-white">

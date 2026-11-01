@@ -742,6 +742,12 @@ export default function MarketplaceDashboard() {
           >
             Support Inbox
           </a>
+          <a
+            href="/admin/team-applications"
+            className="rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-100 hover:border-blue-400 hover:text-white"
+          >
+            Team Applications
+          </a>
           <button
             type="button"
             onClick={() => {

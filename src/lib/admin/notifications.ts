@@ -7,13 +7,14 @@ export type AdminNotificationEvent =
   | "supplier_registered"
   | "product_submitted"
   | "support_message"
-  | "marketplace_event";
+  | "marketplace_event"
+  | "team_application";
 
 type AdminNotificationInput = {
   eventType: AdminNotificationEvent;
   title: string;
   message: string;
-  entityType?: "supplier" | "product" | "support_conversation" | "other";
+  entityType?: "supplier" | "product" | "support_conversation" | "team_application" | "other";
   entityId?: string | null;
   metadata?: Record<string, unknown>;
   emailSubject?: string;
