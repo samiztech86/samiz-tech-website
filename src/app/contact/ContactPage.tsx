@@ -11,43 +11,124 @@ export default function ContactPage() {
   const [service, setService] = useState("");
   const [message, setMessage] = useState("");
 
-  const submitToWhatsApp = (e: React.FormEvent<HTMLFormElement>) => {
+  const [submissionStatus, setSubmissionStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+  const [submissionError, setSubmissionError] = useState("");
+  const [submittedEnquiry, setSubmittedEnquiry] = useState<{
+    reference: string;
+    details: {
+      name: string;
+      company: string;
+      phone: string;
+      email: string;
+      service: string;
+      message: string;
+    };
+  } | null>(null);
+
+  const submitEnquiry = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const text = `Hello Samiz Tech,
+    if (submissionStatus === "submitting") return;
 
-I would like to discuss a project.
+    const details = { name, company, phone, email, service, message };
 
-Name: ${name}
-Company: ${company || "Not provided"}
-Phone: ${phone}
-Email: ${email || "Not provided"}
-Service: ${service || "Not specified"}
+    setSubmissionStatus("submitting");
+    setSubmissionError("");
+    setSubmittedEnquiry(null);
 
-Project details:
-${message}`;
+    try {
+      const response = await fetch("/api/contact-enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...details, website: "" }),
+      });
 
-    window.open(
-      `https://wa.me/2348155721739?text=${encodeURIComponent(text)}`,
-      "_blank",
-    );
+      const result: {
+        success?: boolean;
+        reference?: string;
+        error?: string;
+      } = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.success || !result.reference) {
+        throw new Error(
+          result.error || "We could not submit your enquiry. Please try again.",
+        );
+      }
+
+      setSubmittedEnquiry({
+        reference: result.reference,
+        details,
+      });
+
+      setName("");
+      setCompany("");
+      setPhone("");
+      setEmail("");
+      setService("");
+      setMessage("");
+      setSubmissionStatus("success");
+    } catch (error) {
+      setSubmissionError(
+        error instanceof Error
+          ? error.message
+          : "A connection error occurred. Please try again.",
+      );
+      setSubmissionStatus("error");
+    }
   };
+
+  const whatsappFollowUpUrl = (() => {
+    if (!submittedEnquiry) return null;
+
+    const { reference, details } = submittedEnquiry;
+
+    const whatsappMessage = [
+      "Hello Samiz Tech,",
+      "",
+      "I have submitted a project enquiry through your website.",
+      `Enquiry reference: ${reference}`,
+      "",
+      `Name: ${details.name}`,
+      `Company: ${details.company || "Not provided"}`,
+      `Phone: ${details.phone}`,
+      `Email: ${details.email || "Not provided"}`,
+      `Service: ${details.service || "Not specified"}`,
+      "",
+      "Project details:",
+      details.message,
+    ].join("\n");
+
+    return `https://wa.me/2348155721739?text=${encodeURIComponent(whatsappMessage)}`;
+  })();
 
   return (
     <main className="min-h-screen bg-white text-slate-950">
 {/* HERO */}
-      <section className="bg-[#07111f]">
-        <div className="mx-auto max-w-[1400px] px-6 py-20 lg:px-10 lg:py-28">
+      <section className="relative overflow-hidden bg-[#07111f]">
+        <div className="relative aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:aspect-auto">
+          <Image
+            src="/images/engineering/engineering-solar-installation-02.png"
+            alt="Electrical and solar engineering installation by Samiz Tech Engineering Ltd"
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#07111f]/20 to-[#07111f] lg:bg-gradient-to-r lg:from-[#020817]/90 lg:via-[#020817]/65 lg:to-[#020817]/35" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1400px] px-6 py-12 sm:py-16 lg:px-10 lg:py-32">
           <div className="max-w-4xl">
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
-
               <span className="text-xs font-bold uppercase tracking-[0.25em] text-blue-400">
                 Project Enquiry
               </span>
             </div>
 
-            <h1 className="text-5xl font-bold leading-[1.04] tracking-[-0.04em] text-white sm:text-6xl">
+            <h1 className="text-5xl font-bold leading-[1.04] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
               Let's engineer your{" "}
               <span className="text-blue-400">energy solution.</span>
             </h1>
@@ -77,7 +158,15 @@ ${message}`;
                 </h2>
               </div>
 
-              <form onSubmit={submitToWhatsApp} className="space-y-6">
+              <form onSubmit={submitEnquiry} className="space-y-6" aria-busy={submissionStatus === "submitting"}>
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute left-[-10000px] h-px w-px overflow-hidden"
+                />
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <label
@@ -212,14 +301,59 @@ ${message}`;
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-700 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-800 sm:w-auto"
+                  disabled={submissionStatus === "submitting"}
+                  className="w-full bg-blue-700 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
-                  Send Project Enquiry via WhatsApp
+                  {submissionStatus === "submitting"
+                    ? "Submitting Enquiry..."
+                    : "Submit Project Enquiry"}
                 </button>
 
+                {submissionStatus === "error" && (
+                  <p role="alert" className="text-sm leading-6 text-red-700">
+                    {submissionError}
+                  </p>
+                )}
+
+                {submissionStatus === "success" && submittedEnquiry && (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="space-y-3 border border-green-200 bg-green-50 p-5"
+                  >
+                    <p className="font-semibold text-green-900">
+                      Your project enquiry has been received successfully.
+                    </p>
+
+                    <p className="text-sm text-green-900">
+                      Reference:{" "}
+                      <span className="font-bold break-all">
+                        {submittedEnquiry.reference}
+                      </span>
+                    </p>
+
+                    <p className="text-sm leading-6 text-green-800">
+                      Our team can review your enquiry and contact you using
+                      the details you provided.
+                    </p>
+
+                    {whatsappFollowUpUrl && (
+                      <a
+                        href={whatsappFollowUpUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block bg-[#25D366] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#20bd5a]"
+                      >
+                        Continue on WhatsApp (Optional)
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 <p className="text-xs leading-5 text-slate-500">
-                  Submitting this form will open WhatsApp with your project
-                  details prepared for Samiz Tech.
+                  Your enquiry is submitted securely to Samiz Tech. You can
+                  optionally continue the conversation on WhatsApp after
+                  submission.
                 </p>
               </form>
             </div>

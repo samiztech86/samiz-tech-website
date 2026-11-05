@@ -223,6 +223,12 @@ export default function AdminDashboard() {
 
         <div className="flex flex-wrap items-center gap-3">
           <a
+            href="/admin/contact-enquiries"
+            className="rounded-lg border border-blue-300 bg-blue-950/40 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-900"
+          >
+            Contact Enquiries
+          </a>
+          <a
             href="/admin/support"
             className="rounded-lg border border-blue-300 bg-blue-950/40 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-900"
           >

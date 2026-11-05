@@ -7,9 +7,9 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
+  title: "Electrical Engineering & Solar EPC Company in Nigeria | Samiz Tech",
   description:
-    "Samiz Tech Engineering Ltd delivers electrical installations, solar EPC, power distribution, backup power and energy systems for estates, businesses, commercial facilities and industrial projects in Lagos and across Nigeria.",
+    "Samiz Tech Engineering Ltd. is an electrical engineering and solar EPC company in Nigeria, delivering electrical installations, solar power systems, power distribution, backup power and intelligent energy solutions for residential, commercial and industrial facilities.",
   keywords: [
     "electrical engineering company Lagos",
     "electrical contractor Lagos",
@@ -28,6 +28,12 @@ export const metadata: Metadata = {
     "estate solar installation Lagos",
     "backup power systems Lagos",
     "solar battery storage Lagos",
+    "electrical engineering company Nigeria",
+    "electrical contractor Nigeria",
+    "solar EPC company Nigeria",
+    "solar installation company Nigeria",
+    "commercial solar EPC Nigeria",
+    "industrial electrical engineering Nigeria",
     "Samiz Tech Engineering Ltd.",
   ],
   alternates: {
@@ -36,17 +42,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/",
-    title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
+    title: "Electrical Engineering & Solar EPC Company in Nigeria | Samiz Tech",
     description:
-      "Electrical installations, solar EPC, power distribution, backup power and energy systems for commercial, estate, industrial and institutional projects in Lagos and across Nigeria.",
+      "Samiz Tech Engineering Ltd. is an electrical engineering and solar EPC company in Nigeria, delivering electrical installations, solar power systems, power distribution, backup power and intelligent energy solutions for residential, commercial and industrial facilities.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Electrical Engineering & Solar EPC Company in Lagos | Samiz Tech",
+    title: "Electrical Engineering & Solar EPC Company in Nigeria | Samiz Tech",
     description:
-      "Electrical installations, solar EPC, power distribution, backup power and energy systems for projects across Lagos and Nigeria.",
+      "Samiz Tech Engineering Ltd. is an electrical engineering and solar EPC company in Nigeria, delivering electrical installations, solar power systems, power distribution, backup power and intelligent energy solutions for residential, commercial and industrial facilities.",
   },
 };
 
@@ -147,7 +153,7 @@ function GridDiagram() {
         fontSize="34"
         fontWeight="700"
       >
-        33 kV POWER NETWORK
+        ILLUSTRATIVE 33 kV NETWORK
       </text>
 
       <g transform="translate(370 110)">
@@ -273,7 +279,7 @@ function PowerSystemDiagram() {
         fontWeight="700"
         letterSpacing="3"
       >
-        ENGINEERING SINGLE-LINE VIEW
+        ILLUSTRATIVE ENGINEERING SINGLE-LINE VIEW
       </text>
 
       {/* GRID */}
@@ -632,7 +638,7 @@ export default function Home() {
             <div className="mb-7 flex items-center gap-3">
               <span className="h-px w-12 bg-blue-500" />
               <span className="text-xs font-bold uppercase tracking-[0.25em] text-blue-400">
-                33 kV POWER NETWORKS • SOLAR • ENERGY SYSTEMS
+                ELECTRICAL ENGINEERING • SOLAR EPC • ENERGY INFRASTRUCTURE
               </span>
             </div>
 
@@ -642,9 +648,11 @@ export default function Home() {
             </h1>
 
             <p className="mt-4 max-w-xl text-[13px] leading-6 text-slate-300 sm:mt-6 sm:text-base sm:leading-7 lg:mt-7 lg:text-lg lg:leading-8">
-              Samiz Tech Engineering Ltd. delivers electrical, solar, automation and
-              intelligent energy solutions for homes, estates, businesses and
-              critical facilities.
+              Samiz Tech Engineering Ltd. is an electrical engineering and solar EPC
+              company serving residential, commercial, industrial and institutional
+              facilities across Lagos and Nigeria. We deliver electrical installations,
+              solar power systems, power distribution, backup power integration and
+              intelligent energy management.
             </p>
 
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">

@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 
 import { supabaseServer } from "@/lib/supabase/server";
 import { sendMarketplaceEventNotifications } from "@/lib/email/marketplace";
@@ -8,13 +8,14 @@ export type AdminNotificationEvent =
   | "product_submitted"
   | "support_message"
   | "marketplace_event"
-  | "team_application";
+  | "team_application"
+  | "contact_enquiry";
 
 type AdminNotificationInput = {
   eventType: AdminNotificationEvent;
   title: string;
   message: string;
-  entityType?: "supplier" | "product" | "support_conversation" | "team_application" | "other";
+  entityType?: "supplier" | "product" | "support_conversation" | "team_application" | "contact_enquiry" | "other";
   entityId?: string | null;
   metadata?: Record<string, unknown>;
   emailSubject?: string;

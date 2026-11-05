@@ -1,4 +1,27 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Energy Calculators & Electrical Load Analysis Tools | Samiz Tech",
+  description:
+    "Use Samiz Energy Tools to estimate electrical loads, energy consumption, solar PV capacity, inverter and battery requirements, and generator fuel costs for homes, estates and commercial facilities.",
+  alternates: {
+    canonical: "https://www.samiztech.com.ng/energy-tools",
+  },
+  openGraph: {
+    title: "Energy Calculators & Electrical Load Analysis Tools | Samiz Tech",
+    description:
+      "Estimate electrical loads, energy consumption, solar PV capacity, battery requirements and generator operating costs with Samiz Energy Tools.",
+    url: "https://www.samiztech.com.ng/energy-tools",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Energy Calculators & Electrical Load Analysis Tools | Samiz Tech",
+    description:
+      "Estimate electrical loads, energy consumption, solar PV capacity, battery requirements and generator operating costs with Samiz Energy Tools.",
+  },
+};
 
 const tools = [
   {

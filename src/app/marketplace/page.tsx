@@ -489,7 +489,7 @@ export default function MarketplacePage() {
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/70 to-slate-950/45 lg:bg-gradient-to-r lg:from-slate-950/95 lg:via-slate-950/75 lg:to-slate-950/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/40 to-slate-950/15 lg:bg-gradient-to-r lg:from-slate-950/95 lg:via-slate-950/75 lg:to-slate-950/35" />
         </div>
         <div className="relative mx-auto max-w-7xl rounded-2xl border border-white/10 bg-slate-950/45 p-5 backdrop-blur-md px-5 py-16 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none sm:px-8 sm:py-20 lg:px-10 lg:py-24">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-300">

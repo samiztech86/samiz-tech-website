@@ -47,11 +47,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     { path: "/about", changeFrequency: "monthly", priority: 0.6 },
     { path: "/contact", changeFrequency: "monthly", priority: 0.8 },
+    { path: "/join-the-team", changeFrequency: "monthly", priority: 0.6 },
   ];
 
   const staticUrls: MetadataRoute.Sitemap = pages.map((page) => ({
     url: `${baseUrl}${page.path}`,
-    lastModified: new Date(),
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }));

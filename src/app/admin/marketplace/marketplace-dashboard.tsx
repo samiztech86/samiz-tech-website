@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SupplierCommunicationsPanel from "./supplier-communications-panel";
@@ -743,6 +743,12 @@ export default function MarketplaceDashboard() {
             Support Inbox
           </a>
           <a
+            href="/admin/contact-enquiries"
+            className="rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-100 hover:border-blue-400 hover:text-white"
+          >
+            Contact Enquiries
+          </a>
+          <a
             href="/admin/team-applications"
             className="rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-100 hover:border-blue-400 hover:text-white"
           >
@@ -783,7 +789,7 @@ export default function MarketplaceDashboard() {
               )}
             </h2>
             <p className="mt-1 text-sm text-slate-300">
-              Supplier registrations, product submissions and support messages.
+              Supplier registrations, product submissions, support messages and contact enquiries.
               Updates automatically every 15 seconds.
             </p>
           </div>
