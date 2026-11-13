@@ -419,7 +419,7 @@ const [name, setName] = useState("");
                   maxLength={5000}
                   required
                   rows={4}
-                  placeholder="Describe your question or issueâ€¦"
+                  placeholder="Describe your question or issue..."
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm !text-slate-900 placeholder:text-slate-500 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
                 />
               </label>
