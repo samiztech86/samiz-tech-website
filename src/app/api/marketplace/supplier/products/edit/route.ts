@@ -15,7 +15,37 @@ const CATEGORIES = [
   "industrial_distribution",
   "smart_energy_automation",
   "tools_accessories",
+  "generators_power_backup",
+  "cables_wires_accessories",
+  "transformers_substation",
+  "switchgear_control_protection",
+  "batteries_energy_storage",
+  "solar_mounting_accessories",
+  "charge_controllers_protection",
+  "earthing_lightning_surge",
+  "lighting_electrical_fixtures",
+  "motors_pumps_drives",
+  "metering_sensors_monitoring",
+  "renewable_energy_equipment",
+  "ev_charging_equipment",
+  "networking_communication_control",
+  "safety_equipment_ppe",
+  "hvac_building_electrical",
+  "installation_accessories",
+  "engineering_components_spares",
 ] as const;
+
+function isValidCategory(category: string) {
+  return (
+    CATEGORIES.includes(category as (typeof CATEGORIES)[number]) ||
+    (
+      category.length >= 2 &&
+      category.length <= 80 &&
+      category !== "other" &&
+      !/[\u0000-\u001f\u007f]/.test(category)
+    )
+  );
+}
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -108,8 +138,8 @@ export async function POST(request: Request) {
       return respond({ error: "Product name must be 3–180 characters." }, 400);
     }
 
-    if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) {
-      return respond({ error: "Choose a valid product category." }, 400);
+    if (!isValidCategory(category)) {
+      return respond({ error: "Choose a standard category or enter a custom category between 2 and 80 characters." }, 400);
     }
 
     if (description.length < 10 || description.length > 8000) {

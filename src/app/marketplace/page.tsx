@@ -14,15 +14,33 @@ const categories = [
   "Industrial & Distribution",
   "Smart Energy & Automation",
   "Tools & Accessories",
+  "Generators & Power Backup",
+  "Cables, Wires & Cable Accessories",
+  "Transformers & Substation Equipment",
+  "Switchgear, Control Panels & Protection",
+  "Batteries & Energy Storage",
+  "Solar Mounting Structures & Accessories",
+  "Charge Controllers & Solar Protection",
+  "Earthing, Lightning & Surge Protection",
+  "Lighting Systems & Electrical Fixtures",
+  "Motors, Pumps & Industrial Drives",
+  "Metering, Sensors & Energy Monitoring",
+  "Renewable Energy Equipment",
+  "EV Charging Equipment",
+  "Networking, Communication & Control Equipment",
+  "Safety Equipment & PPE",
+  "HVAC & Building Electrical Systems",
+  "Electrical Installation Accessories",
+  "Engineering Components & Spare Parts",
 ] as const;
 
-type Category = (typeof categories)[number];
+type Category = string;
 
 type Product = {
   id: string;
   slug?: string;
   name: string;
-  category: Exclude<Category, "All Products">;
+  category: string;
   description: string;
   image: string;
   imageAlt: string;
@@ -141,20 +159,35 @@ type SupplierApiProduct = {
   supplier_contact_phone: string | null;
 };
 
-const supplierCategoryMap: Record<
-  string,
-  Exclude<Category, "All Products">
-> = {
+const supplierCategoryMap: Record<string, string> = {
   solar_backup_power: "Solar & Backup Power",
   electrical_materials: "Electrical Materials",
   industrial_distribution: "Industrial & Distribution",
   smart_energy_automation: "Smart Energy & Automation",
   tools_accessories: "Tools & Accessories",
+  generators_power_backup: "Generators & Power Backup",
+  cables_wires_accessories: "Cables, Wires & Cable Accessories",
+  transformers_substation: "Transformers & Substation Equipment",
+  switchgear_control_protection: "Switchgear, Control Panels & Protection",
+  batteries_energy_storage: "Batteries & Energy Storage",
+  solar_mounting_accessories: "Solar Mounting Structures & Accessories",
+  charge_controllers_protection: "Charge Controllers & Solar Protection",
+  earthing_lightning_surge: "Earthing, Lightning & Surge Protection",
+  lighting_electrical_fixtures: "Lighting Systems & Electrical Fixtures",
+  motors_pumps_drives: "Motors, Pumps & Industrial Drives",
+  metering_sensors_monitoring: "Metering, Sensors & Energy Monitoring",
+  renewable_energy_equipment: "Renewable Energy Equipment",
+  ev_charging_equipment: "EV Charging Equipment",
+  networking_communication_control: "Networking, Communication & Control Equipment",
+  safety_equipment_ppe: "Safety Equipment & PPE",
+  hvac_building_electrical: "HVAC & Building Electrical Systems",
+  installation_accessories: "Electrical Installation Accessories",
+  engineering_components_spares: "Engineering Components & Spare Parts",
 };
 
 function mapSupplierProduct(product: SupplierApiProduct): Product {
   const category =
-    supplierCategoryMap[product.category] ?? "Solar & Backup Power";
+    supplierCategoryMap[product.category] ?? product.category;
 
   const priceLabel =
     product.price_type === "indicative" &&
@@ -462,6 +495,20 @@ export default function MarketplacePage() {
     };
   }, []);
 
+  const categoryFilters = useMemo(() => {
+    const availableCategories = [...products, ...supplierProducts]
+      .map((product) => product.category.trim())
+      .filter(Boolean);
+
+    const uniqueCategories = new Set<string>(categories);
+
+    for (const category of availableCategories) {
+      uniqueCategories.add(category);
+    }
+
+    return [...uniqueCategories];
+  }, [supplierProducts]);
+
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
 
@@ -599,7 +646,7 @@ export default function MarketplacePage() {
         </div>
 
         <div className="mt-7 flex gap-2 overflow-x-auto pb-3">
-          {categories.map((category) => {
+          {categoryFilters.map((category) => {
             const active = selectedCategory === category;
 
             return (

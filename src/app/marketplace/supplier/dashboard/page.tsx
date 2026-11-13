@@ -103,6 +103,7 @@ export default function SupplierDashboardPage() {
   const [payoutChangeMode, setPayoutChangeMode] = useState(false);
   const [productName, setProductName] = useState("");
   const [productCategory, setProductCategory] = useState("solar_backup_power");
+  const [productCustomCategory, setProductCustomCategory] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productBrand, setProductBrand] = useState("");
   const [productModel, setProductModel] = useState("");
@@ -140,6 +141,7 @@ export default function SupplierDashboardPage() {
     setExistingProductImages([]);
     setProductName("");
     setProductCategory("solar_backup_power");
+    setProductCustomCategory("");
     setProductDescription("");
     setProductBrand("");
     setProductModel("");
@@ -154,7 +156,37 @@ export default function SupplierDashboardPage() {
     setEditingProductId(product.id);
     setExistingProductImages(product.image_urls ?? []);
     setProductName(product.name);
-    setProductCategory(product.category);
+    const standardCategories = [
+      "solar_backup_power",
+      "electrical_materials",
+      "industrial_distribution",
+      "smart_energy_automation",
+      "tools_accessories",
+      "generators_power_backup",
+      "cables_wires_accessories",
+      "transformers_substation",
+      "switchgear_control_protection",
+      "batteries_energy_storage",
+      "solar_mounting_accessories",
+      "charge_controllers_protection",
+      "earthing_lightning_surge",
+      "lighting_electrical_fixtures",
+      "motors_pumps_drives",
+      "metering_sensors_monitoring",
+      "renewable_energy_equipment",
+      "ev_charging_equipment",
+      "networking_communication_control",
+      "safety_equipment_ppe",
+      "hvac_building_electrical",
+      "installation_accessories",
+      "engineering_components_spares",
+    ];
+    setProductCategory(
+      standardCategories.includes(product.category) ? product.category : "other",
+    );
+    setProductCustomCategory(
+      standardCategories.includes(product.category) ? "" : product.category,
+    );
     setProductDescription(product.description ?? "");
     setProductBrand(product.brand ?? "");
     setProductModel(product.model_number ?? "");
@@ -182,7 +214,12 @@ export default function SupplierDashboardPage() {
         formData.append("productId", editingProductId);
       }
       formData.append("name", productName);
-      formData.append("category", productCategory);
+      formData.append(
+        "category",
+        productCategory === "other"
+          ? productCustomCategory.trim()
+          : productCategory,
+      );
       formData.append("description", productDescription);
       formData.append("brand", productBrand);
       formData.append("model_number", productModel);
@@ -1141,15 +1178,60 @@ export default function SupplierDashboardPage() {
                       id="product-category"
                       required
                       value={productCategory}
-                      onChange={(event) => setProductCategory(event.target.value)}
+                      onChange={(event) => {
+                        setProductCategory(event.target.value);
+                        if (event.target.value !== "other") {
+                          setProductCustomCategory("");
+                        }
+                      }}
                       className="w-full border border-slate-300 bg-white px-3 py-2"
                     >
-                      <option value="solar_backup_power">Solar and backup power</option>
-                      <option value="electrical_materials">Electrical materials</option>
-                      <option value="industrial_distribution">Industrial distribution</option>
-                      <option value="smart_energy_automation">Smart energy automation</option>
-                      <option value="tools_accessories">Tools and accessories</option>
+                      <option value="solar_backup_power">Solar & Backup Power</option>
+                      <option value="electrical_materials">Electrical Materials</option>
+                      <option value="industrial_distribution">Industrial & Distribution</option>
+                      <option value="smart_energy_automation">Smart Energy & Automation</option>
+                      <option value="tools_accessories">Tools & Accessories</option>
+                      <option value="generators_power_backup">Generators & Power Backup</option>
+                      <option value="cables_wires_accessories">Cables, Wires & Cable Accessories</option>
+                      <option value="transformers_substation">Transformers & Substation Equipment</option>
+                      <option value="switchgear_control_protection">Switchgear, Control Panels & Protection</option>
+                      <option value="batteries_energy_storage">Batteries & Energy Storage</option>
+                      <option value="solar_mounting_accessories">Solar Mounting Structures & Accessories</option>
+                      <option value="charge_controllers_protection">Charge Controllers & Solar Protection</option>
+                      <option value="earthing_lightning_surge">Earthing, Lightning & Surge Protection</option>
+                      <option value="lighting_electrical_fixtures">Lighting Systems & Electrical Fixtures</option>
+                      <option value="motors_pumps_drives">Motors, Pumps & Industrial Drives</option>
+                      <option value="metering_sensors_monitoring">Metering, Sensors & Energy Monitoring</option>
+                      <option value="renewable_energy_equipment">Renewable Energy Equipment</option>
+                      <option value="ev_charging_equipment">EV Charging Equipment</option>
+                      <option value="networking_communication_control">Networking, Communication & Control Equipment</option>
+                      <option value="safety_equipment_ppe">Safety Equipment & PPE</option>
+                      <option value="hvac_building_electrical">HVAC & Building Electrical Systems</option>
+                      <option value="installation_accessories">Electrical Installation Accessories</option>
+                      <option value="engineering_components_spares">Engineering Components & Spare Parts</option>
+                      <option value="other">Other / Specify</option>
                     </select>
+
+                    {productCategory === "other" ? (
+                      <div className="mt-3">
+                        <label htmlFor="product-custom-category" className="mb-1 block text-sm font-semibold">
+                          Enter product category *
+                        </label>
+                        <input
+                          id="product-custom-category"
+                          required
+                          minLength={2}
+                          maxLength={80}
+                          value={productCustomCategory}
+                          onChange={(event) => setProductCustomCategory(event.target.value)}
+                          className="w-full border border-slate-300 px-3 py-2"
+                          placeholder="e.g. Industrial UPS Systems"
+                        />
+                        <p className="mt-1 text-xs text-slate-500">
+                          Enter a clear category name. Maximum 80 characters.
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div>
