@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import type { Metadata } from "next";
+import HomeFaq from "@/components/HomeFaq";
 
 export const metadata: Metadata = {
   title: "Electrical Engineering & Solar EPC Company in Nigeria | Samiz Tech",
@@ -982,6 +983,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <HomeFaq />
 
       {/* CONTACT */}
       <section id="contact" className="border-t border-slate-200 bg-blue-700">

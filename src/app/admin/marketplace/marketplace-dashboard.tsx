@@ -870,7 +870,7 @@ export default function MarketplaceDashboard() {
                     {notification.message}
                   </p>
                   <p className="mt-2 text-xs text-slate-400">
-                    {humanize(notification.event_type)} Â·{" "}
+                    {humanize(notification.event_type)} |{" "}
                     {new Date(notification.created_at).toLocaleString()}
                   </p>
                 </div>
