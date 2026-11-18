@@ -180,6 +180,10 @@ export default function SupplierDashboardPage() {
       "hvac_building_electrical",
       "installation_accessories",
       "engineering_components_spares",
+      "cable_branch_systems",
+      "cable_connectors",
+      "insulation_piercing_connectors",
+      "cable_jointing_systems",
     ];
     setProductCategory(
       standardCategories.includes(product.category) ? product.category : "other",
@@ -1209,6 +1213,10 @@ export default function SupplierDashboardPage() {
                       <option value="hvac_building_electrical">HVAC & Building Electrical Systems</option>
                       <option value="installation_accessories">Electrical Installation Accessories</option>
                       <option value="engineering_components_spares">Engineering Components & Spare Parts</option>
+                      <option value="cable_branch_systems">Cable Branch Systems</option>
+                      <option value="cable_connectors">Cable Connectors</option>
+                      <option value="insulation_piercing_connectors">Insulation Piercing Connectors</option>
+                      <option value="cable_jointing_systems">Cable Jointing Systems</option>
                       <option value="other">Other / Specify</option>
                     </select>
 

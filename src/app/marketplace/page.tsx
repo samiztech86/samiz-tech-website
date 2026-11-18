@@ -183,6 +183,10 @@ const supplierCategoryMap: Record<string, string> = {
   hvac_building_electrical: "HVAC & Building Electrical Systems",
   installation_accessories: "Electrical Installation Accessories",
   engineering_components_spares: "Engineering Components & Spare Parts",
+  cable_branch_systems: "Cable Branch Systems",
+  cable_connectors: "Cable Connectors",
+  insulation_piercing_connectors: "Insulation Piercing Connectors",
+  cable_jointing_systems: "Cable Jointing Systems",
 };
 
 function mapSupplierProduct(product: SupplierApiProduct): Product {
@@ -591,6 +595,12 @@ export default function MarketplacePage() {
               className="inline-flex items-center justify-center border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
             >
               Become a Supplier
+            </a>
+            <a
+              href="/marketplace/manufacturer-partnership"
+              className="inline-flex items-center justify-center border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              Manufacturer Partnership
             </a>
             <a
               href="/marketplace/supplier/login"

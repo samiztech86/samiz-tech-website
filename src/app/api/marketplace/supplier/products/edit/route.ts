@@ -33,6 +33,10 @@ const CATEGORIES = [
   "hvac_building_electrical",
   "installation_accessories",
   "engineering_components_spares",
+  "cable_branch_systems",
+  "cable_connectors",
+  "insulation_piercing_connectors",
+  "cable_jointing_systems",
 ] as const;
 
 function isValidCategory(category: string) {
