@@ -836,6 +836,12 @@ export default function MarketplaceDashboard() {
           </div>
         </div>
 
+        <details className="group mt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-sm font-semibold text-white hover:border-blue-400 [&::-webkit-details-marker]:hidden">
+            <span>View notifications ({adminNotifications.length})</span>
+            <span className="text-blue-300 group-open:hidden">Expand</span>
+            <span className="hidden text-blue-300 group-open:inline">Collapse</span>
+          </summary>
         {notificationError && (
           <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
             {notificationError}
@@ -887,6 +893,7 @@ export default function MarketplaceDashboard() {
             ))
           )}
         </div>
+        </details>
       </section>
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">

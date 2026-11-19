@@ -760,9 +760,20 @@ export default function MarketplacePage() {
                       compact
                     />
                   ) : null}
-                  <p className="mt-3 flex-1 text-sm leading-6 text-slate-600">
-                    {product.description}
-                  </p>
+                  <div className="mt-3 flex-1">
+                    <p className="hidden text-sm leading-6 text-slate-600 md:block">
+                      {product.description}
+                    </p>
+                    <details className="group md:hidden">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-blue-700 [&::-webkit-details-marker]:hidden">
+                        <span className="group-open:hidden">Read full description</span>
+                        <span className="hidden group-open:inline">Show less</span>
+                      </summary>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        {product.description}
+                      </p>
+                    </details>
+                  </div>
 
                   <div className="mt-5 border-t border-slate-100 pt-4">
                     <p className="text-sm font-semibold text-slate-900">
