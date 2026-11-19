@@ -573,6 +573,12 @@ export default function MarketplacePage() {
               Request a Product
             </a>
             <a
+              href="/marketplace/bulk-orders"
+              className="inline-flex items-center justify-center border border-amber-300 bg-transparent px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              Bulk Orders & Factory Pricing
+            </a>
+            <a
               href="/marketplace/my-quotes"
               className="inline-flex items-center justify-center border border-blue-300 bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500"
             >

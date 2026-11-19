@@ -1923,7 +1923,7 @@ export default function SupplierDashboardPage() {
                                 type="text"
                                 maxLength={200}
                                 className="w-full border border-slate-300 px-3 py-2 text-sm"
-                                placeholder="e.g. 7â€“10 working days"
+                                placeholder="e.g. 7–10 working days"
                               />
                             </div>
 

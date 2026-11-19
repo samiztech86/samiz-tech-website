@@ -23,6 +23,7 @@ const SERVICES = [
   "Smart Automation",
   "EnergyOS",
   "Facility Maintenance",
+  "Bulk Orders & Factory Pricing",
   "Other",
 ] as const;
 
