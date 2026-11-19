@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import MarketplaceProductShare from "@/components/MarketplaceProductShare";
@@ -261,6 +261,21 @@ export default async function MarketplaceProductPage({
             </Link>
           </div>
         </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: product.name,
+              description: product.description,
+              category: formatCategory(product.category),
+              ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
+              ...(product.model_number ? { model: product.model_number } : {}),
+              ...(image ? { image: [image] } : {}),
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
       </article>
     </main>
   );
