@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import MarketplaceProductShare from "@/components/MarketplaceProductShare";
@@ -157,16 +157,16 @@ export default async function MarketplaceProductPage({
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <nav
         aria-label="Breadcrumb"
-        className="mb-8 text-sm text-slate-600"
+        className="mb-8 text-sm text-slate-300"
       >
         <Link
           href="/marketplace"
-          className="hover:text-blue-700 hover:underline"
+          className="hover:text-blue-300 hover:underline"
         >
           Marketplace
         </Link>
         <span className="mx-2" aria-hidden="true">/</span>
-        <span aria-current="page" className="text-slate-900">
+        <span aria-current="page" className="text-slate-100">
           {product.name}
         </span>
       </nav>
@@ -184,18 +184,18 @@ export default async function MarketplaceProductPage({
               priority
             />
           ) : (
-            <p className="px-6 text-center text-sm text-slate-500">
+            <p className="px-6 text-center text-sm text-slate-300">
               Product image currently unavailable.
             </p>
           )}
         </div>
 
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
+          <p className="text-sm font-semibold uppercase tracking-wide text-blue-300">
             {formatCategory(product.category)}
           </p>
 
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             {product.name}
           </h1>
 
@@ -206,16 +206,16 @@ export default async function MarketplaceProductPage({
           />
 
           {supplierName ? (
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-3 text-sm text-slate-300">
               Listed by{" "}
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-slate-100">
                 {supplierName}
               </span>
             </p>
           ) : null}
 
           {product.brand || product.model_number ? (
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-3 text-sm text-slate-300">
               {[
                 product.brand ? `Brand: ${product.brand}` : null,
                 product.model_number
@@ -227,21 +227,21 @@ export default async function MarketplaceProductPage({
             </p>
           ) : null}
 
-          <p className="mt-6 text-2xl font-bold text-slate-950">
+          <p className="mt-6 text-2xl font-bold text-white">
             {formatPrice(product)}
           </p>
 
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-300">
             {product.is_available
               ? "Confirm final specifications and availability with the supplier."
               : "Currently marked as unavailable. Contact Samiz Tech to enquire about alternatives."}
           </p>
 
-          <div className="mt-8 border-t border-slate-200 pt-6">
-            <h2 className="text-lg font-semibold text-slate-950">
+          <div className="mt-8 border-t border-slate-700 pt-6">
+            <h2 className="text-lg font-semibold text-white">
               Product description
             </h2>
-            <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-700">
+            <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-200">
               {product.description}
             </p>
           </div>
@@ -255,7 +255,7 @@ export default async function MarketplaceProductPage({
             </Link>
             <Link
               href="/marketplace/how-it-works"
-              className="inline-flex items-center justify-center border border-slate-300 px-5 py-3 text-center text-sm font-semibold text-slate-800 hover:bg-slate-50"
+              className="inline-flex items-center justify-center border border-slate-600 px-5 py-3 text-center text-sm font-semibold text-slate-100 hover:bg-slate-800"
             >
               How it works
             </Link>
