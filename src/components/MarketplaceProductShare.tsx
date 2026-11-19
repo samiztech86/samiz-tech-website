@@ -58,12 +58,12 @@ export default function MarketplaceProductShare({
   }
 
   const buttonClass =
-    "inline-flex items-center justify-center border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100";
+    "inline-flex items-center justify-center border border-slate-500 bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition-colors hover:border-blue-400 hover:bg-slate-700";
 
   return (
-    <div className={compact ? "mt-3" : "mt-6 border-t border-slate-200 pt-5"}>
+    <div className={compact ? "mt-3" : "mt-6 border-t border-slate-700 pt-5"}>
       {!compact && (
-        <p className="mb-3 text-sm font-semibold text-slate-900">
+        <p className="mb-3 text-sm font-semibold text-white">
           Share this product
         </p>
       )}
@@ -84,7 +84,7 @@ export default function MarketplaceProductShare({
         </button>
       </div>
       {status ? (
-        <p role="status" aria-live="polite" className="mt-2 text-xs text-slate-600">
+        <p role="status" aria-live="polite" className="mt-2 text-xs text-slate-300">
           {status}
         </p>
       ) : null}

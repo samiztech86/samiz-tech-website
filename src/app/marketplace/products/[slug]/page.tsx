@@ -223,7 +223,7 @@ export default async function MarketplaceProductPage({
                   : null,
               ]
                 .filter(Boolean)
-                .join(" Â· ")}
+                .join(" · ")}
             </p>
           ) : null}
 
