@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import MarketplaceProductGallery from "@/components/MarketplaceProductGallery";
 import Link from "next/link";
 import MarketplaceProductShare from "@/components/MarketplaceProductShare";
+import MarketplaceProductQuoteForm from "@/components/MarketplaceProductQuoteForm";
 import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 
@@ -104,17 +105,48 @@ export async function generateMetadata({
   }
 
   const { product, supplierName } = listing;
-  const description =
-    product.description.trim().slice(0, 155) ||
-    `View ${product.name} on Samiz Tech Marketplace.`;
+  const category = formatCategory(product.category);
+  const productDetails = [
+    product.brand ? `Brand: ${product.brand}.` : "",
+    product.model_number ? `Model: ${product.model_number}.` : "",
+  ].filter(Boolean).join(" ");
+
+  const sourceDescription = product.description
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const description = [
+    `${product.name} in ${category}.`,
+    productDetails,
+    sourceDescription,
+    "Request product specifications, pricing and supply information from Samiz Tech Marketplace in Nigeria.",
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .slice(0, 300);
 
   const canonical = `${siteUrl}/marketplace/products/${product.slug}`;
   const image = product.image_urls?.find(
     (url) => typeof url === "string" && /^https?:\/\//i.test(url),
   );
 
+  const title = `${product.name} | Samiz Tech Marketplace`;
+  const keywords = [
+    product.name,
+    product.brand ?? "",
+    product.model_number ?? "",
+    category,
+    `${category} Nigeria`,
+    `${product.name} supplier Nigeria`,
+    `${product.name} price Nigeria`,
+    "industrial equipment procurement Nigeria",
+    "electrical equipment suppliers Nigeria",
+    "Samiz Tech Marketplace",
+    supplierName ?? "",
+  ].filter(Boolean);
+
   return {
-    title: `${product.name} | Samiz Tech Marketplace`,
+    title,
     description,
     alternates: { canonical },
     openGraph: {
@@ -122,19 +154,18 @@ export async function generateMetadata({
       url: canonical,
       siteName: "Samiz Tech Engineering Ltd.",
       locale: "en_NG",
-      title: `${product.name} | Samiz Tech Marketplace`,
+      title,
       description,
       ...(image ? { images: [{ url: image, alt: product.name }] } : {}),
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
     robots: { index: true, follow: true },
-    keywords: [
-      product.name,
-      product.brand ?? "",
-      product.model_number ?? "",
-      "solar and electrical equipment Nigeria",
-      "Samiz Tech Marketplace",
-      supplierName ?? "",
-    ].filter(Boolean),
+    keywords,
   };
 }
 
@@ -237,20 +268,32 @@ export default async function MarketplaceProductPage({
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/marketplace"
-              className="inline-flex items-center justify-center bg-blue-700 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-blue-800"
-            >
-              Browse marketplace to enquire or buy
-            </Link>
-            <Link
-              href="/marketplace/how-it-works"
-              className="inline-flex items-center justify-center border border-slate-600 px-5 py-3 text-center text-sm font-semibold text-slate-100 hover:bg-slate-800"
-            >
-              How it works
-            </Link>
-          </div>
+          {product.price_type === "quote_only" && product.is_available ? (
+            <div className="mt-8">
+              <MarketplaceProductQuoteForm
+                productId={product.id}
+                productName={product.name}
+                supplierName={supplierName}
+              />
+            </div>
+          ) : (
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/marketplace"
+                className="inline-flex items-center justify-center bg-blue-700 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-blue-800"
+              >
+                {product.is_available
+                  ? "Continue to marketplace to buy"
+                  : "Browse marketplace for alternatives"}
+              </Link>
+              <Link
+                href="/marketplace/how-it-works"
+                className="inline-flex items-center justify-center border border-slate-600 px-5 py-3 text-center text-sm font-semibold text-slate-100 hover:bg-slate-800"
+              >
+                How it works
+              </Link>
+            </div>
+          )}
         </div>
         <script
           type="application/ld+json"
@@ -264,6 +307,22 @@ export default async function MarketplaceProductPage({
               ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
               ...(product.model_number ? { model: product.model_number } : {}),
               ...(image ? { image: [image] } : {}),
+              ...(product.price_type === "indicative" &&
+              typeof product.indicative_price === "number" &&
+              Number.isFinite(product.indicative_price) &&
+              product.indicative_price > 0
+                ? {
+                    offers: {
+                      "@type": "Offer",
+                      price: product.indicative_price,
+                      priceCurrency: product.currency || "NGN",
+                      availability: product.is_available
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock",
+                      url: `${siteUrl}/marketplace/products/${product.slug}`,
+                    },
+                  }
+                : {}),
             }).replace(/</g, "\\u003c"),
           }}
         />

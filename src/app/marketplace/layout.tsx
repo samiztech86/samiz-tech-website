@@ -3,18 +3,23 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Samiz Tech Marketplace | Solar & Electrical Products",
+    absolute: "Industrial, Electrical & Solar Equipment Marketplace Nigeria | Samiz Tech",
   },
   description:
-    "Shop solar panels, inverters, batteries and electrical products on Samiz Tech Marketplace. Browse supplier listings and request quotations in Nigeria.",
+    "Source generators, solar and battery systems, electrical materials, switchgear and industrial power equipment in Nigeria. Browse supplier listings and request quotations through Samiz Tech Marketplace.",
   keywords: [
-    "Samiz Tech Marketplace",
+    "industrial equipment marketplace Nigeria",
+    "electrical equipment suppliers Nigeria",
+    "generator suppliers Nigeria",
+    "industrial generators Nigeria",
     "solar equipment marketplace Nigeria",
-    "solar panels and inverters Nigeria",
-    "solar batteries Nigeria",
+    "inverters and batteries Nigeria",
     "electrical materials suppliers Nigeria",
-    "electrical equipment marketplace",
-    "industrial electrical equipment Nigeria",
+    "switchgear and control panels Nigeria",
+    "transformers and substation equipment Nigeria",
+    "commercial power equipment procurement",
+    "bulk electrical equipment orders Nigeria",
+    "Samiz Tech Marketplace",
   ],
   alternates: {
     canonical: "https://www.samiztech.com.ng/marketplace",
@@ -22,17 +27,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.samiztech.com.ng/marketplace",
-    title: "Samiz Tech Marketplace | Solar & Electrical Products",
+    title: "Industrial, Electrical & Solar Equipment Marketplace Nigeria | Samiz Tech",
     description:
-      "Browse solar panels, inverters, batteries and electrical products from supplier listings, or request a quotation.",
+      "Browse generators, solar systems, electrical materials and industrial power equipment. Request supplier quotations and source equipment through Samiz Tech Marketplace.",
     siteName: "Samiz Tech Engineering Ltd.",
     locale: "en_NG",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Samiz Tech Marketplace | Solar & Electrical Products",
+    title: "Industrial, Electrical & Solar Equipment Marketplace Nigeria | Samiz Tech",
     description:
-      "Explore solar, electrical and industrial power products from supplier listings on Samiz Tech Marketplace.",
+      "Source generators, electrical materials, solar equipment and industrial power products in Nigeria through Samiz Tech Marketplace.",
   },
 };
 
