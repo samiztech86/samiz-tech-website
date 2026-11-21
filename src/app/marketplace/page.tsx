@@ -3,6 +3,7 @@
 import Image from "next/image";
 import MarketplaceAdSlot from "@/components/MarketplaceAdSlot";
 import MarketplaceProductShare from "@/components/MarketplaceProductShare";
+import MarketplaceProductGallery from "@/components/MarketplaceProductGallery";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
@@ -43,6 +44,7 @@ type Product = {
   category: string;
   description: string;
   image: string;
+  imageUrls?: string[];
   imageAlt: string;
   priceLabel?: string;
   price_type?: "quote_only" | "indicative";
@@ -129,7 +131,8 @@ function mapSupplierProduct(product: SupplierApiProduct): Product {
     name: product.name,
     category,
     description: product.description,
-    image: product.image_urls?.find((url) => typeof url === "string" && url.trim()) ?? "",
+    image: product.image_urls?.find((url) => typeof url === "string" && /^https?:\/\//i.test(url)) ?? "",
+    imageUrls: product.image_urls?.filter((url) => typeof url === "string" && /^https?:\/\//i.test(url)) ?? [],
     imageAlt: product.name,
     priceLabel,
     price_type: product.price_type,
@@ -629,16 +632,17 @@ export default function MarketplacePage() {
                 className="flex h-full flex-col overflow-hidden border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="relative aspect-[4/3] bg-slate-100">
-                  {product.isSupplierListing && !product.image ? (
-                    <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-slate-500">
-                      Product image unavailable
-                    </div>
+                  {product.isSupplierListing ? (
+                    <MarketplaceProductGallery
+                      images={product.imageUrls ?? (product.image ? [product.image] : [])}
+                      alt={product.imageAlt}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
                   ) : (
                     <Image
                       src={product.image}
                       alt={product.imageAlt}
                       fill
-                      unoptimized={product.isSupplierListing === true}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       className="object-contain p-4"
                     />

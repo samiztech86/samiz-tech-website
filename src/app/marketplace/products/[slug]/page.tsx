@@ -1,5 +1,5 @@
-﻿import type { Metadata } from "next";
-import Image from "next/image";
+import type { Metadata } from "next";
+import MarketplaceProductGallery from "@/components/MarketplaceProductGallery";
 import Link from "next/link";
 import MarketplaceProductShare from "@/components/MarketplaceProductShare";
 import { notFound } from "next/navigation";
@@ -172,22 +172,13 @@ export default async function MarketplaceProductPage({
       </nav>
 
       <article className="grid gap-8 md:grid-cols-2 md:gap-12">
-        <div className="relative flex min-h-72 items-center justify-center overflow-hidden border border-slate-200 bg-white md:min-h-96">
-          {image ? (
-            <Image
-              src={image}
-              alt={product.name}
-              fill
-              unoptimized
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-contain p-6"
-              priority
-            />
-          ) : (
-            <p className="px-6 text-center text-sm text-slate-300">
-              Product image currently unavailable.
-            </p>
-          )}
+        <div className="relative min-h-72 overflow-hidden border border-slate-200 bg-white md:min-h-96">
+          <MarketplaceProductGallery
+            images={product.image_urls ?? []}
+            alt={product.name}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+          />
         </div>
 
         <div>
