@@ -319,7 +319,16 @@ export async function POST(request: Request) {
           .from("marketplace-product-images")
           .remove(uploadedPaths);
       }
-      console.error("Marketplace product creation failed.");
+      if (insertError) {
+        console.error("Marketplace product creation failed.", {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+        });
+      } else {
+        console.error("Marketplace product creation returned no product.");
+      }
       return respond(
         { error: "Product could not be saved. Please try again." },
         500,

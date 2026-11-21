@@ -1324,14 +1324,24 @@ export default function SupplierDashboardPage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label htmlFor="product-images" className="mb-1 block text-sm font-semibold">
+                    <label htmlFor="product-image-slot-0" className="mb-1 block text-sm font-semibold">
                       Product images (optional, up to 5)
                     </label>
-                    <p className="mb-2 text-sm text-slate-600">
-                      JPEG, PNG or WebP. Maximum 5 MB per image.
+                    <p className="mb-3 text-sm text-slate-600">
+                      Add up to five images. JPEG, PNG or WebP; maximum 5 MB per image.
                     </p>
+
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-slate-700">
+                        Image slots
+                      </span>
+                      <span className="text-sm text-slate-600">
+                        {productImages.length} of 5 selected
+                      </span>
+                    </div>
+
                     {existingProductImages.length > 0 ? (
-                      <div className="mb-4">
+                      <div className="mb-4 rounded border border-slate-200 p-3">
                         <p className="mb-2 text-sm font-semibold text-slate-700">
                           Current product images
                         </p>
@@ -1347,72 +1357,113 @@ export default function SupplierDashboardPage() {
                           ))}
                         </div>
                         <p className="mt-2 text-xs text-slate-600">
-                          Leave the upload field empty to keep these images. Upload new images to replace the current set.
+                          These images remain unchanged unless you select new images below. New uploads replace the current image set.
                         </p>
                       </div>
                     ) : null}
-                    <input
-                      key={editingProductId ?? "new-product"}
-                      id="product-images"
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      multiple
-                      disabled={productSubmitting}
-                      onChange={(event) => {
-                        const files = Array.from(event.target.files ?? []);
-                        if (files.length > 5) {
-                          setProductError("Choose no more than 5 images.");
-                          event.target.value = "";
-                          return;
-                        }
-                        const invalid = files.find(
-                          (file) =>
-                            !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-                            file.size > 5 * 1024 * 1024,
-                        );
-                        if (invalid) {
-                          setProductError(
-                            invalid.size > 5 * 1024 * 1024
-                              ? "Each image must be 5 MB or smaller."
-                              : "Images must be JPEG, PNG, or WebP.",
-                          );
-                          event.target.value = "";
-                          return;
-                        }
-                        setProductError("");
-                        setProductImages(files);
-                      }}
-                      className="block w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm"
-                    />
 
-                    {imagePreviews.length ? (
-                      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-                        {imagePreviews.map((preview, index) => (
-                          <div key={preview.url} className="border border-slate-200 p-2">
-                            <img
-                              src={preview.url}
-                              alt={preview.file.name}
-                              className="h-28 w-full object-contain"
-                            />
-                            <p className="mt-2 break-all text-xs text-slate-600">
-                              {preview.file.name}
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                      {Array.from({ length: 5 }, (_, index) => {
+                        const preview = imagePreviews[index];
+
+                        return (
+                          <div
+                            key={index}
+                            className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+                          >
+                            <p className="mb-2 text-sm font-semibold text-slate-700">
+                              Image {index + 1}
+                              {index === 0 ? " (Primary)" : ""}
                             </p>
-                            <button
-                              type="button"
-                              disabled={productSubmitting}
-                              onClick={() =>
-                                setProductImages((current) =>
-                                  current.filter((_, itemIndex) => itemIndex !== index),
-                                )
-                              }
-                              className="mt-2 text-xs font-semibold text-red-700 underline"
-                            >
-                              Remove image
-                            </button>
+
+                            {preview ? (
+                              <img
+                                src={preview.url}
+                                alt={`Product image ${index + 1}`}
+                                className="mb-2 h-28 w-full rounded border border-slate-200 bg-white object-contain"
+                              />
+                            ) : (
+                              <div className="mb-2 flex h-28 items-center justify-center rounded border border-dashed border-slate-300 bg-white text-sm text-slate-400">
+                                No image selected
+                              </div>
+                            )}
+
+                            <input
+                              key={`${editingProductId ?? "new-product"}-${index}-${preview?.url ?? "empty"}`}
+                              id={`product-image-slot-${index}`}
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              disabled={productSubmitting || index > productImages.length}
+                              onChange={(event) => {
+                                const file = event.target.files?.[0];
+                                if (!file) return;
+
+                                if (
+                                  !["image/jpeg", "image/png", "image/webp"].includes(file.type)
+                                ) {
+                                  setProductError("Images must be JPEG, PNG, or WebP.");
+                                  event.target.value = "";
+                                  return;
+                                }
+
+                                if (file.size > 5 * 1024 * 1024) {
+                                  setProductError("Each image must be 5 MB or smaller.");
+                                  event.target.value = "";
+                                  return;
+                                }
+
+                                if (index > productImages.length) {
+                                  setProductError("Please fill the image slots in order.");
+                                  event.target.value = "";
+                                  return;
+                                }
+
+                                setProductImages((current) => {
+                                  const next = [...current];
+
+                                  if (index === next.length) {
+                                    next.push(file);
+                                  } else {
+                                    next[index] = file;
+                                  }
+
+                                  return next;
+                                });
+
+                                setProductError("");
+                              }}
+                              className="block w-full text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-200 file:px-2 file:py-2 file:text-xs file:font-semibold file:text-slate-700"
+                            />
+
+                            {preview ? (
+                              <>
+                                <p className="mt-2 break-all text-xs text-slate-600">
+                                  {preview.file.name}
+                                </p>
+                                <button
+                                  type="button"
+                                  disabled={productSubmitting}
+                                  onClick={() =>
+                                    setProductImages((current) =>
+                                      current.filter((_, itemIndex) => itemIndex !== index),
+                                    )
+                                  }
+                                  className="mt-2 text-xs font-semibold text-red-700 underline"
+                                >
+                                  Remove image
+                                </button>
+                              </>
+                            ) : (
+                              <p className="mt-2 text-xs text-slate-500">
+                                {index > productImages.length
+                                  ? "Add the previous image first"
+                                  : "Choose an image"}
+                              </p>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    ) : null}
+                        );
+                      })}
+                    </div>
                   </div>
 
                   {productError ? (
